@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Domain", "SupervisorBravo.Domain\SupervisorBravo.Domain.csproj", "{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Persistence", "SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj", "{6CB05085-BFF9-4457-94B0-3DE256DE8669}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C65D857F-1299-4567-ADBD-A20B0A323F78}
+	EndGlobalSection
+EndGlobal
