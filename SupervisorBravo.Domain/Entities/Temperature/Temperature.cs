@@ -18,11 +18,11 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// <summary>
         /// Valor de la temperatura medida por el Dixell.
         /// </summary>
-        public double TemperatureMeasurement { get; set; }
+        public double TemperatureMeasurement { get; private set; }
         /// <summary>
         /// Fecha y hora de la medición de la temperatura.
         /// </summary>
-        public DateTime MeasurementTime { get; set; }
+        public DateTime MeasurementTime { get; private set; }
         /// <summary>
         /// Identiifcador del Dixell al que pertence la medicion de la temperatura.
         /// </summary>
@@ -31,7 +31,7 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// Referencia al Dixell al que pertenece la medición de la temperatura.
         /// </summary>
         [ForeignKey(nameof(DixellId))]
-        public virtual DixellXR60CX Dixell { get; set; }
+        public virtual DixellBase Dixell { get; private set; }
         #endregion
 
         #region Constructores
@@ -40,18 +40,19 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// </summary>
         public Temperature()
         {
-            TemperatureMeasurement = 0.0;
-            MeasurementTime = DateTime.Now;
+            
         }
         /// <summary>
         /// Crea una instancia de la clase <see cref="Temperature"/> con los valores especificados.
         /// </summary>
         /// <param name="temperatureMeasurement">Valor de la empeatura medida por el Dixell.</param>
         /// <param name="measurementTime">Fecha y hora de la medición de la temperatura.</param>
-        public Temperature(double temperatureMeasurement, DateTime measurementTime)
+        /// <param name="dixellId">Identificador del Dixell que hizo la lectura.</param>
+        public Temperature(double temperatureMeasurement, DateTime measurementTime, Guid dixellId)
         {
             TemperatureMeasurement = temperatureMeasurement;
             MeasurementTime = measurementTime;
+            DixellId = dixellId;
         }
         #endregion
     }

@@ -12,17 +12,10 @@ namespace SupervisorBravo.Domain.Entities.Dixell
     /// <summary>
     /// Modela un Dixell modelo XR60CX.
     /// </summary>
-    public class DixellXR60CX : Entity
+    public class DixellXR60CX : DixellBase
     {
         #region Propiedades
-        /// <summary>
-        /// Identificador del Dixell en el bus modbus.
-        /// </summary>
-        public int ModbusId { get; set; }
-        /// <summary>
-        /// Nombre de la sala donde se encuentra el Dixell.
-        /// </summary>
-        public string RoomName { get; set; }
+       
         /// <summary>
         /// Control de encendido y apagado del Dixell.
         /// </summary>
@@ -31,14 +24,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// Control de encendido y apagado del deshielo
         /// </summary>
         public bool Thawing { get; set; }
-        /// <summary>
-        /// Valor del setpoint del Dixell.
-        /// </summary>
-        public double SetPoint { get; set; }
-        /// <summary>
-        /// Colección de temperaturas medidas por el Dixell.
-        /// </summary>
-        public virtual ICollection<Temperature> temperatures { get ; set; } = new List<Temperature>();
+       
         #endregion
 
         #region Constructores
@@ -47,7 +33,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// </summary>
         public DixellXR60CX()
         {
-            ModbusId = 0;
+            MoodbusId = 0;
             RoomName = string.Empty;
             ControlON_OFF = false;
             Thawing = false;
@@ -63,7 +49,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// <param name="setPoint">Valor del SetPoint del Dixell.</param>
         public DixellXR60CX(int modbusId, string roomName, double setPoint)
         {
-            ModbusId = modbusId;
+            MoodbusId = modbusId;
             RoomName = roomName;
             ControlON_OFF = true;
             Thawing = false;
