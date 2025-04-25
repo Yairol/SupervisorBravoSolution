@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/SupervisorBravo.Persistence/Migrations/20250424210506_InitialCreate.cs
+/SupervisorBravo.Persistence/Migrations/20250424210506_InitialCreate.Designer.cs
+/SupervisorBravo.Persistence/Migrations/ApplicationDbContextModelSnapshot.cs
