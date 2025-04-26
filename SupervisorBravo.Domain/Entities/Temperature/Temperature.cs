@@ -31,7 +31,7 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// Referencia al Dixell al que pertenece la medición de la temperatura.
         /// </summary>
         [ForeignKey(nameof(DixellId))]
-        public virtual DixellBase Dixell { get; private set; }
+        public virtual DixellBase Dixell { get; set; }
         #endregion
 
         #region Constructores

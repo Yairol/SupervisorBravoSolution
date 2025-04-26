@@ -18,9 +18,4 @@
     <ProjectReference Include="..\SupervisorBravo.Domain\SupervisorBravo.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Abstracts\" />
-    <Folder Include="Repository\" />
-  </ItemGroup>
-
 </Project>

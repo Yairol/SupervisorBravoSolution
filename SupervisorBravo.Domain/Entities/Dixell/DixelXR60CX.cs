@@ -47,13 +47,13 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// <param name="controlON_OFF">Estado del control ON/OFF del Dixell.</param>
         /// <param name="thawing">Estado del deshielo del Dixell.</param>
         /// <param name="setPoint">Valor del SetPoint del Dixell.</param>
-        public DixellXR60CX(int modbusId, string roomName, double setPoint)
+        public DixellXR60CX(int modbusId, string roomName)
         {
             MoodbusId = modbusId;
             RoomName = roomName;
             ControlON_OFF = true;
             Thawing = false;
-            SetPoint = setPoint;
+            SetPoint = 5;
         }
         #endregion
     }
