@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Domain", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Persistence", "SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj", "{6CB05085-BFF9-4457-94B0-3DE256DE8669}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.MSTest", "SupervisorBravo.MSTest\SupervisorBravo.MSTest.csproj", "{5DFD0AC8-6A81-462E-A89E-3B7AC30EDACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Web", "SupervisorBravo.Web\SupervisorBravo.Web.csproj", "{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CB05085-BFF9-4457-94B0-3DE256DE8669}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DFD0AC8-6A81-462E-A89E-3B7AC30EDACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DFD0AC8-6A81-462E-A89E-3B7AC30EDACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DFD0AC8-6A81-462E-A89E-3B7AC30EDACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DFD0AC8-6A81-462E-A89E-3B7AC30EDACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
