@@ -69,15 +69,26 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR60CX>(dixell.Id);
             if (dixell == null) return NotFound();
 
-            // Actualizas solo las propiedades que se modifican
             dixellUpdate.Id = dixell.Id;
             dixellUpdate.RoomName = dixell.RoomName;
+            dixellUpdate.SetPoint = dixell.SetPoint;
             dixellUpdate.MoodbusId = dixell.MoodbusId;
             dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
             dixellUpdate.Thawing = dixell.Thawing;
 
             await _dixellRepository.UpdateDixell(dixellUpdate);
 
+            await _dixellRepository.CommitTransaction();
+
+            return RedirectToAction(nameof(Dixells));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteDixell(int id)
+        {
+            await _dixellRepository.BeginTransaction();
+            var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR60CX>(id);
+            await _dixellRepository.DeleteDixell<DixellXR60CX>(dixell.Id);
             await _dixellRepository.CommitTransaction();
 
             return RedirectToAction(nameof(Dixells));

@@ -11,4 +11,8 @@
     <ProjectReference Include="..\SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\DTOs\" />
+  </ItemGroup>
+
 </Project>
