@@ -1,0 +1,56 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXR60CX>
+
+<div class="row">
+    <div class="col-sm-8 offset-sm-2">
+        <h2>Parametros de Refrigeracion.</h2>
+        <a asp-controller="Refrigertion" asp-action="CreateDixell" class="btn btn-success">Crear</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Dispositivo</th>
+                    <th>On/Off</th>
+                    <th>SetPoint</th>
+                    <th>Temperatura</th>
+                    <th>Cooling</th>
+                    <th>Defrost</th>
+                    <th>Fan</th>
+                    <th>Último Muestreo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.RoomName</td>
+                        <td>@item.ControlON_OFF</td>
+                        <td>@item.SetPoint</td>
+                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement</td>
+                        <td>@(item.Thawing? "NO" : "SI")</td>
+                        <td>@(item.Thawing? "SI" : "NO")</td>
+                        <td>@(item.Thawing? "NO" : "SI")</td>
+                        <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td>
+                            <a
+                                asp-controller="Refrigertion"
+                                asp-action="UpdateDixell"
+                                asp-route-id ="@item.MoodbusId"
+                                class="btn btn-primary">Editar</a>
+                        </td>
+                    </tr>
+                }
+        </table>
+
+
+
+    </div>
+
+
+
+
+
+</div>

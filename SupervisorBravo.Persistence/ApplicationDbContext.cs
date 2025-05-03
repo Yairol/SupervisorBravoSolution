@@ -29,7 +29,7 @@ namespace SupervisorBravo.Persistence
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-J0L95CI\\SQLEXPRESS;Database=DBTest;Trusted_Connection=True;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer();
             }
         }
 

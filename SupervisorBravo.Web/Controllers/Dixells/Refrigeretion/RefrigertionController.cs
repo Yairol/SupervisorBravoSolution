@@ -1,0 +1,86 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Persistence.Abstracts.Dixells;
+
+namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
+{
+    public class RefrigertionController : Controller
+    {
+        private readonly IDixellRepository _dixellRepository;
+
+        public RefrigertionController(IDixellRepository dixellRepository)
+        {
+            _dixellRepository = dixellRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Dixells()
+        {
+            await _dixellRepository.BeginTransaction();
+
+            var dixells = await _dixellRepository.GetAllDixells<DixellXR60CX>();
+
+            await _dixellRepository.CommitTransaction();
+
+
+            if (dixells == null)
+            {
+                return NotFound();
+            }        
+            return View(dixells);
+        }
+
+        [HttpGet]
+        public IActionResult CreateDixell()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateDixell(DixellXR60CX dixell)
+        {
+            await _dixellRepository.BeginTransaction();
+            var newDixell = await _dixellRepository.CreateDixellXR60CX(dixell.RoomName, dixell.MoodbusId);
+            await _dixellRepository.CommitTransaction();
+            if (dixell == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Dixells));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateDixell(int id)
+        {
+            await _dixellRepository.BeginTransaction();
+            var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR60CX>(id);
+            await _dixellRepository.CommitTransaction();
+            if(dixell == null)
+                return NotFound();
+            return View(dixell);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDixell(DixellXR60CX dixell)
+        {
+            await _dixellRepository.BeginTransaction();
+            var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR60CX>(dixell.Id);
+            if (dixell == null) return NotFound();
+
+            // Actualizas solo las propiedades que se modifican
+            dixellUpdate.Id = dixell.Id;
+            dixellUpdate.RoomName = dixell.RoomName;
+            dixellUpdate.MoodbusId = dixell.MoodbusId;
+            dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
+            dixellUpdate.Thawing = dixell.Thawing;
+
+            await _dixellRepository.UpdateDixell(dixellUpdate);
+
+            await _dixellRepository.CommitTransaction();
+
+            return RedirectToAction(nameof(Dixells));
+        }
+    }
+}

@@ -31,7 +31,7 @@ namespace SupervisorBravo.Persistence.Repository
 
         public async Task<List<T>> GetAllDixells<T>() where T : DixellBase
         {
-            return await _context.Set<T>().ToListAsync();
+            return await _context.Set<T>().Include(d => d.temperatures).ToListAsync();
         }
 
         public async Task<T> GetDixellById<T>(Guid id) where T : DixellBase
