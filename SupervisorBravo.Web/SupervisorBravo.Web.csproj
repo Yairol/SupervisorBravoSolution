@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SupervisorBravo.Domain\SupervisorBravo.Domain.csproj" />
     <ProjectReference Include="..\SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj" />
+    <ProjectReference Include="..\SupervisorBravo.WorkerService\SupervisorBravo.WorkerService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

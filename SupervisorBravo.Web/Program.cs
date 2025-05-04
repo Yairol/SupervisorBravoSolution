@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Repository;
+using SupervisorBravo.WorkerService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString"));
 });
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
+builder.Services.AddHostedService<Worker>();
 
 
 var app = builder.Build();
