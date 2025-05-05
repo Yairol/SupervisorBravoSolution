@@ -3,12 +3,12 @@
 *@
 @{
 }
-@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXR60CX>
+@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXT111C>
 
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
-        <h2>Parametros de Refrigeracion.</h2>
-        <a asp-controller="Refrigertion" asp-action="CreateDixell" class="btn btn-success mb-3">Crear</a>
+        <h2>Parametros de Cocción-Enfriamiento.</h2>
+        <a asp-controller="CoolingCoercion" asp-action="CreateDixell" class="btn btn-success mb-3">Crear</a>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -16,9 +16,7 @@
                     <th>On/Off</th>
                     <th>SetPoint</th>
                     <th>Temperatura</th>
-                    <th>Cooling</th>
-                    <th>Defrost</th>
-                    <th>Fan</th>
+                    <th>Electro Válvula</th>
                     <th>Último Muestreo</th>
                 </tr>
             </thead>
@@ -30,20 +28,19 @@
                         <td>@item.ControlON_OFF</td>
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@(item.Thawing? "NO" : "SI")</td>
-                        <td>@(item.Thawing? "SI" : "NO")</td>
-                        <td>@(item.Thawing? "NO" : "SI")</td>
+                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement < item.SetPoint)? "SI" : "NO")</td>
                         <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         <td>
-                            <a asp-controller="Refrigertion"
-                                asp-action="UpdateDixell"
-                                asp-route-id ="@item.MoodbusId"
-                                class="btn btn-primary">Editar
+                            <a asp-controller="CoolingCoercion"
+                               asp-action="UpdateDixell"
+                               asp-route-id="@item.MoodbusId"
+                               class="btn btn-primary">
+                                Editar
                             </a>
 
                         </td>
                         <td>
-                            <a asp-controller="Refrigertion"
+                            <a asp-controller="CoolingCoercion"
                                asp-action="DeleteDixell"
                                asp-route-id="@item.MoodbusId"
                                onclick="return confirmar()"

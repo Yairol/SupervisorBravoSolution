@@ -13,6 +13,13 @@ namespace SupervisorBravo.Persistence.Abstracts.Dixells
     public interface IDixellRepository : IRepository
     {
         /// <summary>
+        /// Crea un Dixell XT111C en la BD.
+        /// </summary>
+        /// <param name="roomName"></param>
+        /// <param name="moodbusId"></param>
+        /// <returns></returns>
+        Task<DixellXT111C> CreateDixellXT111C(string roomName, int moodbusId);
+        /// <summary>
         /// Creacion de un Dixell en la BD.
         /// </summary>
         /// <param name="roomName">Sala que monitorea el Dixell.</param>

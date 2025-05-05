@@ -13,6 +13,12 @@ namespace SupervisorBravo.Persistence.Repository
     public partial class AplicationRepository : IDixellRepository
     {
 
+        public async Task<DixellXT111C> CreateDixellXT111C(string roomName, int moodbusId)
+        {
+            DixellXT111C dixellXT111C = new DixellXT111C(moodbusId, roomName);
+            await _context.AddAsync(dixellXT111C);
+            return dixellXT111C;
+        }
         public async Task<DixellXR60CX> CreateDixellXR60CX(string roomName, int moodbusId)
         {
             DixellXR60CX dixellXR60CX = new DixellXR60CX(moodbusId, roomName);

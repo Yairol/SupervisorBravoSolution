@@ -3,6 +3,7 @@ using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
+using SupervisorBravo.WorkerService.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString"));
 });
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
+
 builder.Services.AddHostedService<Worker>();
 
 
@@ -35,6 +37,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Refrigertion}/{action=Dixells}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

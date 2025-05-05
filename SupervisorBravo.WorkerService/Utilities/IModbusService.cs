@@ -6,17 +6,9 @@ using System.Threading.Tasks;
 
 namespace SupervisorBravo.WorkerService.Utilities
 {
-    public static class ModbusUtilities
+    public interface IModbusService
     {
-        public static void CreateConexionPort()
-        {
-
-        }
-
-        public static void IsConexionPortEnabled()
-        {
-
-        }
+        Task<ushort[]> ReadRegistersAsync(byte slaveId, ushort startAddress, ushort numberOfPoints);
 
 
     }

@@ -14,6 +14,8 @@ namespace SupervisorBravo.Persistence
     {
         public DbSet<DixellBase> DixellBases { get; set; }
         public DbSet<DixellXR60CX> DixellXR60CXs {  get; set; }
+
+        public DbSet<DixellXT111C> DixellXT111Cs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
 
         public ApplicationDbContext() { }
@@ -40,6 +42,7 @@ namespace SupervisorBravo.Persistence
             modelBuilder.ApplyConfiguration(new DixellBaseFluentConfiguration());
             modelBuilder.ApplyConfiguration(new DixellXR60CFluentConfiguration());
             modelBuilder.ApplyConfiguration(new TemperatureFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new DixellXT111CFluentConfiguration());
         }
 
         private static DbContextOptions GetOptions(string connectionString)
