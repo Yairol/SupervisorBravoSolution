@@ -5,10 +5,7 @@
     /// </summary>
     public class DixellXT111C : DixellBase
     {
-        /// <summary>
-        /// Control On/Off activo
-        /// </summary>
-        public bool ControlON_OFF { get; set; }
+       
 
         /// <summary>
         /// Constructor por defecto.
@@ -29,6 +26,8 @@
         {
             MoodbusId = modbusId;
             RoomName = roomNAme;
+            SetPointWrite = false;
+            ControlON_OFFWrite = false;
         }
     }
 }

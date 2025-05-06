@@ -67,11 +67,20 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR60CX>(dixell.Id);
             if (dixell == null) return NotFound();
 
+            if(dixell.ControlON_OFF != dixellUpdate.ControlON_OFF)
+            {
+                dixellUpdate.ControlON_OFFWrite = true;
+                dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
+            }
+            if ((dixell.Thawing != dixellUpdate.Thawing) && (dixellUpdate.ThawingWrite == false))
+            {
+                dixellUpdate.ThawingWrite = true;
+                dixellUpdate.Thawing = dixell.Thawing;
+            }
+
             dixellUpdate.Id = dixell.Id;
             dixellUpdate.RoomName = dixell.RoomName;
-            dixellUpdate.SetPoint = dixell.SetPoint;
             dixellUpdate.MoodbusId = dixell.MoodbusId;
-            dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
             dixellUpdate.Thawing = dixell.Thawing;
 
             await _dixellRepository.UpdateDixell(dixellUpdate);

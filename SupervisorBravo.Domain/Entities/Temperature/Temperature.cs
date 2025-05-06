@@ -15,6 +15,10 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// </summary>
         public double TemperatureMeasurement { get; private set; }
         /// <summary>
+        /// Indicador si el control estuvo activo cuando se hizo la medcion.
+        /// </summary>
+        public bool ControlEnable { get; set; }
+        /// <summary>
         /// Fecha y hora de la medición de la temperatura.
         /// </summary>
         public DateTime MeasurementTime { get; private set; }

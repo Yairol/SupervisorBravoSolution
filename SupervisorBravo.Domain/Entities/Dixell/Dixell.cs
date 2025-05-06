@@ -13,6 +13,14 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// </summary>
         public string RoomName { get; set; }
         /// <summary>
+        /// Control On/Off activo
+        /// </summary>
+        public bool ControlON_OFF { get; set; }
+        /// <summary>
+        /// Identificador si el control On/Off es de escritura.
+        /// </summary>
+        public bool ControlON_OFFWrite { get; set; }
+        /// <summary>
         /// Identificador en el bus Moodbus.
         /// </summary>
         public int MoodbusId { get; set; }
@@ -20,6 +28,10 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// Valor del SetPoint.
         /// </summary>
         public double SetPoint { get; set; }
+        /// <summary>
+        /// Identificador si el SetPoint es de escritura.
+        /// </summary>
+        public bool SetPointWrite { get; set; }
         /// <summary>
         /// Lecturas de las temperaturas medididas por el Dixell.
         /// </summary>

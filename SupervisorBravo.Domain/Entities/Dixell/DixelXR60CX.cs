@@ -8,13 +8,13 @@
         #region Propiedades
 
         /// <summary>
-        /// Control de encendido y apagado del Dixell.
-        /// </summary>
-        public bool ControlON_OFF { get; set; }
-        /// <summary>
         /// Control de encendido y apagado del deshielo
         /// </summary>
         public bool Thawing { get; set; }
+        /// <summary>
+        /// Identificador si el control de deshielo es de escritura.
+        /// </summary>
+        public bool ThawingWrite { get; set; }
 
         #endregion
 
@@ -43,7 +43,9 @@
             MoodbusId = modbusId;
             RoomName = roomName;
             ControlON_OFF = true;
+            ControlON_OFFWrite = false;
             Thawing = false;
+            ThawingWrite = false;
             SetPoint = 5;
         }
         #endregion

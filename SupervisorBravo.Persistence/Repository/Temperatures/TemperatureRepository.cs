@@ -10,6 +10,9 @@ namespace SupervisorBravo.Persistence.Repository
         public async Task<Temperature> CreateTemperature(double temperatureMeasurement, Guid dixellId)
         {
             Temperature temperature = new Temperature(temperatureMeasurement, DateTime.Now, dixellId);
+            var dixell = await _context.Set<DixellBase>().FindAsync(dixellId);
+            temperature.ControlEnable = dixell?.ControlON_OFF ?? false;
+
             await _context.AddAsync(temperature);
             return temperature;
         }

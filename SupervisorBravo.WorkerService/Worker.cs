@@ -73,11 +73,29 @@ namespace SupervisorBravo.WorkerService
                                     _logger.LogError(ex, $"Error leyendo Dixell ID {dixell.MoodbusId}");
                                 }
                             }
-                            //Lectura de SetPoint en dixells XR
+                            //Operaciones sobre Dixells --------------------------------- XR
                             foreach (var dixell in dixellXRs)
                             {
                                 try
                                 {
+                                    //Escritura del control de deshielo
+                                    if (dixell.ThawingWrite)
+                                    {
+                                        dixell.ThawingWrite = false;
+                                        await WriteThawingXR(master, dixell.MoodbusId, dixell.Thawing).WaitAsync(TimeSpan.FromSeconds(5));
+
+                                        await repository.UpdateDixell<DixellXR60CX>(dixell);
+                                        await repository.PartialCommit();
+                                    }
+
+                                    if (dixell.ControlON_OFFWrite)
+                                    {
+                                        await WriteControlON_OFFXR(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(5));
+                                        dixell.ControlON_OFFWrite = false;
+                                        await repository.UpdateDixell<DixellXR60CX>(dixell);
+                                        await repository.PartialCommit();
+                                    }
+
                                     //Lectura del SetPoint
                                     await Task.Delay(500);
                                     double? setPointValueXr = await ReadSetPointXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(5));
@@ -121,11 +139,22 @@ namespace SupervisorBravo.WorkerService
                                 }
                             }
                             await Task.Delay(500);
-                            //Lectura de SetPoint y control en dixells XT
+                            //Lectura de SetPoint y control en dixells ------------------------------------- XT
                             foreach (var dixell in dixellXTs)
                             {
                                 try
                                 {
+                                    //Escritura de control on off
+                                    if (dixell.ControlON_OFFWrite)
+                                    {
+                                        dixell.ControlON_OFFWrite = false;
+                                        await repository.UpdateDixell<DixellXT111C>(dixell);
+                                        await repository.PartialCommit();
+                                        await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(5));
+                                      
+                                        
+                                    }
+
                                     await Task.Delay(500);
                                     //Lectura del SetPoint
                                     double? setPointValueXr = await ReadSetPointXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(5));
@@ -187,7 +216,7 @@ namespace SupervisorBravo.WorkerService
         {
             var modbusidbyte = (byte)modbusId;
             var setPointUshort = await master.ReadHoldingRegistersAsync(modbusidbyte, SETPOINT_XR, 1);
-            double setPointValue = ((short)setPointUshort[0]) / 10.0 ;
+            double setPointValue = ((short)setPointUshort[0]) / 10.0;
             return setPointValue;
         }
 
@@ -203,7 +232,7 @@ namespace SupervisorBravo.WorkerService
         {
             var modbusidbyte = (byte)modbusId;
             var controlOn_off = await master.ReadCoilsAsync(modbusidbyte, CONTROL_ON_OFFXR, 1);
-            
+
             return controlOn_off[0];
         }
 
@@ -212,7 +241,7 @@ namespace SupervisorBravo.WorkerService
             var modbusidbyte = (byte)modbusId;
             var controlOn_off = await master.ReadHoldingRegistersAsync(modbusidbyte, CONROL_ON_OFFXT_READ, 1);
 
-            if(controlOn_off[0] == 257)
+            if (controlOn_off[0] == 257)
             {
                 return true;
             }
@@ -221,12 +250,60 @@ namespace SupervisorBravo.WorkerService
                 return false;
             }
         }
-
         public async Task<bool> ReadThawingXR(IModbusSerialMaster master, int modbusId)
         {
             var modbusidbyte = (byte)modbusId;
             var thawing = await master.ReadCoilsAsync(modbusidbyte, THAWING_XR, 1);
             return thawing[0];
+        }
+
+        public async Task WriteThawingXR(IModbusSerialMaster master, int modbusId, bool value)
+        {
+            var modbusidbyte = (byte)modbusId;
+            if (value)
+            {
+                await master.WriteSingleCoilAsync(modbusidbyte, THAWING_XR, value);
+            }
+            else
+            {
+                await master.WriteSingleCoilAsync(modbusidbyte, CONTROL_ON_OFFXR, false);
+                await Task.Delay(600);
+                await master.WriteSingleCoilAsync(modbusidbyte, CONTROL_ON_OFFXR, true);
+            }
+
+        }
+
+        public async Task WriteControlON_OFFXR(IModbusSerialMaster master, int modbusId, bool value)
+        {
+            var modbusidbyte = (byte)modbusId;
+            await master.WriteSingleCoilAsync(modbusidbyte, CONTROL_ON_OFFXR, value);
+        }
+
+        public async Task WriteControlON_OFFXT(IModbusSerialMaster master, int modbusId, bool value)
+        {
+            var modbusidbyte = (byte)modbusId;
+            if (value)
+            {
+                try
+                {
+                    await master.WriteSingleRegisterAsync(modbusidbyte, CONTROL_ON_OFFXT_WRITE, 65535);
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(ex, "Respuesta valida 1");
+                }
+                
+            }
+            else
+            {
+                try
+                {
+                    await master.WriteSingleRegisterAsync(modbusidbyte, CONTROL_ON_OFFXT_WRITE, 1);
+                } catch(IOException ex)
+                {
+                    _logger.LogError(ex, "Respuesta valida 1");
+                }
+            }
         }
     }
 }
