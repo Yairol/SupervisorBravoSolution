@@ -3,11 +3,6 @@ using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Persistence.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.MSTest
 {
@@ -19,17 +14,17 @@ namespace SupervisorBravo.MSTest
 
         public TemperatureTests()
         {
-            _context = new ApplicationDbContext("Server=DESKTOP-J0L95CI\\SQLEXPRESS;Database=DBTest;Trusted_Connection=True;TrustServerCertificate=True;");    
+            _context = new ApplicationDbContext("Server=DESKTOP-J0L95CI\\SQLEXPRESS;Database=DBTest;Trusted_Connection=True;TrustServerCertificate=True;");
             _temperaturesRepository = new AplicationRepository(_context);
         }
 
         [TestMethod]
-        [DataRow(0, 25 )]
-        [DataRow(0, 23 )]
-        [DataRow(0, 25 )]
-        [DataRow(0, 25 )]
-        [DataRow(0, 20 )]
-        
+        [DataRow(0, 25)]
+        [DataRow(0, 23)]
+        [DataRow(0, 25)]
+        [DataRow(0, 25)]
+        [DataRow(0, 20)]
+
         public async Task Can_Create_Temperature(int pos, double temperatureValue)
         {
             await _temperaturesRepository.BeginTransaction();
@@ -49,7 +44,7 @@ namespace SupervisorBravo.MSTest
 
         [TestMethod]
         [DataRow(2025, 4, 26, 12, 20, 0, 2025, 4, 26, 13, 24, 0)]
-        public async Task Can_Get_Temperature_ByRangeDate(int yearStart, int monthStrat, int dayStart,int hourStart, int minuteStart, int secondStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd, int secondEnd)
+        public async Task Can_Get_Temperature_ByRangeDate(int yearStart, int monthStrat, int dayStart, int hourStart, int minuteStart, int secondStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd, int secondEnd)
         {
             await _temperaturesRepository.BeginTransaction();
 

@@ -2,11 +2,6 @@
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {

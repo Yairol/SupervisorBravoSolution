@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SupervisorBravo.Domain.Entities.Dixell
+﻿namespace SupervisorBravo.Domain.Entities.Dixell
 {
     /// <summary>
     /// Clase que modela un dixell XT111C
@@ -33,7 +27,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// <param name="roomNAme">Nombre de la habitacion que monitorea el dixell.</param>
         public DixellXT111C(int modbusId, string roomNAme)
         {
-            MoodbusId= modbusId;
+            MoodbusId = modbusId;
             RoomName = roomNAme;
         }
     }

@@ -2,18 +2,13 @@
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.FluentConfigurations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence
 {
-    public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext : DbContext
     {
         public DbSet<DixellBase> DixellBases { get; set; }
-        public DbSet<DixellXR60CX> DixellXR60CXs {  get; set; }
+        public DbSet<DixellXR60CX> DixellXR60CXs { get; set; }
 
         public DbSet<DixellXT111C> DixellXT111Cs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
@@ -47,7 +42,7 @@ namespace SupervisorBravo.Persistence
 
         private static DbContextOptions GetOptions(string connectionString)
         {
-            return SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder (), connectionString).Options;
+            return SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder(), connectionString).Options;
         }
 
     }

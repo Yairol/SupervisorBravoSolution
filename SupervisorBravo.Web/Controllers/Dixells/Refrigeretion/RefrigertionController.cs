@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 
@@ -28,7 +26,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             if (dixells == null)
             {
                 return NotFound();
-            }        
+            }
             return View(dixells);
         }
 
@@ -57,7 +55,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             await _dixellRepository.BeginTransaction();
             var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR60CX>(id);
             await _dixellRepository.CommitTransaction();
-            if(dixell == null)
+            if (dixell == null)
                 return NotFound();
             return View(dixell);
         }

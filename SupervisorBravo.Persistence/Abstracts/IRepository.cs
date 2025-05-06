@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SupervisorBravo.Persistence.Abstracts
+﻿namespace SupervisorBravo.Persistence.Abstracts
 {
     /// <summary>
     /// Define las propiedades y métodos de un repositorio.

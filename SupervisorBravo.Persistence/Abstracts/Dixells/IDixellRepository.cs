@@ -1,9 +1,4 @@
 ﻿using SupervisorBravo.Domain.Entities.Dixell;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Abstracts.Dixells
 {
@@ -59,6 +54,6 @@ namespace SupervisorBravo.Persistence.Abstracts.Dixells
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task  DeleteDixell<T>(Guid id) where T : DixellBase;
+        Task DeleteDixell<T>(Guid id) where T : DixellBase;
     }
 }

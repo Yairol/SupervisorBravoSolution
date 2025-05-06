@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {
@@ -43,7 +38,7 @@ namespace SupervisorBravo.Persistence.Repository
         public async Task<T> GetDixellById<T>(Guid id) where T : DixellBase
         {
             return await _context.Set<T>().FindAsync(id);
-   
+
         }
 
         public async Task<T> GetDixellByMoodbusId<T>(int moodbusId) where T : DixellBase

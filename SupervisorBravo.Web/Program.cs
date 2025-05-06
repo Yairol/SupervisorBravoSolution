@@ -3,7 +3,6 @@ using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
-using SupervisorBravo.WorkerService.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 

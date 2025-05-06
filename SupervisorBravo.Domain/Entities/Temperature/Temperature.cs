@@ -1,11 +1,6 @@
 ﻿using SupervisorBravo.Domain.Entities.Common;
 using SupervisorBravo.Domain.Entities.Dixell;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Domain.Entities.Temperatures
 {
@@ -40,7 +35,7 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// </summary>
         public Temperature()
         {
-            
+
         }
         /// <summary>
         /// Crea una instancia de la clase <see cref="Temperature"/> con los valores especificados.

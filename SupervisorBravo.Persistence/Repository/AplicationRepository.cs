@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using SupervisorBravo.Persistence.Abstracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {
@@ -43,7 +38,7 @@ namespace SupervisorBravo.Persistence.Repository
         {
             if (IsInTransaction)
                 throw new InvalidOperationException("Cannot begin a new transaction before closing the current one.");
-           _transaction = await _context.Database.BeginTransactionAsync();
+            _transaction = await _context.Database.BeginTransactionAsync();
             await _context.Database.CanConnectAsync();
             await _context.Database.MigrateAsync();
         }

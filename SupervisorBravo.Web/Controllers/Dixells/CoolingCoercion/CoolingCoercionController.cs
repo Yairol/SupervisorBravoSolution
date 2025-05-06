@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
-using SupervisorBravo.Persistence.Repository;
 
 namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
 {
     public class CoolingCoercionController : Controller
     {
         private readonly IDixellRepository _dixellRepository;
-        public CoolingCoercionController(IDixellRepository aplicationRepository) 
+        public CoolingCoercionController(IDixellRepository aplicationRepository)
         {
             _dixellRepository = aplicationRepository;
         }

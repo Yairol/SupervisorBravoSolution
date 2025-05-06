@@ -2,7 +2,6 @@
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Repository;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.MSTest
 {
@@ -42,15 +41,15 @@ namespace SupervisorBravo.MSTest
             await _dixellRepository.BeginTransaction();
             var dixells = await _dixellRepository.GetAllDixells<DixellXR60CX>();
 
-            var dixell = dixells.FirstOrDefault(d => d.MoodbusId ==  modbusId);
+            var dixell = dixells.FirstOrDefault(d => d.MoodbusId == modbusId);
             await _dixellRepository.CommitTransaction();
             Assert.IsNotNull(dixell);
-            
+
         }
 
         [TestMethod]
-        [DataRow(0, 20,"Sala 10", false, 10 )]
-        public async Task Can_Update_Dixell(int pos, double setPoint, string roomName, bool control,int modbusId)
+        [DataRow(0, 20, "Sala 10", false, 10)]
+        public async Task Can_Update_Dixell(int pos, double setPoint, string roomName, bool control, int modbusId)
         {
             await _dixellRepository.BeginTransaction();
             var dixells = await _dixellRepository.GetAllDixells<DixellXR60CX>();

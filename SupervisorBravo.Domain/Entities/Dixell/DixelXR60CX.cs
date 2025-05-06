@@ -1,13 +1,4 @@
-﻿using SupervisorBravo.Domain.Entities.Common;
-using SupervisorBravo.Domain.Entities.Temperatures;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SupervisorBravo.Domain.Entities.Dixell
+﻿namespace SupervisorBravo.Domain.Entities.Dixell
 {
     /// <summary>
     /// Modela un Dixell modelo XR60CX.
@@ -15,7 +6,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
     public class DixellXR60CX : DixellBase
     {
         #region Propiedades
-       
+
         /// <summary>
         /// Control de encendido y apagado del Dixell.
         /// </summary>
@@ -24,7 +15,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// Control de encendido y apagado del deshielo
         /// </summary>
         public bool Thawing { get; set; }
-       
+
         #endregion
 
         #region Constructores

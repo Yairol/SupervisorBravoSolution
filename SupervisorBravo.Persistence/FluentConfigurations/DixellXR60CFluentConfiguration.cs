@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SupervisorBravo.Domain.Entities.Dixell;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.FluentConfigurations
 {
@@ -18,7 +13,7 @@ namespace SupervisorBravo.Persistence.FluentConfigurations
         {
             builder.ToTable(nameof(DixellXR60CX));
             builder.HasBaseType(typeof(DixellBase));
-            
+
 
         }
     }
