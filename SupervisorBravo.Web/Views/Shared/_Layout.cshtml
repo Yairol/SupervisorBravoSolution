@@ -38,6 +38,9 @@
                                 <li>
                                     <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white"> Añadir Dixell </a>
                                 </li>
+                                <li>
+                                    <a asp-controller="RefrigerationChart" asp-action="RefrigerationChart" class="nav-link px-0 text-white"> Graficos </a>
+                                </li>
                             </ul>
                         </li>
 
@@ -51,6 +54,9 @@
                                 </li>
                                 <li>
                                     <a asp-controller="CoolingCoercion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dixell</a>
+                                </li>
+                                <li>
+                                    <a asp-controller="CoolingCoercionChart" asp-action="CoolingCoercionChart" class="nav-link px-0 text-white"> Graficos </a>
                                 </li>
                             </ul>
                         </li>
@@ -77,6 +83,9 @@
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

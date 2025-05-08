@@ -60,12 +60,17 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
             var dixellUpdate = await _dixellRepository.GetDixellById<DixellXT111C>(dixell.Id);
             if (dixell == null) return NotFound();
 
-            if (dixell.ControlON_OFF != dixellUpdate.ControlON_OFF)
+            if (dixell.ControlON_OFF != dixellUpdate.ControlON_OFF && dixellUpdate.ControlON_OFFWrite == false)
             {
                 dixellUpdate.ControlON_OFFWrite = true;
                 dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
             }
 
+            if(dixell.SetPoint != dixellUpdate.SetPoint && dixellUpdate.SetPointWrite == false)
+            {
+                dixellUpdate.ControlON_OFFWrite = true;
+                dixellUpdate.SetPoint = dixell.SetPoint;
+            }
 
             dixellUpdate.Id = dixell.Id;
             dixellUpdate.RoomName = dixell.RoomName;

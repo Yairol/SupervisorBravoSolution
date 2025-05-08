@@ -42,6 +42,13 @@ namespace SupervisorBravo.Persistence.Abstracts.Dixells
         /// <returns></returns>
         Task<List<T>> GetAllDixells<T>() where T : DixellBase;
         /// <summary>
+        /// Obtencion de un Dixell en la BD por el nombre de la sala.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="roomName"></param>
+        /// <returns></returns>
+        Task<T?> GetDixellByRoomName<T>(string roomName) where T : DixellBase;
+        /// <summary>
         /// Modificacion de un Dixell en la BD.
         /// </summary>
         /// <typeparam name="T"></typeparam>

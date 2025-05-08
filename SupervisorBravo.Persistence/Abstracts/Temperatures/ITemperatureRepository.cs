@@ -31,7 +31,7 @@ namespace SupervisorBravo.Persistence.Abstracts.Temperatures
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <returns></returns>
-        Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate);
+        Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate, Guid dixellId);
 
 
     }

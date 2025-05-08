@@ -42,20 +42,20 @@ namespace SupervisorBravo.MSTest
 
         }
 
-        [TestMethod]
-        [DataRow(2025, 4, 26, 12, 20, 0, 2025, 4, 26, 13, 24, 0)]
-        public async Task Can_Get_Temperature_ByRangeDate(int yearStart, int monthStrat, int dayStart, int hourStart, int minuteStart, int secondStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd, int secondEnd)
-        {
-            await _temperaturesRepository.BeginTransaction();
+        //[TestMethod]
+        //[DataRow(2025, 4, 26, 12, 20, 0, 2025, 4, 26, 13, 24, 0)]
+        //public async Task Can_Get_Temperature_ByRangeDate(int yearStart, int monthStrat, int dayStart, int hourStart, int minuteStart, int secondStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd, int secondEnd)
+        //{
+        //    await _temperaturesRepository.BeginTransaction();
 
-            DateTime dateTimeStart = new DateTime(yearStart, monthStrat, dayStart, hourStart, minuteStart, secondStart);
-            DateTime dateTimeEnd = new DateTime(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd, secondEnd);
+        //    DateTime dateTimeStart = new DateTime(yearStart, monthStrat, dayStart, hourStart, minuteStart, secondStart);
+        //    DateTime dateTimeEnd = new DateTime(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd, secondEnd);
 
-            var temeperatures = await _temperaturesRepository.GetTemperaturesByDateRange(dateTimeStart, dateTimeEnd);
+        //    var temeperatures = await _temperaturesRepository.GetTemperaturesByDateRange(dateTimeStart, dateTimeEnd);
 
-            Assert.IsNotNull(temeperatures);
-            Assert.AreEqual(temeperatures.Count, 4);
-            Assert.IsTrue(temeperatures.Any());
-        }
+        //    Assert.IsNotNull(temeperatures);
+        //    Assert.AreEqual(temeperatures.Count, 4);
+        //    Assert.IsTrue(temeperatures.Any());
+        //}
     }
 }

@@ -51,5 +51,10 @@ namespace SupervisorBravo.Persistence.Repository
             _context.Set<T>().Update(dixell);
             return Task.CompletedTask;
         }
+
+        public async Task<T?> GetDixellByRoomName<T>(string roomName) where T : DixellBase
+        {
+            return await _context.Set<T>().FirstOrDefaultAsync(d => d.RoomName == roomName);
+        }
     }
 }

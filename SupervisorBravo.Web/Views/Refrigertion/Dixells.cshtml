@@ -16,9 +16,9 @@
                     <th>On/Off</th>
                     <th>SetPoint</th>
                     <th>Temperatura</th>
-                    <th>Cooling</th>
-                    <th>Defrost</th>
-                    <th>Fan</th>
+                    <th>Enfriamiento</th>
+                    <th>Descongelar</th>
+                    <th>Ventilador</th>
                     <th>Último Muestreo</th>
                 </tr>
             </thead>
@@ -27,11 +27,11 @@
                 {
                     <tr>
                         <td>@item.RoomName</td>
-                        <td>@item.ControlON_OFF</td>
+                        <td>@((item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@(item.Thawing ? "🔴Inactivo" : "⚡Activo")</td>
-                        <td>@(item.Thawing ? "⚡Activo" : "🔴Inactivo")</td>
+                        <td>@((item.Thawing) ? "🔴Inactivo" : "⚡Activo")</td>
+                        <td>@((item.Thawing && item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
                         <td>@(item.Thawing ? "🔴Inactivo" : "⚡Activo")</td>
                         <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         <td>

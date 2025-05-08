@@ -28,7 +28,7 @@
                         <td>@item.ControlON_OFF</td>
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement < item.SetPoint)? "SI" : "NO")</td>
+                        <td>@(((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement < item.SetPoint) && item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
                         <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         <td>
                             <a asp-controller="CoolingCoercion"

@@ -78,6 +78,12 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
                 dixellUpdate.Thawing = dixell.Thawing;
             }
 
+            if ((dixell.SetPoint != dixellUpdate.SetPoint) && (dixellUpdate.SetPointWrite == false))
+            {
+                dixellUpdate.SetPointWrite = true;
+                dixellUpdate.SetPoint = dixell.SetPoint;
+            }
+
             dixellUpdate.Id = dixell.Id;
             dixellUpdate.RoomName = dixell.RoomName;
             dixellUpdate.MoodbusId = dixell.MoodbusId;

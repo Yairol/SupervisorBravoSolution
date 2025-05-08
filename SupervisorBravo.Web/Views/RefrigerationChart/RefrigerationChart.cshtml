@@ -1,0 +1,103 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model SupervisorBravo.Web.Models.DTOs.TemperatureFilterViewModel
+
+@{
+    ViewData["Title"] = "Gráfico de Temperaturas";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="RefrigerationChart" method="post">
+    <div class="form-group">
+        <label>Dixell</label>
+        <input type="text" name="DixellName" class="form-control" value="@Model.DixellName" required />
+    </div>
+    <div class="form-group">
+        <label>Desde</label>
+        <input type="datetime-local" name="StartDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+    <div class="form-group">
+        <label>Hasta</label>
+        <input type="datetime-local" name="EndDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+</form>
+
+@if (Model.Temperatures.Any())
+{
+    <canvas id="temperatureChart" width="100%" height="40"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('temperatureChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.MeasurementTime.ToString("yyyy-MM-dd HH:mm")))),
+                datasets: [
+                    {
+                        label: 'Temperatura (°C)',
+                        data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.TemperatureMeasurement))),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Control Activo',
+                        data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.ControlEnable ? 1 : 0))),
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        yAxisID: 'y1',
+                        stepped: true,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                stacked: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Temperaturas y Control'
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Temperatura (°C)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Control Activo (1/0)'
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value === 1 ? 'Sí' : 'No';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

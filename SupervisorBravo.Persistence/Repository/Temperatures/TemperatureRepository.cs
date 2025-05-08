@@ -27,9 +27,9 @@ namespace SupervisorBravo.Persistence.Repository
             return await _context.Set<Temperature>().FindAsync(id);
         }
 
-        public async Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate)
+        public async Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate, Guid dixellId)
         {
-            return await _context.Temperatures.Where(t => t.MeasurementTime >= startDate && t.MeasurementTime <= endDate).OrderBy(t => t.MeasurementTime).ToListAsync();
+            return await _context.Temperatures.Where(t => t.MeasurementTime >= startDate && t.MeasurementTime <= endDate && t.DixellId == dixellId).OrderBy(t => t.MeasurementTime).ToListAsync();
         }
     }
 }
