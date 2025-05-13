@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 
@@ -14,6 +15,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Dixells()
         {
             await _dixellRepository.BeginTransaction();
@@ -31,12 +33,14 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateDixell()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateDixell(DixellXR60CX dixell)
         {
             await _dixellRepository.BeginTransaction();
@@ -50,6 +54,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Tecnico")]
         public async Task<IActionResult> UpdateDixell(int id)
         {
             await _dixellRepository.BeginTransaction();
@@ -61,13 +66,14 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Tecnico")]
         public async Task<IActionResult> UpdateDixell(DixellXR60CX dixell)
         {
             await _dixellRepository.BeginTransaction();
             var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR60CX>(dixell.Id);
             if (dixell == null) return NotFound();
 
-            if(dixell.ControlON_OFF != dixellUpdate.ControlON_OFF)
+            if (dixell.ControlON_OFF != dixellUpdate.ControlON_OFF)
             {
                 dixellUpdate.ControlON_OFFWrite = true;
                 dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
@@ -97,6 +103,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDixell(int id)
         {
             await _dixellRepository.BeginTransaction();

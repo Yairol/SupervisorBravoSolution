@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 
@@ -13,6 +14,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Dixells()
         {
             await _dixellRepository.BeginTransaction();
@@ -25,12 +27,14 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateDixell()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateDixell(DixellXT111C dixell)
         {
             await _dixellRepository.BeginTransaction();
@@ -43,6 +47,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
             return RedirectToAction(nameof(Dixells));
         }
         [HttpGet]
+        [Authorize(Roles = "Admin,Tecnico")]
         public async Task<IActionResult> UpdateDixell(int id)
         {
             await _dixellRepository.BeginTransaction();
@@ -54,6 +59,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Tecnico")]
         public async Task<IActionResult> UpdateDixell(DixellXT111C dixell)
         {
             await _dixellRepository.BeginTransaction();
@@ -66,7 +72,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
                 dixellUpdate.ControlON_OFF = dixell.ControlON_OFF;
             }
 
-            if(dixell.SetPoint != dixellUpdate.SetPoint && dixellUpdate.SetPointWrite == false)
+            if (dixell.SetPoint != dixellUpdate.SetPoint && dixellUpdate.SetPointWrite == false)
             {
                 dixellUpdate.ControlON_OFFWrite = true;
                 dixellUpdate.SetPoint = dixell.SetPoint;
@@ -86,6 +92,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDixell(int id)
         {
             await _dixellRepository.BeginTransaction();

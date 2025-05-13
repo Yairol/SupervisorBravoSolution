@@ -17,6 +17,20 @@ builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddHostedService<Worker>();
 
 
+builder.Services.AddAuthentication("MiCookieAuth")
+    .AddCookie("MiCookieAuth", options =>
+    {
+        options.LoginPath = "/Login";
+        options.AccessDeniedPath = "/AccessDenied";
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("TecnicoOnly", policy => policy.RequireRole("Tecnico"));
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,11 +45,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
 app.Run();

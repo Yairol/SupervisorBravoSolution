@@ -150,7 +150,7 @@ namespace SupervisorBravo.WorkerService
                                     _logger.LogError(ex, $"Error leyendo Dixell ID {dixell.MoodbusId}");
                                 }
                             }
-                           
+
                             //Lectura de SetPoint y control en dixells ------------------------------------- XT
                             foreach (var dixell in dixellXTs)
                             {
@@ -164,7 +164,7 @@ namespace SupervisorBravo.WorkerService
                                         await repository.UpdateDixell<DixellXT111C>(dixell);
                                         await repository.PartialCommit();
                                         await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(5));
-                                        
+
                                     }
                                     //Escritura SetPoint.
                                     if (dixell.SetPointWrite)
@@ -198,7 +198,7 @@ namespace SupervisorBravo.WorkerService
                                         await repository.UpdateDixell<DixellXT111C>(dixell);
                                     }
                                     await repository.PartialCommit();
-                                    
+
 
                                 }
                                 catch (TimeoutException)
@@ -365,14 +365,15 @@ namespace SupervisorBravo.WorkerService
                 {
                     _logger.LogError(ex, "Respuesta valida 1");
                 }
-                
+
             }
             else
             {
                 try
                 {
                     await master.WriteSingleRegisterAsync(modbusidbyte, CONTROL_ON_OFFXT_WRITE, 1);
-                } catch(IOException ex)
+                }
+                catch (IOException ex)
                 {
                     _logger.LogError(ex, "Respuesta valida 1");
                 }
@@ -408,7 +409,8 @@ namespace SupervisorBravo.WorkerService
             try
             {
                 await master.WriteSingleRegisterAsync(modbusidbyte, SETPOINT_XT, valueU);
-            }catch(IOException ex)
+            }
+            catch (IOException ex)
             {
                 _logger.LogError(ex, "Respuesta valida 1");
             }

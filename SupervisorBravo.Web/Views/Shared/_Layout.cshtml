@@ -15,56 +15,76 @@
 <body>
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5 d-none d-sm-inline">Supervisor Bravo</span>
-                    </a>
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Index" class="nav-link align-middle px-0 text-white">
-                                <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Inicio</span>
-                            </a>
-                        </li>
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex flex-column" style="min-height: 100vh;">
+                <div class="d-flex flex-column justify-content-between flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white w-100">
+                    <!-- LOGO + MENÚ -->
+                    <div class="w-100">
+                        <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                            <span class="fs-5 d-none d-sm-inline">Supervisor Bravo</span>
+                        </a>
 
-                        <li>
-                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Refrigeración</span>
-                            </a>
-                            <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white"> Dixells</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white"> Añadir Dixell </a>
-                                </li>
-                                <li>
-                                    <a asp-controller="RefrigerationChart" asp-action="RefrigerationChart" class="nav-link px-0 text-white"> Graficos </a>
-                                </li>
-                            </ul>
-                        </li>
+                        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                            <li class="nav-item">
+                                <a asp-controller="Home" asp-action="Index" class="nav-link align-middle px-0 text-white">
+                                    <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Inicio</span>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Cocción-Enfriamiento</span>
-                            </a>
-                            <ul class="collapse show nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
-                                <li class="w-100">
-                                    <a asp-controller="CoolingCoercion" asp-action="Dixells" class="nav-link px-0 text-white">Dixells</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="CoolingCoercion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dixell</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="CoolingCoercionChart" asp-action="CoolingCoercionChart" class="nav-link px-0 text-white"> Graficos </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <hr>
+                            <li>
+                                <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Refrigeración</span>
+                                </a>
+                                <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
+                                    <li class="w-100">
+                                        <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white"> Dixells</a>
+                                    </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white"> Añadir Dixell </a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <a asp-controller="RefrigerationChart" asp-action="RefrigerationChart" class="nav-link px-0 text-white"> Graficos </a>
+                                    </li>
+                                </ul>
+                            </li>
 
+                            <li>
+                                <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Cocción-Enfriamiento</span>
+                                </a>
+                                <ul class="collapse show nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
+                                    <li class="w-100">
+                                        <a asp-controller="CoolingCoercion" asp-action="Dixells" class="nav-link px-0 text-white">Dixells</a>
+                                    </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a asp-controller="CoolingCoercion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dixell</a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <a asp-controller="CoolingCoercionChart" asp-action="CoolingCoercionChart" class="nav-link px-0 text-white"> Graficos </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- BOTÓN CERRAR SESIÓN -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-controller="Login" asp-action="Logout" method="post" class="w-100 mb-3">
+                            <button type="submit" class="btn btn-outline-light w-100">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span class="ms-1 d-none d-sm-inline">Cerrar sesión</span>
+                            </button>
+                        </form>
+                    }
                 </div>
             </div>
+
             <div class="col py-3">
                 @RenderBody()
             </div>
@@ -88,5 +108,7 @@
 
 
     @await RenderSectionAsync("Scripts", required: false)
+    <partial name="_ValidationScriptsPartial" />
+
 </body>
 </html>

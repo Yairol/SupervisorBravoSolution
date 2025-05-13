@@ -5,7 +5,7 @@
     /// </summary>
     public class DixellXT111C : DixellBase
     {
-       
+
 
         /// <summary>
         /// Constructor por defecto.

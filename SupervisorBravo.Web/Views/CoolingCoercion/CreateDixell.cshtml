@@ -11,11 +11,13 @@
         <form asp-controller="CoolingCoercion" asp-action="CreateDixell" method="post">
             <div class="mb-3">
                 <label>Nombre de la sala.</label>
-                <input class="form-control" asp-for="RoomName" type="text" />
+                <input class="form-control" asp-for="RoomName" type="text" required/>
+                <span asp-validation-for="RoomName" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label>Identificador en el bus modbus.</label>
-                <input class="form-control" asp-for="MoodbusId" type="number" />
+                <input class="form-control" asp-for="MoodbusId" type="number" required/>
+                <span asp-validation-for="MoodbusId" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Crear</button>

@@ -8,7 +8,11 @@
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
         <h2>Parametros de Refrigeracion.</h2>
-        <a asp-controller="Refrigertion" asp-action="CreateDixell" class="btn btn-success mb-3">Crear</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Refrigertion" asp-action="CreateDixell" class="btn btn-success mb-3">Crear</a>
+        }
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -30,27 +34,35 @@
                         <td>@((item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@((item.Thawing) ? "🔴Inactivo" : "⚡Activo")</td>
+                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "⚡Activo" : "🔴Inactivo")</td>
                         <td>@((item.Thawing && item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
-                        <td>@(item.Thawing ? "🔴Inactivo" : "⚡Activo")</td>
+                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "⚡Activo" : "🔴Inactivo")</td>
                         <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                        <td>
-                            <a asp-controller="Refrigertion"
+                        @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+                        {
+                            <td>
+                                <a asp-controller="Refrigertion"
                                 asp-action="UpdateDixell"
-                                asp-route-id ="@item.MoodbusId"
-                                class="btn btn-primary">Editar
-                            </a>
+                                asp-route-id="@item.MoodbusId"
+                                class="btn btn-primary">
+                                    Editar
+                                </a>
 
-                        </td>
-                        <td>
-                            <a asp-controller="Refrigertion"
-                               asp-action="DeleteDixell"
-                               asp-route-id="@item.MoodbusId"
-                               onclick="return confirmar()"
-                               class="btn btn-primary">
-                                Eliminar
-                            </a>
-                        </td>
+                            </td>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <td>
+                                <a asp-controller="Refrigertion"
+                                asp-action="DeleteDixell"
+                                asp-route-id="@item.MoodbusId"
+                                onclick="return confirmar()"
+                                class="btn btn-primary">
+                                    Eliminar
+                                </a>
+                            </td>
+                        }
+
                     </tr>
                 }
         </table>

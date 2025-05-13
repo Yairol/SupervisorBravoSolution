@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
@@ -17,6 +18,7 @@ namespace SupervisorBravo.Web.Controllers.Charts
 
 
         [HttpGet, HttpPost]
+        [Authorize]
         public async Task<IActionResult> CoolingCoercionChart(TemperatureFilterViewModel model)
         {
 

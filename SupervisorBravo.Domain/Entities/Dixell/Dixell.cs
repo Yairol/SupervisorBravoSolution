@@ -1,5 +1,6 @@
 ﻿using SupervisorBravo.Domain.Entities.Common;
 using SupervisorBravo.Domain.Entities.Temperatures;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupervisorBravo.Domain.Entities.Dixell
 {
@@ -11,6 +12,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// <summary>
         /// Nombre de la sala que monitorea.
         /// </summary>
+        [Required(ErrorMessage = "El campo nombre de la sala es obligatorio.")]
         public string RoomName { get; set; }
         /// <summary>
         /// Control On/Off activo
@@ -23,6 +25,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// <summary>
         /// Identificador en el bus Moodbus.
         /// </summary>
+        [Required(ErrorMessage = "El campo identificador modbus es obligatorio.")]
         public int MoodbusId { get; set; }
         /// <summary>
         /// Valor del SetPoint.
