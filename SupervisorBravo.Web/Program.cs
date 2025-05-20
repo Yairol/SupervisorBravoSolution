@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
+using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
 
@@ -13,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString"));
 });
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
-
+builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
 builder.Services.AddHostedService<Worker>();
 
 

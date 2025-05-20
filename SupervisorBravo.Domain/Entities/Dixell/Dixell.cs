@@ -39,6 +39,10 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// Lecturas de las temperaturas medididas por el Dixell.
         /// </summary>
         public virtual ICollection<Temperature> temperatures { get; set; } = new List<Temperature>();
+        /// <summary>
+        /// Indicador de alarmas habilitadas.
+        /// </summary>
+        public bool  AlarmEnable { get; set; }
 
     }
 }

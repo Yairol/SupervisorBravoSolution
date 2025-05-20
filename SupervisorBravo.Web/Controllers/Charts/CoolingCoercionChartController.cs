@@ -18,7 +18,6 @@ namespace SupervisorBravo.Web.Controllers.Charts
 
 
         [HttpGet, HttpPost]
-        [Authorize]
         public async Task<IActionResult> CoolingCoercionChart(TemperatureFilterViewModel model)
         {
 

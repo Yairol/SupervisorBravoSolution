@@ -23,6 +23,7 @@
                     <th>Enfriamiento</th>
                     <th>Descongelar</th>
                     <th>Ventilador</th>
+                    <th>Estado</th>
                     <th>Último Muestreo</th>
                 </tr>
             </thead>
@@ -31,12 +32,13 @@
                 {
                     <tr>
                         <td>@item.RoomName</td>
-                        <td>@((item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
+                        <td>@((item.ControlON_OFF && (item.AlarmEnable == false )) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
                         <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "⚡Activo" : "🔴Inactivo")</td>
-                        <td>@((item.Thawing && item.ControlON_OFF) ? "⚡Activo" : "🔴Inactivo")</td>
+                        <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "⚡Activo" : "🔴Inactivo")</td>
+                        <td>@((item.AlarmEnable) ? "🔴Apagado" : "🟢Encendido")</td>
                         <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {

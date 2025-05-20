@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.FluentConfigurations;
 
@@ -12,7 +13,8 @@ namespace SupervisorBravo.Persistence
 
         public DbSet<DixellXT111C> DixellXT111Cs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
-
+        public DbSet<Alarm> Alarms { get; set; }
+        public DbSet<DeviceAlarm> DeviceAlarms { get; set; }
         public ApplicationDbContext() { }
 
         public ApplicationDbContext(string connectionString)
@@ -38,6 +40,8 @@ namespace SupervisorBravo.Persistence
             modelBuilder.ApplyConfiguration(new DixellXR60CFluentConfiguration());
             modelBuilder.ApplyConfiguration(new TemperatureFluentConfiguration());
             modelBuilder.ApplyConfiguration(new DixellXT111CFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new AlarmFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new DeviceAlarmFluentConfiguration());
         }
 
         private static DbContextOptions GetOptions(string connectionString)

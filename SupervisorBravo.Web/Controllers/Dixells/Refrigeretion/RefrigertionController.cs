@@ -21,7 +21,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             await _dixellRepository.BeginTransaction();
 
             var dixells = await _dixellRepository.GetAllDixells<DixellXR60CX>();
-
+            var dixellsList = dixells.OrderBy(x => x.RoomName).ToList();
             await _dixellRepository.CommitTransaction();
 
 
@@ -29,7 +29,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             {
                 return NotFound();
             }
-            return View(dixells);
+            return View(dixellsList);
         }
 
         [HttpGet]

@@ -1,0 +1,83 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model SupervisorBravo.Web.Models.DTOs.AlarmModel
+
+<div class="row">
+    <div class="col-sm-8 offset-sm-2">
+        <h2>Alarmas</h2>
+        <a asp-controller="Alarm" asp-action="DeleteAllAlarms" 
+           onclick="return confirmar()"
+           class="btn btn-primary">
+            Eliminar Todas
+        </a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Alarms)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.AlarmDate</td>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <td>
+                                <a asp-controller="Alarm"
+                                   asp-action="DeleteAlarm"
+                                   asp-route-id="@item.Id"
+                                   onclick="return confirmar()"
+                                   class="btn btn-primary">
+                                    Eliminar
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+        </table>
+
+        <h2>Alarmas de Dispositivos</h2>
+        <a asp-controller="Alarm" asp-action="DeleteAllDeviceAlarms"
+           onclick="return confirmar()"
+           class="btn btn-primary">
+            Eliminar Todas
+        </a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Dispositivo</th>
+                    <th>Descripcion</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.DeviceAlarms)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.DeviceName</td>
+                        <td>@item.Description</td>
+                        <td>@item.AlarmDate</td>
+                    </tr>
+                }
+        </table>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        function confirmar()
+        {
+            return confirm("¿Esta seguro que desea eliminar permanentemente todas las alarmas?")
+        }
+    </script>
+}
