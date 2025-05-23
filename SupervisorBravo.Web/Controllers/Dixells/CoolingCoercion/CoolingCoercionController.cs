@@ -20,7 +20,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
             await _dixellRepository.BeginTransaction();
 
             var dixells = await _dixellRepository.GetAllDixells<DixellXT111C>();
-            var dixellsList = dixells.OrderBy(x => x.RoomName).ToList();
+            var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();
             await _dixellRepository.CommitTransaction();
 
             return View(dixellsList);

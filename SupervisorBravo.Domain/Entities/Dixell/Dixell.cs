@@ -42,7 +42,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// <summary>
         /// Indicador de alarmas habilitadas.
         /// </summary>
-        public bool  AlarmEnable { get; set; }
+        public bool AlarmEnable { get; set; }
 
     }
 }

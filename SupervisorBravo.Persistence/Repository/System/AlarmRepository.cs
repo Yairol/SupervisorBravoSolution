@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Persistence.Abstracts.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {
@@ -23,7 +18,7 @@ namespace SupervisorBravo.Persistence.Repository
             var alarm = await _context.Set<Alarm>().FindAsync(alarmId);
             if (alarm != null)
             {
-                 _context.Remove(alarm);
+                _context.Remove(alarm);
             }
         }
 

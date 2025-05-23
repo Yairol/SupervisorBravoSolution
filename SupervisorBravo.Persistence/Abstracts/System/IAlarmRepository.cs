@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SupervisorBravo.Domain.Entities.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SupervisorBravo.Domain.Entities.System;
 
 namespace SupervisorBravo.Persistence.Abstracts.System
 {

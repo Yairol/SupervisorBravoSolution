@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Persistence.Abstracts.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {
@@ -21,7 +16,7 @@ namespace SupervisorBravo.Persistence.Repository
         public async Task DeleteDeviceAlarm(Guid deviceAlarmId)
         {
             var deviceAlarm = await _context.Set<DeviceAlarm>().FindAsync(deviceAlarmId);
-            if(deviceAlarm != null)
+            if (deviceAlarm != null)
             {
                 _context.Remove(deviceAlarm);
             }

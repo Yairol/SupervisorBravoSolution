@@ -1,0 +1,69 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model SupervisorBravo.Web.Models.DTOs.DixellReporteViewModel
+
+
+<h2>Medida de Desempeño</h2>
+
+<form asp-action="Performance" method="post">
+    <div class="form-group">
+        <label>Dispositivo</label>
+        <select name="Sala" class="form-control" required>
+            <option value="">Seleccione una sala</option>
+            <option value="Refrigeracion" selected="@(Model.Sala == "Refrigeracion")">Refrigeración</option>
+            <option value="Coccion-Enfriamiento" selected="@(Model.Sala == "Coccion-Enfriamiento")">Cocción-Enfriamiento</option>
+        </select>
+
+    </div>
+    <div class="form-group">
+        <label>Desde</label>
+        <input type="datetime-local" name="FechaInicio" class="form-control" value="@Model.FechaInicio.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+    <div class="form-group">
+        <label>Hasta</label>
+        <input type="datetime-local" name="FechaFin" class="form-control" value="@Model.FechaFin.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+</form>
+
+@if (Model.Reportes.Any())
+{
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <h2>Parametros de @Model.Sala</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="background-color: yellow;">Dispositivo</th>
+                        <th style ="background-color: yellow;">SP</th>
+                        <th style="background-color: yellow;">AVG</th>
+                        <th style="background-color: yellow;">Min</th>
+                        <th style="background-color: yellow;">Max</th>
+                        <th style="background-color: yellow;">%Cool</th>
+                        <th style="background-color: yellow;">Tiempo Controlando</th>
+                        <th style="background-color: yellow;">Tiempo Encendido</th>
+                        <th style="background-color: yellow;">Tiempo Apagado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Reportes)
+                    {
+                        <tr>
+                            <td>@item.NombreDixell</td>
+                            <td>@item.SetPoint</td>
+                            <td>@item.TemperaturaPromedio</td>
+                            <td>@item.TemperaturaMinima</td>
+                            <td>@item.TemperaturaMaxima</td>
+                            <td>@item.PorcientoControlando.ToString("F2")</td>
+                            <td>@item.TiempoControlando.TotalHours.ToString("F2")</td>
+                            <td>@item.TiempoDesconectado.TotalHours.ToString("F2")</td>
+                            <td>@item.TiempoApagado.TotalHours.ToString("F2")</td>
+                        </tr>
+                    }
+            </table>
+        </div>
+    </div>
+
+}
+

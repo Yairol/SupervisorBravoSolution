@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Web.Models.DTOs;
 

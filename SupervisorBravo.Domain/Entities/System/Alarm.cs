@@ -1,9 +1,4 @@
 ﻿using SupervisorBravo.Domain.Entities.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Domain.Entities.System
 {
@@ -42,7 +37,7 @@ namespace SupervisorBravo.Domain.Entities.System
         /// <summary>
         /// Constructor por defecto.
         /// </summary>
-        public Alarm() 
+        public Alarm()
         {
             Name = string.Empty;
             Description = string.Empty;

@@ -16,15 +16,15 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Dispositivo</th>
-                    <th>On/Off</th>
-                    <th>SetPoint</th>
-                    <th>Temperatura</th>
-                    <th>Enfriamiento</th>
-                    <th>Descongelar</th>
-                    <th>Ventilador</th>
-                    <th>Estado</th>
-                    <th>Último Muestreo</th>
+                    <th style="background-color: yellow;">Dispositivo</th>
+                    <th style="background-color: yellow;">Estado</th>
+                    <th style="background-color: yellow;">SetPoint</th>
+                    <th style="background-color: yellow;">Temperatura</th>
+                    <th style="background-color: yellow;">Enfriamiento</th>
+                    <th style="background-color: yellow;">Descongelar</th>
+                    <th style="background-color: yellow;">Ventilador</th>
+                    <th style="background-color: yellow;">On/Off</th>
+                    <th style="background-color: yellow;">Último Muestreo</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,14 +32,15 @@
                 {
                     <tr>
                         <td>@item.RoomName</td>
-                        <td>@((item.ControlON_OFF && (item.AlarmEnable == false )) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement == 0) ? "🔴Apagado" : "🟢Encendido")</td>
+
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "⚡Activo" : "🔴Inactivo")</td>
+                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement > item.SetPoint && item.ControlON_OFF == true && item.Thawing == false) ? "⚡Activo" : "🔴Inactivo")</td>
-                        <td>@((item.AlarmEnable) ? "🔴Apagado" : "🟢Encendido")</td>
-                        <td>@item.temperatures.LastOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td>@((item.ControlON_OFF == true && item.Thawing == false && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement != 0)) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@((item.ControlON_OFF && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement != 0)) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).ToList().FirstOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {
                             <td>
