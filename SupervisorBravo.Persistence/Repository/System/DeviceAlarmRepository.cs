@@ -13,6 +13,15 @@ namespace SupervisorBravo.Persistence.Repository
             return deviceAlarm;
         }
 
+        public async Task DeleteAlarmByRoomName(string roomName)
+        {
+            var deviceAlarm = await _context.Set<DeviceAlarm>().FirstOrDefaultAsync(d => d.DeviceName == roomName);
+            if (deviceAlarm != null)
+            {
+                _context.Remove(deviceAlarm);
+            }
+        }
+
         public async Task DeleteDeviceAlarm(Guid deviceAlarmId)
         {
             var deviceAlarm = await _context.Set<DeviceAlarm>().FindAsync(deviceAlarmId);

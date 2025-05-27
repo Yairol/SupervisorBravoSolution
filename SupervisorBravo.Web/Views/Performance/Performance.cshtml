@@ -9,56 +9,54 @@
 <form asp-action="Performance" method="post">
     <div class="form-group">
         <label>Dispositivo</label>
-        <select name="Sala" class="form-control" required>
+        <select name="Room" class="form-control" required>
             <option value="">Seleccione una sala</option>
-            <option value="Refrigeracion" selected="@(Model.Sala == "Refrigeracion")">Refrigeración</option>
-            <option value="Coccion-Enfriamiento" selected="@(Model.Sala == "Coccion-Enfriamiento")">Cocción-Enfriamiento</option>
+            <option value="Refrigeracion" selected="@(Model.Room == "Refrigeracion")">Refrigeración</option>
+            <option value="Coccion-Enfriamiento" selected="@(Model.Room == "Coccion-Enfriamiento")">Cocción-Enfriamiento</option>
         </select>
 
     </div>
     <div class="form-group">
         <label>Desde</label>
-        <input type="datetime-local" name="FechaInicio" class="form-control" value="@Model.FechaInicio.ToString("yyyy-MM-ddTHH:mm")" required />
+        <input type="datetime-local" name="StartDateReport" class="form-control" value="@Model.StartDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
     </div>
     <div class="form-group">
         <label>Hasta</label>
-        <input type="datetime-local" name="FechaFin" class="form-control" value="@Model.FechaFin.ToString("yyyy-MM-ddTHH:mm")" required />
+        <input type="datetime-local" name="EndDateReport" class="form-control" value="@Model.EndDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
     </div>
     <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
 </form>
 
-@if (Model.Reportes.Any())
+@if (Model.Reports.Any())
 {
     <div class="row">
         <div class="col-sm-8 offset-sm-2">
-            <h2>Parametros de @Model.Sala</h2>
+            <h2>Parametros de @Model.Room</h2>
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th style="background-color: yellow;">Dispositivo</th>
-                        <th style ="background-color: yellow;">SP</th>
+                        <th style="background-color: yellow;">SP</th>
                         <th style="background-color: yellow;">AVG</th>
                         <th style="background-color: yellow;">Min</th>
                         <th style="background-color: yellow;">Max</th>
-                        <th style="background-color: yellow;">%Cool</th>
-                        <th style="background-color: yellow;">Tiempo Controlando</th>
-                        <th style="background-color: yellow;">Tiempo Encendido</th>
-                        <th style="background-color: yellow;">Tiempo Apagado</th>
+                        <th style="background-color: yellow;">@((Model.Room == "Refrigeracion") ? "%Cool" : "Electro Valvula") </th>
+                        <th style="background-color: yellow;">Tiempo Desconectado(horas)/% del intervalo</th>
+                        <th style="background-color: yellow;">Tiempo Apagado(Off)(horas)/% del intervalo</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Reportes)
+                    @foreach (var item in Model.Reports)
                     {
                         <tr>
-                            <td>@item.NombreDixell</td>
+                            <td>@item.DixellName</td>
                             <td>@item.SetPoint</td>
-                            <td>@item.TemperaturaPromedio</td>
-                            <td>@item.TemperaturaMinima</td>
-                            <td>@item.TemperaturaMaxima</td>
-                            <td>@item.PorcientoControlando.ToString("F2")</td>
-                            <td>@item.TiempoControlando.TotalHours.ToString("F2")</td>
-                            <td>@item.TiempoDesconectado.TotalHours.ToString("F2")</td>
-                            <td>@item.TiempoApagado.TotalHours.ToString("F2")</td>
+                            <td>@item.AvgTemperature</td>
+                            <td>@item.MinTemperature</td>
+                            <td>@item.MaxTemperature</td>
+                            <td>@item.AvgControl.ToString("F1")%</td>
+                            <td>@item.DisconnectTime.TotalHours.ToString("F1")/@item.AvgDisconnectTime.ToString("F1")%</td>
+                            <td>@item.OffTime.TotalHours.ToString("F1")/@item.AvgOffTime.ToString("F1")%</td>
                         </tr>
                     }
             </table>

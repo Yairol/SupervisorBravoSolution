@@ -29,12 +29,11 @@
                 {
                     <tr>
                         <td>@item.RoomName</td>
-                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement == 0) ? "🔴Apagado" : "🟢Encendido")</td>
+                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.DisconnectDixell == true) ? "🔴Apagado" : "🟢Encendido")</td>
                         <td>@item.SetPoint °C</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@(((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement < item.SetPoint) && item.ControlON_OFF ) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
-
+                        <td>@(((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.ControlEnable == true) && item.ControlON_OFF ) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@((item.ControlON_OFF && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.DisconnectDixell == false)) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {

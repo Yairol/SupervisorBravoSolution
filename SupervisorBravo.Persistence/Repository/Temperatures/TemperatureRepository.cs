@@ -11,7 +11,35 @@ namespace SupervisorBravo.Persistence.Repository
         {
             Temperature temperature = new Temperature(temperatureMeasurement, DateTime.Now, dixellId);
             var dixell = await _context.Set<DixellBase>().FindAsync(dixellId);
-            temperature.ControlEnable = dixell?.ControlON_OFF ?? false;
+
+            if(temperature.TemperatureMeasurement == 0)
+            {
+                temperature.DisconnectDixell = true;
+            }
+            else
+            {
+                temperature.DisconnectDixell = false;
+            }
+            if (dixell.ControlON_OFF && (temperature.DisconnectDixell == false))
+            {
+                temperature.On_OffDixell = true;
+            }
+            else
+            {
+                temperature.On_OffDixell = false;
+            }
+            if (dixell is DixellXR60CX)
+            {
+                temperature.ControlEnable = (dixell.SetPoint > temperatureMeasurement)
+                                            && (temperature.DisconnectDixell == false)
+                                            && (temperature.On_OffDixell == true)? true : false;
+            }
+            if (dixell is DixellXT111C)
+            {
+                temperature.ControlEnable = (dixell.SetPoint < temperatureMeasurement)
+                                            && (temperature.DisconnectDixell == false)
+                                            && (temperature.On_OffDixell == true) ? true : false;
+            }
 
             await _context.AddAsync(temperature);
             return temperature;

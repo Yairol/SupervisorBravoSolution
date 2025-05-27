@@ -15,13 +15,21 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// </summary>
         public double TemperatureMeasurement { get; private set; }
         /// <summary>
+        /// Fecha y hora de la medición de la temperatura.
+        /// </summary>
+        public DateTime MeasurementTime { get; private set; }
+        /// <summary>
         /// Indicador si el control estuvo activo cuando se hizo la medcion.
         /// </summary>
         public bool ControlEnable { get; set; }
         /// <summary>
-        /// Fecha y hora de la medición de la temperatura.
+        /// Indicador si el Dixell está encendido o apagado.
         /// </summary>
-        public DateTime MeasurementTime { get; private set; }
+        public bool On_OffDixell { get; set; }
+        /// <summary>
+        /// Indicador si el dixell estuvo desconctado de la alimentacion.
+        /// </summary>
+        public bool DisconnectDixell { get; set; }
         /// <summary>
         /// Identiifcador del Dixell al que pertence la medicion de la temperatura.
         /// </summary>

@@ -10,5 +10,6 @@ namespace SupervisorBravo.Persistence.Abstracts.System
         Task UpdateDate(DeviceAlarm deviceAlarm);
         Task<IEnumerable<DeviceAlarm>> GetAllDeviceAlarms();
         Task DeleteDeviceAlarm(Guid deviceAlarmId);
+        Task DeleteAlarmByRoomName(string roomName);
     }
 }
