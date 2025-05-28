@@ -33,7 +33,7 @@ namespace SupervisorBravo.WorkerService
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(TimeSpan.FromSeconds(8), stoppingToken);
-                using (SerialPort port = new SerialPort("COM9", 9600, Parity.None, 8, StopBits.One))
+                using (SerialPort port = new SerialPort("COM10", 9600, Parity.None, 8, StopBits.One))
                 {
                     try
                     {
@@ -54,13 +54,13 @@ namespace SupervisorBravo.WorkerService
 
                             #region Lecturas Dixell XR
                             //Operaciones sobre Dixells --------------------------------- XR
-                            var dixellXRs = await repository.GetAllDixells<DixellXR60CX>();
+                            var dixellXRs = await repository.GetAllDixellsWithoutTemperatures<DixellXR60CX>();
                             foreach (var dixellx in dixellXRs)
                             {
                                 var dixell = await repository.GetDixellById<DixellXR60CX>(dixellx.Id);
                                 try
                                 {
-                                    if(((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null)
+                                    if((await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null))
                                     {
                                         //Escritura del control de deshielo
                                         if (dixell.ThawingWrite)
@@ -140,13 +140,13 @@ namespace SupervisorBravo.WorkerService
                             await repository.PartialCommit();
                             #region Lecturas Dixell XT
                             //Lectura de SetPoint y control en dixells ------------------------------------- XT
-                            var dixellXTs = await repository.GetAllDixells<DixellXT111C>();
+                            var dixellXTs = await repository.GetAllDixellsWithoutTemperatures<DixellXT111C>();
                             foreach (var dixellx in dixellXTs)
                             {
                                 var dixell = await repository.GetDixellById<DixellXT111C>(dixellx.Id);
                                 try
                                 {
-                                    if(((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null)
+                                    if((await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null))
                                     {
                                         //Escritura de control on off
                                         if (dixell.ControlON_OFFWrite)
@@ -207,7 +207,7 @@ namespace SupervisorBravo.WorkerService
                             await repository.PartialCommit();
                             #region Lectura de temperaturas
                             //Lectura de temperatura en todos los dixells
-                            var dixells = await repository.GetAllDixells<DixellBase>();
+                            var dixells = await repository.GetAllDixellsWithoutTemperatures<DixellBase>();
                             foreach (var dixell in dixells)
                             {
 
@@ -241,19 +241,20 @@ namespace SupervisorBravo.WorkerService
                                 await repository.PartialCommit();
                             }
                             #endregion
-
                             await repository.CommitTransaction();
                         }
                     }
                     catch (Exception ex)
                     {
-                        //using (var scope = _scopeFactory.CreateScope())
-                        //{
-                        //    var repository = scope.ServiceProvider.GetRequiredService<IDixellRepository>();
-                        //    await repository.BeginTransaction();
-                        //    await ((IAlarmRepository)repository).CreateAlarm("Error de desconexion del bus modbus", "Este error se produce debedio a la desconexion del USB-RS485 del servidor para reconectar inserte el adaptador USB-RS485 al servidor.");
-                        //    await repository.CommitTransaction();
-                        //}
+
+                        await Task.Delay(500);
+                        using (var scope = _scopeFactory.CreateScope())
+                        {
+                            var repository = scope.ServiceProvider.GetRequiredService<IDixellRepository>();
+                            await repository.BeginTransaction();
+                            await ((IAlarmRepository)repository).CreateAlarm("Error de desconexion del bus modbus", "Este error se produce debedio a la desconexion del USB-RS485 del servidor para reconectar inserte el adaptador USB-RS485 al servidor.");
+                            await repository.CommitTransaction();
+                        }
                         _logger.LogError(ex, "Erro al leer el puerto");
 
                     }

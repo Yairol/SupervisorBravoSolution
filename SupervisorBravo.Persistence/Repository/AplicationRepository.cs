@@ -9,10 +9,11 @@ namespace SupervisorBravo.Persistence.Repository
     /// </summary>
     public partial class AplicationRepository : IRepository
     {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         /// <summary>
         /// Contexto mediante el cual se establece la conexion a la BD.
         /// </summary>
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext? _context;
         /// <summary>
         /// Indicador de transaccion.
         /// </summary>
@@ -22,9 +23,9 @@ namespace SupervisorBravo.Persistence.Repository
         /// Inicializa un objeto <see cref="ApplicationDbContext"/>.
         /// </summary>
         /// <param name="context"></param>
-        public AplicationRepository(ApplicationDbContext context)
+        public AplicationRepository(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public bool IsInTransaction => _transaction != null;
@@ -38,6 +39,8 @@ namespace SupervisorBravo.Persistence.Repository
         {
             if (IsInTransaction)
                 throw new InvalidOperationException("Cannot begin a new transaction before closing the current one.");
+           _context = await _contextFactory.CreateDbContextAsync();
+            
             _transaction = await _context.Database.BeginTransactionAsync();
             await _context.Database.CanConnectAsync();
             await _context.Database.MigrateAsync();
@@ -52,10 +55,13 @@ namespace SupervisorBravo.Persistence.Repository
             if (!IsInTransaction)
                 throw new InvalidOperationException("There is no open transaction to commit.");
 
-            await _context.SaveChangesAsync();
+            await _context!.SaveChangesAsync();
             await _transaction!.CommitAsync();
             await _transaction.DisposeAsync();
+
+            await _context.DisposeAsync();
             _transaction = null;
+            _context = null;
         }
         /// <summary>
         /// Guarda los cambios de la transacción actual sin cerrarla.
@@ -81,7 +87,10 @@ namespace SupervisorBravo.Persistence.Repository
 
             await _transaction!.RollbackAsync();
             await _transaction.DisposeAsync();
+            await _context!.DisposeAsync();
+
             _transaction = null;
+            _context = null;
         }
     }
 }

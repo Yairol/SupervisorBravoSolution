@@ -56,5 +56,10 @@ namespace SupervisorBravo.Persistence.Repository
         {
             return await _context.Set<T>().FirstOrDefaultAsync(d => d.RoomName == roomName);
         }
+
+        public async Task<List<T>> GetAllDixellsWithoutTemperatures<T>() where T : DixellBase
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
     }
 }

@@ -64,7 +64,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
                         {
                             controlTime += deltaTime;
                         }
-                        if (anterior.On_OffDixell == false)
+                        if (anterior.On_OffDixell == false && anterior.DisconnectDixell == false)
                         {
                             offTime += deltaTime;
                         }
@@ -132,7 +132,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
                         {
                             controlTime += deltaTime;
                         }
-                        if (anterior.On_OffDixell == false)
+                        if (anterior.On_OffDixell == false && anterior.DisconnectDixell == false)
                         {
                             offTime += deltaTime;
                         }

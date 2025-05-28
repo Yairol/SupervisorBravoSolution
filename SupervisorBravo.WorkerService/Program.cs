@@ -10,14 +10,12 @@ using SupervisorBravo.WorkerService.Utilities;
 var builder = Host.CreateApplicationBuilder(args);
 
 // Primero registrar todas las dependencias
-builder.Services.AddDbContext<ApplicationDbContext>(option =>
+builder.Services.AddDbContextFactory<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("connectionString"))
 );
 
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
-builder.Services.AddScoped<ITemperatureRepository, AplicationRepository>();
-builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
-builder.Services.AddScoped<IModbusService, ModbusService>();
+
 
 
 // Luego registrar el Worker que depende de los anteriores

@@ -17,10 +17,6 @@ namespace SupervisorBravo.Persistence
         public DbSet<DeviceAlarm> DeviceAlarms { get; set; }
         public ApplicationDbContext() { }
 
-        public ApplicationDbContext(string connectionString)
-        {
-
-        }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
 
