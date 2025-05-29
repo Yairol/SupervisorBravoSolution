@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.System;
@@ -16,6 +17,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
 builder.Services.AddHostedService<Worker>();
+ExcelPackage.License.SetNonCommercialPersonal("Bravo");
 
 
 builder.Services.AddAuthentication("MiCookieAuth")

@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.JSInterop;
+using OfficeOpenXml.Style;
+using OfficeOpenXml;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Web.Models.DTOs;
+using System.Drawing;
 
 namespace SupervisorBravo.Web.Controllers.System.Performances
 {
@@ -171,5 +174,62 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ExportToExcel(DixellReporteViewModel model)
+        {
+            await Performance(model); // Rellenamos los datos como en la vista
+
+
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Reporte");
+
+            // Encabezados (igual que en la vista)
+            string[] headers =
+            {
+        "Dispositivo", "SP", "AVG", "Min", "Max",
+        model.Room == "Refrigeracion" ? "%Cool" : "Electro Válvula",
+        "Tiempo Desconectado(horas)/% del intervalo",
+        "Tiempo Apagado(Off)(horas)/% del intervalo"
+    };
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var cell = worksheet.Cells[1, i + 1];
+                cell.Value = headers[i];
+                cell.Style.Font.Bold = true;
+                cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                cell.Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                cell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            int row = 2;
+            foreach (var item in model.Reports)
+            {
+                worksheet.Cells[row, 1].Value = item.DixellName;
+                worksheet.Cells[row, 2].Value = item.SetPoint;
+                worksheet.Cells[row, 3].Value = item.AvgTemperature;
+                worksheet.Cells[row, 4].Value = item.MinTemperature;
+                worksheet.Cells[row, 5].Value = item.MaxTemperature;
+                worksheet.Cells[row, 6].Value = $"{item.AvgControl:F1}%";
+                worksheet.Cells[row, 7].Value = $"{item.DisconnectTime.TotalHours:F1}/{item.AvgDisconnectTime:F1}%";
+                worksheet.Cells[row, 8].Value = $"{item.OffTime.TotalHours:F1}/{item.AvgOffTime:F1}%";
+
+                for (int col = 1; col <= headers.Length; col++)
+                {
+                    worksheet.Cells[row, col].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
+
+                row++;
+            }
+
+            worksheet.Cells.AutoFitColumns();
+
+            var stream = new MemoryStream();
+            package.SaveAs(stream);
+            stream.Position = 0;
+
+            var fileName = $"ReporteDixell_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
     }
 }
