@@ -21,7 +21,7 @@ namespace SupervisorBravo.Web.Controllers.Charts
         [Authorize]
         public async Task<IActionResult> RefrigerationChart(TemperatureFilterViewModel model)
         {
-
+            await _repository.BeginTransaction();
             if (model.StartDate == default && model.EndDate == default)
             {
                 model.EndDate = DateTime.Now;
@@ -34,6 +34,7 @@ namespace SupervisorBravo.Web.Controllers.Charts
                 model.Temperatures = await ((ITemperatureRepository)_repository).GetTemperaturesByDateRange(model.StartDate, model.EndDate, dixell.Id);
             }
 
+            await _repository.CommitTransaction();
             return View(model);
         }
 

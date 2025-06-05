@@ -24,11 +24,10 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
         [HttpGet, HttpPost]
         public async Task<IActionResult> Performance(DixellReporteViewModel model)
         {
-
             if(model.StartDateReport == default && model.EndDateReport == default){
 
-                model.EndDateReport = DateTime.Now;
-                model.StartDateReport = DateTime.Now.AddHours(-10);
+                model.EndDateReport = DateTime.Today.AddHours(6);
+                model.StartDateReport = DateTime.Today.AddHours(-6);
             }
 
             await _dixellRepository.BeginTransaction();

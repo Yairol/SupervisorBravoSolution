@@ -34,7 +34,7 @@
                         <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
                         <td>@(((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.ControlEnable == true) && item.ControlON_OFF ) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.ControlON_OFF && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.DisconnectDixell == false)) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm")</td>
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {
                             <td>
@@ -73,5 +73,9 @@
         {
             return confirm("¿Esta seguro que desea eliminar permanentemente este dixell?")
         }
+        // Recargar la página cada 80 segundos (80,000 milisegundos)
+        setTimeout(function () {
+            location.reload();
+        }, 80000);
     </script>
 }

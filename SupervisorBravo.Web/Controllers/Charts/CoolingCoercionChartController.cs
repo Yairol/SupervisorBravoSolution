@@ -19,7 +19,7 @@ namespace SupervisorBravo.Web.Controllers.Charts
         [HttpGet, HttpPost]
         public async Task<IActionResult> CoolingCoercionChart(TemperatureFilterViewModel model)
         {
-
+            await _repository.BeginTransaction();
             if (model.StartDate == default && model.EndDate == default)
             {
                 model.EndDate = DateTime.Now;
@@ -31,7 +31,7 @@ namespace SupervisorBravo.Web.Controllers.Charts
             {
                 model.Temperatures = await ((ITemperatureRepository)_repository).GetTemperaturesByDateRange(model.StartDate, model.EndDate, dixell.Id);
             }
-
+            await _repository.CommitTransaction();
             return View(model);
         }
     }
