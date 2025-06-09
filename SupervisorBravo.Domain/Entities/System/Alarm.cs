@@ -31,7 +31,7 @@ namespace SupervisorBravo.Domain.Entities.System
         {
             Name = name;
             Description = description;
-            AlarmDate = DateTime.Now;
+            AlarmDate = DateTime.UtcNow;
 
         }
         /// <summary>

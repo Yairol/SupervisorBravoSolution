@@ -39,7 +39,7 @@
                         <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.ControlON_OFF == true && item.Thawing == false && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement != 0)) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.ControlON_OFF && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo"))</td>
-                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).ToList().FirstOrDefault()?.MeasurementTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).ToList().FirstOrDefault()?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {
                             <td>

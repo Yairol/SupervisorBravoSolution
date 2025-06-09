@@ -4,7 +4,6 @@ using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Repository;
-using SupervisorBravo.WorkerService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("connectionString"));
+});
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5000);
 });
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
-builder.Services.AddHostedService<Worker>();
 ExcelPackage.License.SetNonCommercialPersonal("Bravo");
 
 

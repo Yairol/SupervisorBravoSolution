@@ -32,7 +32,7 @@ namespace SupervisorBravo.WorkerService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
                 using (SerialPort port = new SerialPort("COM10", 9600, Parity.None, 8, StopBits.One))
                 {
                     try
@@ -65,9 +65,9 @@ namespace SupervisorBravo.WorkerService
                                         //Escritura del control de deshielo
                                         if (dixell.ThawingWrite)
                                         {
-                                            await Task.Delay(50);
+                                            await Task.Delay(80);
                                             dixell.ThawingWrite = false;
-                                            await WriteThawingXR(master, dixell.MoodbusId, dixell.Thawing).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                            await WriteThawingXR(master, dixell.MoodbusId, dixell.Thawing).WaitAsync(TimeSpan.FromSeconds(1));
 
                                             await repository.UpdateDixell<DixellXR60CX>(dixell);
                                             await repository.PartialCommit();
@@ -75,8 +75,8 @@ namespace SupervisorBravo.WorkerService
                                         //Escritura de control on off
                                         if (dixell.ControlON_OFFWrite)
                                         {
-                                            await Task.Delay(50);
-                                            await WriteControlON_OFFXR(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                            await Task.Delay(80);
+                                            await WriteControlON_OFFXR(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(1));
                                             dixell.ControlON_OFFWrite = false;
                                             await repository.UpdateDixell<DixellXR60CX>(dixell);
                                             await repository.PartialCommit();
@@ -85,8 +85,8 @@ namespace SupervisorBravo.WorkerService
                                         //Escritura de SetPoint
                                         if (dixell.SetPointWrite)
                                         {
-                                            await Task.Delay(50);
-                                            await WriteSetPointXR(master, dixell.MoodbusId, dixell.SetPoint).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                            await Task.Delay(80);
+                                            await WriteSetPointXR(master, dixell.MoodbusId, dixell.SetPoint).WaitAsync(TimeSpan.FromSeconds(1));
                                             dixell.SetPointWrite = false;
                                             await repository.UpdateDixell<DixellXR60CX>(dixell);
                                             await repository.PartialCommit();
@@ -94,8 +94,8 @@ namespace SupervisorBravo.WorkerService
                                         }
 
                                         //Lectura del SetPoint
-                                        await Task.Delay(50);
-                                        double? setPointValueXr = await ReadSetPointXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                        await Task.Delay(80);
+                                        double? setPointValueXr = await ReadSetPointXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
                                         if (setPointValueXr != null)
                                         {
                                             dixell.SetPoint = setPointValueXr.Value;
@@ -105,8 +105,8 @@ namespace SupervisorBravo.WorkerService
 
 
                                         //Lectura On/Off
-                                        await Task.Delay(50);
-                                        bool? controlOn_Off = await ReadControlOnOffXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                        await Task.Delay(80);
+                                        bool? controlOn_Off = await ReadControlOnOffXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
                                         if (controlOn_Off != null)
                                         {
 
@@ -116,8 +116,8 @@ namespace SupervisorBravo.WorkerService
                                         }
 
                                         //Lectura Thawing
-                                        await Task.Delay(50);
-                                        bool? thawing = await ReadThawingXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                        await Task.Delay(80);
+                                        bool? thawing = await ReadThawingXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
                                         if (thawing != null)
                                         {
                                             dixell.Thawing = thawing.Value;
@@ -151,17 +151,17 @@ namespace SupervisorBravo.WorkerService
                                         //Escritura de control on off
                                         if (dixell.ControlON_OFFWrite)
                                         {
-                                            await Task.Delay(50);
+                                            await Task.Delay(80);
                                             dixell.ControlON_OFFWrite = false;
                                             await repository.UpdateDixell<DixellXT111C>(dixell);
                                             await repository.PartialCommit();
-                                            await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                            await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(1));
 
                                         }
                                         //Escritura SetPoint.
                                         if (dixell.SetPointWrite)
                                         {
-                                            await Task.Delay(50);
+                                            await Task.Delay(80);
                                             dixell.SetPointWrite = false;
                                             await repository.UpdateDixell<DixellXT111C>(dixell);
                                             await repository.PartialCommit();
@@ -171,8 +171,8 @@ namespace SupervisorBravo.WorkerService
 
 
                                         //Lectura del SetPoint
-                                        await Task.Delay(50);
-                                        double? setPointValueXr = await ReadSetPointXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                        await Task.Delay(80);
+                                        double? setPointValueXr = await ReadSetPointXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
                                         if (setPointValueXr != null)
                                         {
                                             dixell.SetPoint = setPointValueXr.Value;
@@ -183,8 +183,8 @@ namespace SupervisorBravo.WorkerService
 
 
                                         //Lectura del Control On/Off.
-                                        await Task.Delay(50);
-                                        bool? controlOn_Off = await ReadControlOnOffXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                        await Task.Delay(80);
+                                        bool? controlOn_Off = await ReadControlOnOffXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
                                         if (controlOn_Off != null)
                                         {
                                             dixell.ControlON_OFF = controlOn_Off.Value;
@@ -214,8 +214,8 @@ namespace SupervisorBravo.WorkerService
                                 try
                                 {
                                     //Lectura de temperaturas.
-                                    await Task.Delay(50);
-                                    double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(0.5));
+                                    await Task.Delay(80);
+                                    double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
                                     if (temperatureValue != null)
                                     {
                                         await ((ITemperatureRepository)repository).CreateTemperature(temperatureValue.Value, dixell.Id);
@@ -247,7 +247,7 @@ namespace SupervisorBravo.WorkerService
                     catch (Exception ex)
                     {
 
-                        await Task.Delay(50);
+                        await Task.Delay(80);
                         using (var scope = _scopeFactory.CreateScope())
                         {
                             var repository = scope.ServiceProvider.GetRequiredService<IDixellRepository>();
@@ -259,7 +259,7 @@ namespace SupervisorBravo.WorkerService
 
                     }
                 }
-                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
         }
         #region Helpers

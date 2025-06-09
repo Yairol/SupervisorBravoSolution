@@ -3,6 +3,8 @@ using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.FluentConfigurations;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+
 
 namespace SupervisorBravo.Persistence
 {
@@ -10,21 +12,21 @@ namespace SupervisorBravo.Persistence
     {
         public DbSet<DixellBase> DixellBases { get; set; }
         public DbSet<DixellXR60CX> DixellXR60CXs { get; set; }
-
         public DbSet<DixellXT111C> DixellXT111Cs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<Alarm> Alarms { get; set; }
         public DbSet<DeviceAlarm> DeviceAlarms { get; set; }
+
         public ApplicationDbContext() { }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options) { }
+            : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer();
+                optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=DBTest;User Id=postgres;Password=yairol123");
             }
         }
 
@@ -39,11 +41,5 @@ namespace SupervisorBravo.Persistence
             modelBuilder.ApplyConfiguration(new AlarmFluentConfiguration());
             modelBuilder.ApplyConfiguration(new DeviceAlarmFluentConfiguration());
         }
-
-        private static DbContextOptions GetOptions(string connectionString)
-        {
-            return SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder(), connectionString).Options;
-        }
-
     }
 }

@@ -6,17 +6,17 @@ using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
 using SupervisorBravo.WorkerService.Utilities;
+using NpgsqlTypes;
+
 
 var builder = Host.CreateApplicationBuilder(args);
 
 // Primero registrar todas las dependencias
 builder.Services.AddDbContextFactory<ApplicationDbContext>(option =>
-    option.UseSqlServer(builder.Configuration.GetConnectionString("connectionString"))
+    option.UseNpgsql(builder.Configuration.GetConnectionString("connectionString"))
 );
 
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
-
-
 
 // Luego registrar el Worker que depende de los anteriores
 builder.Services.AddHostedService<Worker>();

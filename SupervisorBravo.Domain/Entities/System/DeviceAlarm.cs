@@ -33,7 +33,7 @@ namespace SupervisorBravo.Domain.Entities.System
             Name = name;
             Description = description;
             DeviceName = deviceName;
-            AlarmDate = DateTime.Now;
+            AlarmDate = DateTime.UtcNow;
 
         }
         /// <summary>

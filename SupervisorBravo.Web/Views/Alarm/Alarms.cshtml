@@ -27,7 +27,7 @@
                     <tr>
                         <td>@item.Name</td>
                         <td>@item.Description</td>
-                        <td>@item.AlarmDate</td>
+                        <td>@item.AlarmDate.ToLocalTime()</td>
                         @if (User.IsInRole("Admin"))
                         {
                             <td>
@@ -61,7 +61,7 @@
                         <td>@item.Name</td>
                         <td>@item.DeviceName</td>
                         <td>@item.Description</td>
-                        <td>@item.AlarmDate</td>
+                        <td>@item.AlarmDate.ToLocalTime()</td>
                     </tr>
                 }
         </table>

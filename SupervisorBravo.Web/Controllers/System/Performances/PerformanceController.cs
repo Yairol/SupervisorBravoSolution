@@ -38,7 +38,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
 
                 foreach(var dixell in dixells)
                 {
-                    var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport, model.EndDateReport, dixell.Id);
+                    var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
                     var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
                     var temperaturasOrdenandas = temperaturas.OrderBy(t => t.MeasurementTime).ToList();
 
@@ -106,7 +106,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
 
                 foreach (var dixell in dixells)
                 {
-                    var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport, model.EndDateReport, dixell.Id);
+                    var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
                     var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
                     var temperaturasOrdenandas = temperaturas.OrderBy(t => t.MeasurementTime).ToList();
 
@@ -227,7 +227,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             package.SaveAs(stream);
             stream.Position = 0;
 
-            var fileName = $"ReporteDixell_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            var fileName = $"ReporteDixell_{DateTime.UtcNow:yyyyMMdd_HHmmss}.xlsx";
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
     }

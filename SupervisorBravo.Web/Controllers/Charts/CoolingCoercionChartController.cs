@@ -29,7 +29,7 @@ namespace SupervisorBravo.Web.Controllers.Charts
 
             if (dixell != null)
             {
-                model.Temperatures = await ((ITemperatureRepository)_repository).GetTemperaturesByDateRange(model.StartDate, model.EndDate, dixell.Id);
+                model.Temperatures = await ((ITemperatureRepository)_repository).GetTemperaturesByDateRange(model.StartDate.ToUniversalTime(), model.EndDate.ToUniversalTime(), dixell.Id);
             }
             await _repository.CommitTransaction();
             return View(model);
