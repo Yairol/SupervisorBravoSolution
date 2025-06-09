@@ -35,6 +35,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("TecnicoOnly", policy => policy.RequireRole("Tecnico"));
 });
 
+builder.Services.AddResponseCompression();
 
 var app = builder.Build();
 
@@ -55,6 +56,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseResponseCompression();
 app.UseAuthentication();
 app.UseAuthorization();
 

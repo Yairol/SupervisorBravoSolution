@@ -1,13 +1,9 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXR60CX>
+﻿@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXR60CX>
 
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
-        <h2>Parametros de Refrigeración.</h2>
+        <h2>Parámetros de Refrigeración.</h2>
+
         @if (User.IsInRole("Admin"))
         {
             <a asp-controller="Refrigertion" asp-action="CreateDixell" class="btn btn-success mb-3">Crear</a>
@@ -25,48 +21,61 @@
                     <th style="background-color: yellow;">Ventilador</th>
                     <th style="background-color: yellow;">On/Off</th>
                     <th style="background-color: yellow;">Último Muestreo</th>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+                    {
+                        <th style="background-color: yellow;">Editar</th>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <th style="background-color: yellow;">Eliminar</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
+                    var ultimoMuestreo = item.temperatures
+                    .OrderByDescending(t => t.MeasurementTime)
+                    .FirstOrDefault();
+
                     <tr>
                         <td>@item.RoomName</td>
-                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.DisconnectDixell == true) ? "🔴Apagado" : "🟢Encendido")</td>
+                        <td>@(ultimoMuestreo?.DisconnectDixell == true ? "🔴Apagado" : "🟢Encendido")</td>
                         <td>@item.SetPoint °C</td>
-                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement °C</td>
-                        <td>@((item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.ControlEnable == true && item.ControlON_OFF == true && item.Thawing == false) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@ultimoMuestreo?.TemperatureMeasurement °C</td>
+                        <td>@((ultimoMuestreo?.ControlEnable == true && item.ControlON_OFF && !item.Thawing) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.ControlON_OFF == true && item.Thawing == false && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.TemperatureMeasurement != 0)) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.ControlON_OFF && (item.temperatures.OrderByDescending(t => t.MeasurementTime).FirstOrDefault()?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo"))</td>
-                        <td>@item.temperatures.OrderByDescending(t => t.MeasurementTime).ToList().FirstOrDefault()?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@((item.ControlON_OFF && !item.Thawing && ultimoMuestreo?.TemperatureMeasurement != 0) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@((item.ControlON_OFF && ultimoMuestreo?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@ultimoMuestreo?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {
                             <td>
                                 <a asp-controller="Refrigertion"
-                                asp-action="UpdateDixell"
-                                asp-route-id="@item.MoodbusId"
-                                class="btn btn-primary">
+                                   asp-action="UpdateDixell"
+                                   asp-route-id="@item.MoodbusId"
+                                   class="btn btn-primary">
                                     Editar
                                 </a>
-
                             </td>
                         }
+
                         @if (User.IsInRole("Admin"))
                         {
                             <td>
                                 <a asp-controller="Refrigertion"
-                                asp-action="DeleteDixell"
-                                asp-route-id="@item.MoodbusId"
-                                onclick="return confirmar()"
-                                class="btn btn-primary">
+                                   asp-action="DeleteDixell"
+                                   asp-route-id="@item.MoodbusId"
+                                   onclick="return confirmar()"
+                                   class="btn btn-primary">
                                     Eliminar
                                 </a>
                             </td>
                         }
-
                     </tr>
                 }
+            </tbody>
         </table>
     </div>
 </div>
@@ -74,11 +83,11 @@
 @section Scripts
 {
     <script>
-        function confirmar()
-        {
-            return confirm("¿Esta seguro que desea eliminar permanentemente este dixell?")
+        function confirmar() {
+            return confirm("¿Está seguro que desea eliminar permanentemente este dixell?");
         }
-        // Recargar la página cada 80 segundos (80,000 milisegundos)
+
+        // Recargar la página cada 80 segundos
         setTimeout(function () {
             location.reload();
         }, 80000);
