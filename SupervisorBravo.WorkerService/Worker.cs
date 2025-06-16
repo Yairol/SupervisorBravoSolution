@@ -221,7 +221,7 @@ namespace SupervisorBravo.WorkerService
                                 {
                                     //Lectura de temperaturas.
                                     await Task.Delay(300);
-                                    double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1.5));
+                                    double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(2.1));
                                     if (temperatureValue != null)
                                     {
                                         await ((ITemperatureRepository)repository).CreateTemperature(temperatureValue.Value, dixell.Id);
