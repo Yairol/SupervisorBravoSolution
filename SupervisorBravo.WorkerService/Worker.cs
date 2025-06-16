@@ -37,8 +37,8 @@ namespace SupervisorBravo.WorkerService
                 {
                     try
                     {
-                        port.ReadTimeout = 500;  // 1 segundo
-                        port.WriteTimeout = 500;
+                        port.ReadTimeout = 1000;  // 1 segundo
+                        port.WriteTimeout = 1000;
                         port.Open();
 
 
@@ -138,6 +138,9 @@ namespace SupervisorBravo.WorkerService
                             }
                             #endregion
                             await repository.PartialCommit();
+                            port.Close();
+                            await Task.Delay(1000);
+                            port.Open();
                             #region Lecturas Dixell XT
                             //Lectura de SetPoint y control en dixells ------------------------------------- XT
                             var dixellXTs = await repository.GetAllDixellsWithoutTemperatures<DixellXT>();
@@ -205,6 +208,9 @@ namespace SupervisorBravo.WorkerService
                             }
                             #endregion
                             await repository.PartialCommit();
+                            port.Close();
+                            await Task.Delay(1000);
+                            port.Open();
                             #region Lectura de temperaturas
                             //Lectura de temperatura en todos los dixells
                             var dixells = await repository.GetAllDixellsWithoutTemperatures<DixellBase>();
