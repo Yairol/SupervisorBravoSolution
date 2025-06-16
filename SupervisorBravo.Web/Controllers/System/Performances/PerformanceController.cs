@@ -34,7 +34,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             if (model.Room == "Refrigeracion")
             {
 
-                var dixells = await _dixellRepository.GetAllDixells<DixellXR60CX>();
+                var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
 
                 foreach(var dixell in dixells)
                 {
@@ -102,7 +102,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
 
             }else if(model.Room == "Coccion-Enfriamiento")
             {
-                var dixells = await _dixellRepository.GetAllDixells<DixellXT111C>();
+                var dixells = await _dixellRepository.GetAllDixells<DixellXT>();
 
                 foreach (var dixell in dixells)
                 {

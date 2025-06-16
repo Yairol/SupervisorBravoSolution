@@ -20,7 +20,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         {
             await _dixellRepository.BeginTransaction();
 
-            var dixells = await _dixellRepository.GetAllDixells<DixellXR60CX>();
+            var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
             var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();
             await _dixellRepository.CommitTransaction();
 
@@ -41,7 +41,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateDixell(DixellXR60CX dixell)
+        public async Task<IActionResult> CreateDixell(DixellXR dixell)
         {
             await _dixellRepository.BeginTransaction();
             var newDixell = await _dixellRepository.CreateDixellXR60CX(dixell.RoomName, dixell.MoodbusId);
@@ -58,7 +58,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> UpdateDixell(int id)
         {
             await _dixellRepository.BeginTransaction();
-            var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR60CX>(id);
+            var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR>(id);
             await _dixellRepository.CommitTransaction();
             if (dixell == null)
                 return NotFound();
@@ -67,10 +67,10 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
 
         [HttpPost]
         [Authorize(Roles = "Admin,Tecnico")]
-        public async Task<IActionResult> UpdateDixell(DixellXR60CX dixell)
+        public async Task<IActionResult> UpdateDixell(DixellXR dixell)
         {
             await _dixellRepository.BeginTransaction();
-            var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR60CX>(dixell.Id);
+            var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR>(dixell.Id);
             if (dixell == null) return NotFound();
 
             if (dixell.ControlON_OFF != dixellUpdate.ControlON_OFF)
@@ -107,8 +107,8 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> DeleteDixell(int id)
         {
             await _dixellRepository.BeginTransaction();
-            var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR60CX>(id);
-            await _dixellRepository.DeleteDixell<DixellXR60CX>(dixell.Id);
+            var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR>(id);
+            await _dixellRepository.DeleteDixell<DixellXR>(dixell.Id);
             await _dixellRepository.CommitTransaction();
 
             return RedirectToAction(nameof(Dixells));

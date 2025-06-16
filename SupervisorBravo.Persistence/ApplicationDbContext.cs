@@ -11,8 +11,8 @@ namespace SupervisorBravo.Persistence
     public class ApplicationDbContext : DbContext
     {
         public DbSet<DixellBase> DixellBases { get; set; }
-        public DbSet<DixellXR60CX> DixellXR60CXs { get; set; }
-        public DbSet<DixellXT111C> DixellXT111Cs { get; set; }
+        public DbSet<DixellXR> DixellXR60CXs { get; set; }
+        public DbSet<DixellXT> DixellXT111Cs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<Alarm> Alarms { get; set; }
         public DbSet<DeviceAlarm> DeviceAlarms { get; set; }

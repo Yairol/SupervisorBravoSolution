@@ -31,12 +31,9 @@
                             </li>
 
                             <li>
-                                <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Refrigeración</span>
-                                </a>
                                 <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                     <li class="w-100">
-                                        <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white"> Estado Actual</a>
+                                        <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white">Refrigeración</a>
                                     </li>
                                     @if (User.IsInRole("Admin"))
                                     {
@@ -44,19 +41,13 @@
                                             <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white"> Añadir Dixell </a>
                                         </li>
                                     }
-                                    <li>
-                                        <a asp-controller="RefrigerationChart" asp-action="RefrigerationChart" class="nav-link px-0 text-white"> Graficos </a>
-                                    </li>
                                 </ul>
                             </li>
 
                             <li>
-                                <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Cocción-Enfriamiento</span>
-                                </a>
                                 <ul class="collapse show nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
                                     <li class="w-100">
-                                        <a asp-controller="CoolingCoercion" asp-action="Dixells" class="nav-link px-0 text-white">Estado Actual</a>
+                                        <a asp-controller="CoolingCoercion" asp-action="Dixells" class="nav-link px-0 text-white">Cocción-Enfriamiento</a>
                                     </li>
                                     @if (User.IsInRole("Admin"))
                                     {
@@ -64,9 +55,6 @@
                                             <a asp-controller="CoolingCoercion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dixell</a>
                                         </li>
                                     }
-                                    <li>
-                                        <a asp-controller="CoolingCoercionChart" asp-action="CoolingCoercionChart" class="nav-link px-0 text-white"> Graficos </a>
-                                    </li>
                                 </ul>
                             </li>
                             <li>

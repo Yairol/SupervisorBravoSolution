@@ -1,4 +1,4 @@
-﻿@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXR60CX>
+﻿@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXR>
 
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
@@ -12,6 +12,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th></th>
                     <th style="background-color: yellow;">Dispositivo</th>
                     <th style="background-color: yellow;">Estado</th>
                     <th style="background-color: yellow;">SetPoint</th>
@@ -39,14 +40,23 @@
                     .FirstOrDefault();
 
                     <tr>
+                        <td>
+                            <a asp-controller="RefrigerationChart"
+                               asp-action="RefrigerationChart"
+                               asp-route-dixellName="@item.RoomName"
+                               class="btn btn-primary">
+                                Graficar
+                            </a>
+
+                        </td>
                         <td>@item.RoomName</td>
                         <td>@(ultimoMuestreo?.DisconnectDixell == true ? "🔴Apagado" : "🟢Encendido")</td>
                         <td>@item.SetPoint °C</td>
                         <td>@ultimoMuestreo?.TemperatureMeasurement °C</td>
                         <td>@((ultimoMuestreo?.ControlEnable == true && item.ControlON_OFF && !item.Thawing) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@((item.Thawing && item.ControlON_OFF && !item.Thawing) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@((item.ControlON_OFF && !item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@((item.ControlON_OFF && !item.Thawing && ultimoMuestreo?.TemperatureMeasurement != 0) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.ControlON_OFF && ultimoMuestreo?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo")</td>
                         <td>@ultimoMuestreo?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
 
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
@@ -61,7 +71,7 @@
                             </td>
                         }
 
-                        @if (User.IsInRole("Admin"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
                         {
                             <td>
                                 <a asp-controller="Refrigertion"

@@ -12,8 +12,8 @@ using SupervisorBravo.Persistence;
 namespace SupervisorBravo.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250605230739_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250616130733_CambiodeNombres")]
+    partial class CambiodeNombres
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,6 +143,12 @@ namespace SupervisorBravo.Persistence.Migrations
                 {
                     b.HasBaseType("SupervisorBravo.Domain.Entities.Dixell.DixellBase");
 
+                    b.Property<bool>("Cooling")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("Fan")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("Thawing")
                         .HasColumnType("boolean");
 
@@ -155,6 +161,9 @@ namespace SupervisorBravo.Persistence.Migrations
             modelBuilder.Entity("SupervisorBravo.Domain.Entities.Dixell.DixellXT", b =>
                 {
                     b.HasBaseType("SupervisorBravo.Domain.Entities.Dixell.DixellBase");
+
+                    b.Property<bool>("ElectroValve")
+                        .HasColumnType("boolean");
 
                     b.ToTable("DixellXT", (string)null);
                 });

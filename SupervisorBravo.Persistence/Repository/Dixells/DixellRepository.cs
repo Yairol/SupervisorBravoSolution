@@ -8,15 +8,15 @@ namespace SupervisorBravo.Persistence.Repository
     public partial class AplicationRepository : IDixellRepository
     {
 
-        public async Task<DixellXT111C> CreateDixellXT111C(string roomName, int moodbusId)
+        public async Task<DixellXT> CreateDixellXT111C(string roomName, int moodbusId)
         {
-            DixellXT111C dixellXT111C = new DixellXT111C(moodbusId, roomName);
+            DixellXT dixellXT111C = new DixellXT(moodbusId, roomName);
             await _context.AddAsync(dixellXT111C);
             return dixellXT111C;
         }
-        public async Task<DixellXR60CX> CreateDixellXR60CX(string roomName, int moodbusId)
+        public async Task<DixellXR> CreateDixellXR60CX(string roomName, int moodbusId)
         {
-            DixellXR60CX dixellXR60CX = new DixellXR60CX(moodbusId, roomName);
+            DixellXR dixellXR60CX = new DixellXR(moodbusId, roomName);
             await _context.AddAsync(dixellXR60CX);
             return dixellXR60CX;
         }

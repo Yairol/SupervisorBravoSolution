@@ -15,17 +15,37 @@ namespace SupervisorBravo.Web.Controllers.Charts
             _repository = repository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CoolingCoercionChart(string dixellName)
+        {
+            await _repository.BeginTransaction();
+            var model = new TemperatureFilterViewModel
+            {
+                DixellName = dixellName,
+                StartDate = DateTime.Today.AddHours(-6),
+                EndDate = DateTime.Today.AddHours(6)
+            };
 
-        [HttpGet, HttpPost]
+            var dixell = await _repository.GetDixellByRoomName<DixellXT>(model.DixellName);
+            if (dixell != null)
+            {
+                model.Temperatures = await ((ITemperatureRepository)_repository)
+                    .GetTemperaturesByDateRange(model.StartDate.ToUniversalTime(), model.EndDate.ToUniversalTime(), dixell.Id);
+            }
+            await _repository.CommitTransaction();
+            return View(model);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CoolingCoercionChart(TemperatureFilterViewModel model)
         {
             await _repository.BeginTransaction();
             if (model.StartDate == default && model.EndDate == default)
             {
-                model.EndDate = DateTime.Now;
-                model.StartDate = DateTime.Now.AddHours(-10);
+                model.EndDate = DateTime.Today.AddHours(6);
+                model.StartDate = DateTime.Today.AddHours(-6);
             }
-            var dixell = await _repository.GetDixellByRoomName<DixellXT111C>(model.DixellName);
+            var dixell = await _repository.GetDixellByRoomName<DixellXT>(model.DixellName);
 
             if (dixell != null)
             {

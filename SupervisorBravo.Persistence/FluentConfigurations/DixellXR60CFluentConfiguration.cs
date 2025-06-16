@@ -7,11 +7,11 @@ namespace SupervisorBravo.Persistence.FluentConfigurations
     /// <summary>
     /// Configuracion para la creacion de tablas y relaciones.
     /// </summary>
-    internal class DixellXR60CFluentConfiguration : IEntityTypeConfiguration<DixellXR60CX>
+    internal class DixellXR60CFluentConfiguration : IEntityTypeConfiguration<DixellXR>
     {
-        public void Configure(EntityTypeBuilder<DixellXR60CX> builder)
+        public void Configure(EntityTypeBuilder<DixellXR> builder)
         {
-            builder.ToTable(nameof(DixellXR60CX));
+            builder.ToTable(nameof(DixellXR));
             builder.HasBaseType(typeof(DixellBase));
 
 

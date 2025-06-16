@@ -28,13 +28,13 @@ namespace SupervisorBravo.Persistence.Repository
             {
                 temperature.On_OffDixell = false;
             }
-            if (dixell is DixellXR60CX)
+            if (dixell is DixellXR)
             {
                 temperature.ControlEnable = (dixell.SetPoint < temperatureMeasurement)
                                             && (temperature.DisconnectDixell == false)
                                             && (temperature.On_OffDixell == true)? true : false;
             }
-            if (dixell is DixellXT111C)
+            if (dixell is DixellXT)
             {
                 temperature.ControlEnable = (dixell.SetPoint > temperatureMeasurement)
                                             && (temperature.DisconnectDixell == false)

@@ -1,4 +1,4 @@
-﻿@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXT111C>
+﻿@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXT>
 
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
@@ -10,6 +10,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th></th>
                     <th style="background-color: yellow;">Dispositivo</th>
                     <th style="background-color: yellow;">Estado</th>
                     <th style="background-color: yellow;">SetPoint</th>
@@ -35,6 +36,15 @@
                     .FirstOrDefault();
 
                     <tr>
+                        <td>
+                            <a asp-controller="CoolingCoercionChart"
+                               asp-action="CoolingCoercionChart"
+                               asp-route-dixellName="@item.RoomName"
+                               class="btn btn-primary">
+                                Graficar
+                            </a>
+
+                        </td>
                         <td>@item.RoomName</td>
                         <td>@(ultimoMuestreo?.DisconnectDixell == true ? "🔴Apagado" : "🟢Encendido")</td>
                         <td>@item.SetPoint °C</td>
@@ -44,17 +54,6 @@
                         <td>@ultimoMuestreo?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
 
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
-                        {
-                            <td>
-                                <a asp-controller="CoolingCoercion"
-                                   asp-action="UpdateDixell"
-                                   asp-route-id="@item.MoodbusId"
-                                   class="btn btn-primary">
-                                    Editar
-                                </a>
-                            </td>
-                        }
-                        @if (User.IsInRole("Admin"))
                         {
                             <td>
                                 <a asp-controller="CoolingCoercion"

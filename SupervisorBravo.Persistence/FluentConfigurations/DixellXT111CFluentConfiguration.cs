@@ -4,11 +4,11 @@ using SupervisorBravo.Domain.Entities.Dixell;
 
 namespace SupervisorBravo.Persistence.FluentConfigurations
 {
-    public class DixellXT111CFluentConfiguration : IEntityTypeConfiguration<DixellXT111C>
+    public class DixellXT111CFluentConfiguration : IEntityTypeConfiguration<DixellXT>
     {
-        public void Configure(EntityTypeBuilder<DixellXT111C> builder)
+        public void Configure(EntityTypeBuilder<DixellXT> builder)
         {
-            builder.ToTable(nameof(DixellXT111C));
+            builder.ToTable(nameof(DixellXT));
             builder.HasBaseType(typeof(DixellBase));
         }
     }

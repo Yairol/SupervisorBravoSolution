@@ -59,7 +59,7 @@ namespace SupervisorBravo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DixellXR60CX",
+                name: "DixellXR",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -78,7 +78,7 @@ namespace SupervisorBravo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DixellXT111C",
+                name: "DixellXT",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false)
@@ -133,10 +133,10 @@ namespace SupervisorBravo.Persistence.Migrations
                 name: "DeviceAlarm");
 
             migrationBuilder.DropTable(
-                name: "DixellXR60CX");
+                name: "DixellXR");
 
             migrationBuilder.DropTable(
-                name: "DixellXT111C");
+                name: "DixellXT");
 
             migrationBuilder.DropTable(
                 name: "Temperature");

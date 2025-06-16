@@ -13,14 +13,14 @@ namespace SupervisorBravo.Persistence.Abstracts.Dixells
         /// <param name="roomName"></param>
         /// <param name="moodbusId"></param>
         /// <returns></returns>
-        Task<DixellXT111C> CreateDixellXT111C(string roomName, int moodbusId);
+        Task<DixellXT> CreateDixellXT111C(string roomName, int moodbusId);
         /// <summary>
         /// Creacion de un Dixell en la BD.
         /// </summary>
         /// <param name="roomName">Sala que monitorea el Dixell.</param>
         /// <param name="moodbusId">Identificador en el bus moodbus del Dixell.</param>
         /// <returns></returns>
-        Task<DixellXR60CX> CreateDixellXR60CX(string roomName, int moodbusId);
+        Task<DixellXR> CreateDixellXR60CX(string roomName, int moodbusId);
         /// <summary>
         /// Obtencion de un Dixell por su id.
         /// </summary>
