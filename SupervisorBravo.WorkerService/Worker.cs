@@ -41,7 +41,7 @@ namespace SupervisorBravo.WorkerService
                         port.WriteTimeout = 1000;
                         port.Open();
 
-
+          
                         var factory = new ModbusFactory();
                         IModbusSerialMaster master = factory.CreateRtuMaster(port);
                         master.Transport.ReadTimeout = 1000;
@@ -138,9 +138,6 @@ namespace SupervisorBravo.WorkerService
                             }
                             #endregion
                             await repository.PartialCommit();
-                            port.Close();
-                            await Task.Delay(1000);
-                            port.Open();
                             #region Lecturas Dixell XT
                             //Lectura de SetPoint y control en dixells ------------------------------------- XT
                             var dixellXTs = await repository.GetAllDixellsWithoutTemperatures<DixellXT>();
@@ -208,9 +205,6 @@ namespace SupervisorBravo.WorkerService
                             }
                             #endregion
                             await repository.PartialCommit();
-                            port.Close();
-                            await Task.Delay(1000);
-                            port.Open();
                             #region Lectura de temperaturas
                             //Lectura de temperatura en todos los dixells
                             var dixells = await repository.GetAllDixellsWithoutTemperatures<DixellBase>();
@@ -221,7 +215,7 @@ namespace SupervisorBravo.WorkerService
                                 {
                                     //Lectura de temperaturas.
                                     await Task.Delay(300);
-                                    double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(2.1));
+                                    double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1.2));
                                     if (temperatureValue != null)
                                     {
                                         await ((ITemperatureRepository)repository).CreateTemperature(temperatureValue.Value, dixell.Id);
@@ -229,10 +223,15 @@ namespace SupervisorBravo.WorkerService
                                         await repository.PartialCommit();
                                     }
 
+
                                 }
                                 catch (TimeoutException)
                                 {
+                                    port.DiscardInBuffer();
+                                    port.DiscardOutBuffer();
+                                    port.Close();
                                     await Task.Delay(80);
+                                    port.Open();
                                     _logger.LogWarning($"Tiempo de espera agotado al leer temperatura del dispositivo ID {dixell.MoodbusId}");
                                     await ((ITemperatureRepository)repository).CreateTemperature(0, dixell.Id);
                                     if (await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null)
