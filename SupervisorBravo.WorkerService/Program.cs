@@ -11,6 +11,11 @@ using NpgsqlTypes;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
+
 // Primero registrar todas las dependencias
 builder.Services.AddDbContextFactory<ApplicationDbContext>(option =>
     option.UseNpgsql(builder.Configuration.GetConnectionString("connectionString"))
