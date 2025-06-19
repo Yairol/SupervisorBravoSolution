@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SupervisorBravo.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,14 +63,16 @@ namespace SupervisorBravo.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Cooling = table.Column<bool>(type: "boolean", nullable: false),
+                    Fan = table.Column<bool>(type: "boolean", nullable: false),
                     Thawing = table.Column<bool>(type: "boolean", nullable: false),
                     ThawingWrite = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DixellXR60CX", x => x.Id);
+                    table.PrimaryKey("PK_DixellXR", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DixellXR60CX_DixellBase_Id",
+                        name: "FK_DixellXR_DixellBase_Id",
                         column: x => x.Id,
                         principalTable: "DixellBase",
                         principalColumn: "Id",
@@ -81,13 +83,14 @@ namespace SupervisorBravo.Persistence.Migrations
                 name: "DixellXT",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ElectroValve = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DixellXT111C", x => x.Id);
+                    table.PrimaryKey("PK_DixellXT", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DixellXT111C_DixellBase_Id",
+                        name: "FK_DixellXT_DixellBase_Id",
                         column: x => x.Id,
                         principalTable: "DixellBase",
                         principalColumn: "Id",
