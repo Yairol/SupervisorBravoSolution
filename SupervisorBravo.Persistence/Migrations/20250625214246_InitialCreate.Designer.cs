@@ -12,8 +12,8 @@ using SupervisorBravo.Persistence;
 namespace SupervisorBravo.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250619142009_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20250625214246_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

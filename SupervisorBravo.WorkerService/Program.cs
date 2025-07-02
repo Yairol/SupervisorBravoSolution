@@ -1,4 +1,12 @@
+using System;
+using System.IO;
+using System.Linq;
+using Npgsql;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.System;
@@ -6,25 +14,85 @@ using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
 using SupervisorBravo.WorkerService.Utilities;
-using NpgsqlTypes;
-
 
 var builder = Host.CreateApplicationBuilder(args);
 
+// --------------------------------------------------
+// 1) Forzar carga de appsettings.json y variables de entorno
+// --------------------------------------------------
+builder.Configuration
+       .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+       .AddEnvironmentVariables();
+
+// --------------------------------------------------
+// 2) Opciones del Host
+// --------------------------------------------------
 builder.Services.Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
 });
 
-// Primero registrar todas las dependencias
-builder.Services.AddDbContextFactory<ApplicationDbContext>(option =>
-    option.UseNpgsql(builder.Configuration.GetConnectionString("connectionString"))
+// --------------------------------------------------
+// 3) Debug: Directorio de trabajo y listado de archivos
+// --------------------------------------------------
+Console.WriteLine($"[CONFIG CHECK] WorkingDirectory: {Environment.CurrentDirectory}");
+Console.WriteLine("[CONFIG CHECK] Files in working directory:");
+foreach (var file in Directory.GetFiles(Environment.CurrentDirectory))
+    Console.WriteLine("  • " + Path.GetFileName(file));
+Console.WriteLine("--------------------------------------------------");
+
+// --------------------------------------------------
+// 4) Debug: Dump de configuración
+// --------------------------------------------------
+Console.WriteLine("==== CONFIGURATION KEYS ====");
+foreach (var kv in builder.Configuration.AsEnumerable().Where(kv => !string.IsNullOrEmpty(kv.Value)))
+    Console.WriteLine($"{kv.Key} = {kv.Value}");
+Console.WriteLine("============================");
+
+// --------------------------------------------------
+// 5) Extraer y validar la cadena de conexión
+// --------------------------------------------------
+var connStr = builder.Configuration.GetConnectionString("connectionString");
+if (string.IsNullOrWhiteSpace(connStr))
+{
+    Console.WriteLine("ERROR: La cadena de conexión 'connectionString' es nula o vacía.");
+    Environment.Exit(-1);
+}
+
+// --------------------------------------------------
+// 6) Prueba de conexión directa con Npgsql
+// --------------------------------------------------
+try
+{
+    using var testConn = new NpgsqlConnection(connStr);
+    testConn.Open();
+    Console.WriteLine("[DB TEST] Conexión a PostgreSQL OK");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("[DB TEST] Error al conectar a la BD:");
+    Console.WriteLine(ex.Message);
+    Environment.Exit(-1);
+}
+
+// --------------------------------------------------
+// 7) Registrar DbContextFactory y repositorios
+// --------------------------------------------------
+builder.Services.AddDbContextFactory<ApplicationDbContext>(opts =>
+    opts.UseNpgsql(connStr)
+        .EnableSensitiveDataLogging()
+        .LogTo(Console.WriteLine, LogLevel.Information)
 );
 
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
+builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
+// (Añade aquí otros repos, e.g. ITemperatureRepository, si los necesitas)
 
-// Luego registrar el Worker que depende de los anteriores
 builder.Services.AddHostedService<Worker>();
 
+// --------------------------------------------------
+// 8) Construir y ejecutar el Host
+// --------------------------------------------------
 var host = builder.Build();
 host.Run();

@@ -57,6 +57,18 @@
                         {
                             <td>
                                 <a asp-controller="CoolingCoercion"
+                                   asp-action="UpdateDixell"
+                                   asp-route-id="@item.MoodbusId"
+                                   class="btn btn-primary">
+                                    Editar
+                                </a>
+                            </td>
+                        }
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+                        {
+                            <td>
+                                <a asp-controller="CoolingCoercion"
                                    asp-action="DeleteDixell"
                                    asp-route-id="@item.MoodbusId"
                                    onclick="return confirmar()"

@@ -35,7 +35,8 @@ namespace SupervisorBravo.Persistence.Repository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task BeginTransaction()
+        public async Task 
+            BeginTransaction()
         {
             if (IsInTransaction)
                 throw new InvalidOperationException("Cannot begin a new transaction before closing the current one.");
@@ -43,7 +44,7 @@ namespace SupervisorBravo.Persistence.Repository
             
             _transaction = await _context.Database.BeginTransactionAsync();
             await _context.Database.CanConnectAsync();
-            await _context.Database.MigrateAsync();
+            //await _context.Database.MigrateAsync();
         }
         /// <summary>
         /// Guarda los cambios de la transacción actual y la cierra.
