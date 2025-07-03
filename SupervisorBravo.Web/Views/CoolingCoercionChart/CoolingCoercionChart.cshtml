@@ -42,7 +42,8 @@
                         data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.TemperatureMeasurement))),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        yAxisID: 'y'
+                        yAxisID: 'y',
+                        pointRadius: 0
                     },
                     {
                         label: 'Control Activo',
@@ -51,7 +52,8 @@
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         yAxisID: 'y1',
                         stepped: true,
-                        borderWidth: 2
+                        borderWidth: 2,
+                        pointRadius: 0
                     }
                 ]
             },
@@ -70,6 +72,7 @@
                 },
                 scales: {
                     y: {
+                        beginAtZero: true,
                         type: 'linear',
                         display: true,
                         position: 'left',

@@ -43,7 +43,8 @@
                         data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.TemperatureMeasurement))),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        yAxisID: 'y'
+                        yAxisID: 'y',
+                        pointRadius: 0
                     },
                     {
                         label: 'Control Activo',
@@ -52,7 +53,8 @@
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         yAxisID: 'y1',
                         stepped: true,
-                        borderWidth: 2
+                        borderWidth: 2,
+                        pointRadius: 0
                     }
                 ]
             },
@@ -64,19 +66,45 @@
                 },
                 stacked: false,
                 plugins: {
+                    tooltip: {
+                        yAlign: 'bottom'
+                    },
                     title: {
                         display: true,
                         text: 'Temperaturas y Control'
                     }
                 },
                 scales: {
+                    x: {
+                        grid: {
+                            display: true,             // muestra las líneas internas
+                            color: '#cccccc',          // gris claro para cuadrícula
+                            borderDash: [5, 5],        // línea discontinua: 5px dibujado, 5px espacio
+                            drawBorder: true,          // dibuja el borde del eje
+                            borderColor: '#000000'     // negro para el borde del eje
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    },
                     y: {
+                        beginAtZero: true,
                         type: 'linear',
                         display: true,
                         position: 'left',
                         title: {
                             display: true,
                             text: 'Temperatura (°C)'
+                        },
+                        grid: {
+                            display: true,
+                            color: '#cccccc',
+                            borderDash: [5, 5],
+                            drawBorder: true,
+                            borderColor: '#000000'
+                        },
+                        ticks: {
+                            color: '#000000'
                         }
                     },
                     y1: {
@@ -94,6 +122,11 @@
                             stepSize: 1,
                             callback: function(value) {
                                 return value === 1 ? 'Sí' : 'No';
+                            },
+                            grid: {
+                                display: true,
+                                color: '#000000',     // eje secundario también en negro
+                                drawOnChartArea: false
                             }
                         }
                     }
