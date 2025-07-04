@@ -1,6 +1,7 @@
 using NModbus;
 using NModbus.Serial;
 using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
@@ -233,7 +234,10 @@ namespace SupervisorBravo.WorkerService
                                     await Task.Delay(80);
                                     port.Open();
                                     _logger.LogWarning($"Tiempo de espera agotado al leer temperatura del dispositivo ID {dixell.MoodbusId}");
-                                    await ((ITemperatureRepository)repository).CreateTemperature(0, dixell.Id);
+                                    //var DeviceToFix = await repository.GetDixellByMoodbusId<DixellBase>(dixell.MoodbusId);
+                                    var temperaturas = await ((ITemperatureRepository)repository).GetAllTemperaturesByDixell(dixell);
+                                    var ultimoMuestreo = temperaturas.OrderByDescending(t => t.MeasurementTime).First();
+                                    await ((ITemperatureRepository)repository).CreateTemperature(ultimoMuestreo.TemperatureMeasurement, dixell.Id, true);
                                     if (await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null)
                                     {
                                         await ((IDeviceAlarm)repository).CreateDeviceAlarm("Error de desconexion.", "Esta alarma se produce debido a que el dispositivo se encuentra apagado o se desconecto de el bus modbus.", dixell.RoomName);

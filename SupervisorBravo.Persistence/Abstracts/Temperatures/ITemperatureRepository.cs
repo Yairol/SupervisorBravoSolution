@@ -13,7 +13,7 @@ namespace SupervisorBravo.Persistence.Abstracts.Temperatures
         /// </summary>
         /// <param name="temperatureMeasurement">Temperatura a crear.</param>
         /// <returns>La temperatura creada.</returns>
-        Task<Temperature> CreateTemperature(double temperatureMeasurement, Guid dixellId);
+        Task<Temperature> CreateTemperature(double temperatureMeasurement, Guid dixellId, bool TemperatureReadTimeOut = false);
         /// <summary>
         /// Obtiene todas las temperaturas.
         /// </summary>

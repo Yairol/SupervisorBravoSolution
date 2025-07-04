@@ -51,12 +51,12 @@
                         </td>
                         <td>@item.RoomName</td> @*NOMBRE DEL DISPOSITIVO*@
                         <td>@(ultimoMuestreo?.DisconnectDixell == true ? "🔴Apagado" : "🟢Encendido")</td> @*CONEXION/DESCONEXION*@
-                        <td>@item.SetPoint °C</td> @*SETPOINT*@
-                        <td>@ultimoMuestreo?.TemperatureMeasurement °C</td> @*TEMPERATURA*@
+                        <td>@((ultimoMuestreo?.DisconnectDixell == false)? item.SetPoint + "°C" : "---")</td> @*SETPOINT*@
+                        <td>@((ultimoMuestreo?.DisconnectDixell == false) ? ultimoMuestreo?.TemperatureMeasurement + "°C" : "---")</td> @*TEMPERATURA*@
                         <td>@((ultimoMuestreo?.ControlEnable == true && item.ControlON_OFF && !item.Thawing) ? "🟢Activo" : "🔴Inactivo")</td>@*ENFRIAMIENTO*@
                         <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>@*DEFROST*@
-                        <td>@((item.ControlON_OFF && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>@*VENTILADOR*@
-                        <td>@((item.ControlON_OFF && ultimoMuestreo?.TemperatureMeasurement != 0) ? "🟢Activo" : "🔴Inactivo")</td>@*CONTROL*@
+                        <td>@((item.ControlON_OFF && item.Fan) ? "🟢Activo" : "🔴Inactivo")</td>@*VENTILADOR*@
+                        <td>@((item.ControlON_OFF && ultimoMuestreo?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo")</td>@*CONTROL*@
                         <td>@ultimoMuestreo?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>@*ULTIMO MUESTREO*@
 
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))

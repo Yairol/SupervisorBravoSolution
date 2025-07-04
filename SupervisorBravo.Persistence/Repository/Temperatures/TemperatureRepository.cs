@@ -7,12 +7,12 @@ namespace SupervisorBravo.Persistence.Repository
 {
     public partial class AplicationRepository : ITemperatureRepository
     {
-        public async Task<Temperature> CreateTemperature(double temperatureMeasurement, Guid dixellId)
+        public async Task<Temperature> CreateTemperature(double temperatureMeasurement, Guid dixellId, bool TemperatureReadTimeOut = false)
         {
             Temperature temperature = new Temperature(temperatureMeasurement, DateTime.UtcNow, dixellId);
             var dixell = await _context.Set<DixellBase>().FindAsync(dixellId);
 
-            if(temperature.TemperatureMeasurement == 0)
+            if(TemperatureReadTimeOut)
             {
                 temperature.DisconnectDixell = true;
             }
