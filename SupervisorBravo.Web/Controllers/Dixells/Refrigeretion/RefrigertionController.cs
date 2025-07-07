@@ -31,7 +31,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             foreach (var device in dixellsList)
             {
                 device.temperatures = await ((ITemperatureRepository)_dixellRepository)
-                    .GetTemperaturesByDateRange(DateTime.Now.AddMinutes(-30).ToUniversalTime(), DateTime.Now.ToUniversalTime(), device.Id);
+                    .GetTemperaturesByDateRange(DateTime.Now.AddMinutes(-5).ToUniversalTime(), DateTime.Now.ToUniversalTime(), device.Id);
                 if (device.temperatures.Count == 0)                
                 {
                     device.temperatures = await ((ITemperatureRepository)_dixellRepository).GetAllTemperaturesByDixell(device);

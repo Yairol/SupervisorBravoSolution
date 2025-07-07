@@ -1,4 +1,4 @@
-﻿@model List<SupervisorBravo.Domain.Entities.Dixell.DixellXT>
+﻿@model SupervisorBravo.Web.Models.DTOs.DixellXTListViewModel
 
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
@@ -29,7 +29,7 @@
                 </tr>
             </thead>
             <tbody class="text-center align-middle">
-                @foreach (var item in Model)
+                @foreach (var item in Model.Devices)
                 {
                     var ultimoMuestreo = item.temperatures
                     .OrderByDescending(t => t.MeasurementTime)

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
+using SupervisorBravo.Persistence.Abstracts.Temperatures;
+using SupervisorBravo.Web.Models.DTOs;
 
 namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
 {
@@ -18,13 +20,29 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
         public async Task<IActionResult> Dixells()
         {
             await _dixellRepository.BeginTransaction();
-
-            var dixells = await _dixellRepository.GetAllDixells<DixellXT>();
-            var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();
+            var model = new DixellXTListViewModel();
+            var dixells = await _dixellRepository.GetAllDixellsWithoutTemperatures<DixellXT>();
+            var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();           
+            foreach (var device in dixellsList)
+            {
+                //Solo carga los ultimos 30 minutos
+                device.temperatures = await ((ITemperatureRepository)_dixellRepository)
+                    .GetTemperaturesByDateRange(DateTime.Now.AddMinutes(-5).ToUniversalTime(), DateTime.Now.ToUniversalTime(), device.Id);
+                if (device.temperatures.Count == 0)
+                {
+                    device.temperatures = await ((ITemperatureRepository)_dixellRepository).GetAllTemperaturesByDixell(device);
+                }
+            }
+            model.Devices = dixellsList.ToList();
             await _dixellRepository.CommitTransaction();
-
-            return View(dixellsList);
+            //cambie a mvc
+            if (dixellsList == null)
+            {
+                return NotFound();
+            }
+            return View(model);
         }
+    
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
