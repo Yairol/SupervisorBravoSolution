@@ -47,7 +47,6 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// </summary>
         public Temperature()
         {
-
         }
         /// <summary>
         /// Crea una instancia de la clase <see cref="Temperature"/> con los valores especificados.

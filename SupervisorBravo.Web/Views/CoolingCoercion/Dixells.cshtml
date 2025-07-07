@@ -45,12 +45,12 @@
                             </a>
 
                         </td>
-                        <td>@item.RoomName</td>
-                        <td>@(ultimoMuestreo?.DisconnectDixell == true ? "🔴Apagado" : "🟢Encendido")</td>
-                        <td>@item.SetPoint °C</td>
-                        <td>@ultimoMuestreo?.TemperatureMeasurement °C</td>
-                        <td>@((ultimoMuestreo?.ControlEnable == true && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>
-                        <td>@((item.ControlON_OFF && ultimoMuestreo?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo")</td>
+                        <td>@item.RoomName</td> @*NOMBRE DEL DISPOSITIVO*@
+                        <td>@(ultimoMuestreo?.DisconnectDixell == true ? "🔴Apagado" : "🟢Encendido")</td>@*CONEXION/DESCONEXION*@
+                        <td>@((ultimoMuestreo?.DisconnectDixell == false) ? item.SetPoint + "°C" : "---")</td> @*SETPOINT*@
+                        <td>@((ultimoMuestreo?.DisconnectDixell == false) ? ultimoMuestreo?.TemperatureMeasurement + "°C" : "---")</td> @*TEMPERATURA*@
+                        <td>@((ultimoMuestreo?.ControlEnable == true && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>@*ELECTROVALVULA*@
+                        <td>@((item.ControlON_OFF && ultimoMuestreo?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo")</td>@*CONTROL*@
                         <td>@ultimoMuestreo?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
 
                         @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))

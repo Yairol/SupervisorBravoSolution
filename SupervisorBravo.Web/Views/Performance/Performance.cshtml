@@ -41,8 +41,8 @@
                     <button type="submit" class="btn btn-success">Exportar a Excel</button>
                 </form>
             }
-            <table class="table table-bordered">
-                <thead>
+            <table class="table table-bordered border border-dark">
+                <thead class="text-center align-middle">
                     <tr>
                         <th style="background-color: yellow;">Dispositivo</th>
                         <th style="background-color: yellow;">SP</th>
@@ -54,7 +54,7 @@
                         <th style="background-color: yellow;">Tiempo Apagado(Off)(horas)/% del intervalo</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-center align-middle">
                     @foreach (var item in Model.Reports)
                     {
                         <tr>
