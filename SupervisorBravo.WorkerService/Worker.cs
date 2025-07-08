@@ -21,7 +21,7 @@ namespace SupervisorBravo.WorkerService
         const ushort CONTROL_ON_OFFXR = 512;
         const ushort CONTROL_ON_OFFXT_WRITE = 1280;
         const ushort CONROL_ON_OFFXT_READ = 2049;
-        const ushort THAWING_XR = 535;
+        const ushort THAWING_XR = 513;
 
         public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
         {

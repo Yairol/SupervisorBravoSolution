@@ -28,6 +28,9 @@ builder.Configuration
 // --------------------------------------------------
 // 2) Opciones del Host
 // --------------------------------------------------
+builder.Logging.ClearProviders(); 
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 builder.Services.Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;

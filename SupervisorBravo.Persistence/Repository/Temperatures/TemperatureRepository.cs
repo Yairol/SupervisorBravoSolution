@@ -57,6 +57,13 @@ namespace SupervisorBravo.Persistence.Repository
 
         public async Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate, Guid dixellId)
         {
+            //Validación para que nunca sea menor el endDate que el StartDate
+            if(startDate > endDate)
+            {
+                DateTime SaveTime = startDate;
+                endDate = startDate;
+                startDate = SaveTime;               
+            }
             return await _context.Temperatures.Where(t => t.MeasurementTime >= startDate && t.MeasurementTime <= endDate && t.DixellId == dixellId).OrderBy(t => t.MeasurementTime).ToListAsync();
         }
     }

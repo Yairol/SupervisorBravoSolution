@@ -13,7 +13,7 @@
     <PackageReference Include="NModbus" Version="3.0.81" />
     <PackageReference Include="NModbus.Serial" Version="3.0.81" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.4" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
