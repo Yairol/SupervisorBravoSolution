@@ -55,7 +55,7 @@
                         <td>@((ultimoMuestreo?.DisconnectDixell == false) ? ultimoMuestreo?.TemperatureMeasurement + "°C" : "---")</td> @*TEMPERATURA*@
                         <td>@((ultimoMuestreo?.ControlEnable == true && item.ControlON_OFF && !item.Thawing) ? "🟢Activo" : "🔴Inactivo")</td>@*ENFRIAMIENTO*@
                         <td>@((item.Thawing && item.ControlON_OFF) ? "🟢Activo" : "🔴Inactivo")</td>@*DEFROST*@
-                        <td>@((item.ControlON_OFF && item.Fan) ? "🟢Activo" : "🔴Inactivo")</td>@*VENTILADOR*@
+                        <td>@((ultimoMuestreo?.DisconnectDixell == false && item.ControlON_OFF && !item.Thawing) ? "🟢Activo" : "🔴Inactivo")</td>@*VENTILADOR*@
                         <td>@((item.ControlON_OFF && ultimoMuestreo?.DisconnectDixell == false) ? "🟢Activo" : "🔴Inactivo")</td>@*CONTROL*@
                         <td>@ultimoMuestreo?.MeasurementTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>@*ULTIMO MUESTREO*@
 

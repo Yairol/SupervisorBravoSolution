@@ -36,7 +36,7 @@
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.MeasurementTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm")))),
+                labels: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.MeasurementTime.ToLocalTime().ToString("dd HH:mm")))),
                 datasets: [
                     {
                         label: 'Temperatura (°C)',
@@ -51,6 +51,35 @@
                         data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.ControlEnable ? 1 : 0))),
                         borderColor: 'rgba(255, 99, 132, 1)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        yAxisID: 'y1',
+                        stepped: true,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Set Point',
+                        data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.SetPointMeasurement))),
+                        borderColor: 'rgba(54, 162, 235, 1)',       // color azul
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        yAxisID: 'y',                               // misma escala que la temperatura
+                        borderDash: [5, 5],                         // línea discontinua
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Desescarche',
+                        data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.DefrostMeasurement == true ? 1 : 0))),
+                        borderColor: 'rgba(0, 0, 0, 1)',      // negro sólido
+                        backgroundColor: 'rgba(0, 0, 0, 0.2)', // negro translúcido
+                        yAxisID: 'y1',
+                        stepped: true,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Enfriamiento',
+                        data: @Html.Raw(Json.Serialize(Model.Temperatures.Select(t => t.CoolingMeasurement == true ? 1 : 0))),
+                        borderColor: 'rgba(0, 0, 139, 1)',       // dark blue sólido
+                        backgroundColor: 'rgba(0, 0, 139, 0.2)', // dark blue translúcido
                         yAxisID: 'y1',
                         stepped: true,
                         borderWidth: 2,
@@ -77,14 +106,15 @@
                 scales: {
                     x: {
                         grid: {
-                            display: true,             // muestra las líneas internas
+                            display: false,             // muestra las líneas internas
                             color: '#cccccc',          // gris claro para cuadrícula
                             borderDash: [5, 5],        // línea discontinua: 5px dibujado, 5px espacio
                             drawBorder: true,          // dibuja el borde del eje
                             borderColor: '#000000'     // negro para el borde del eje
                         },
                         ticks: {
-                            display: false
+                            display: true
+
                         }
                     },
                     y: {

@@ -30,16 +30,31 @@ namespace SupervisorBravo.Persistence.Repository
             }
             if (dixell is DixellXR)
             {
+                var dixellXR = await _context.Set<DixellXR>().FindAsync(dixellId);
                 temperature.ControlEnable = (dixell.SetPoint < temperatureMeasurement)
                                             && (temperature.DisconnectDixell == false)
                                             && (temperature.On_OffDixell == true)? true : false;
+                if (dixellXR != null)
+                {
+                    temperature.CoolingMeasurement = (dixellXR.ControlON_OFF == true && !dixellXR.Thawing);
+                    temperature.DefrostMeasurement = dixellXR.Thawing;
+                }
+
+                    
             }
             if (dixell is DixellXT)
             {
+                var dixellXT = await _context.Set<DixellXT>().FindAsync(dixellId);
                 temperature.ControlEnable = (dixell.SetPoint > temperatureMeasurement)
                                             && (temperature.DisconnectDixell == false)
                                             && (temperature.On_OffDixell == true) ? true : false;
+                if(dixellXT != null)
+                {
+                    temperature.ElectroValveMeasurement = dixellXT.ElectroValve;
+                }
             }
+            //en pruebas
+            temperature.SetPointMeasurement = dixell.SetPoint;
 
             await _context.AddAsync(temperature);
             return temperature;

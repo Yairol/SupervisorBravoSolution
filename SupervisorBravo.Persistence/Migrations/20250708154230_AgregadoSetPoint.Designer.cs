@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SupervisorBravo.Persistence;
@@ -11,9 +12,11 @@ using SupervisorBravo.Persistence;
 namespace SupervisorBravo.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250708154230_AgregadoSetPoint")]
+    partial class AgregadoSetPoint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,20 +117,11 @@ namespace SupervisorBravo.Persistence.Migrations
                     b.Property<bool>("ControlEnable")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("CoolingMeasurement")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("DefrostMeasurement")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("DisconnectDixell")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("DixellId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool?>("ElectroValveMeasurement")
-                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("MeasurementTime")
                         .HasColumnType("timestamp with time zone");

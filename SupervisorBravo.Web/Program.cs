@@ -50,16 +50,20 @@ using (var scope = app.Services.CreateScope())
     var factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
     using var db = factory.CreateDbContext();
 
-    var applied = db.Database.GetAppliedMigrations();
-    if (!applied.Any())
+    var applied = db.Database.GetAppliedMigrations().ToList();
+    var all = db.Database.GetMigrations().ToList();
+
+    var pending = all.Except(applied).ToList();
+
+    if (pending.Any())
     {
-        logger.LogInformation("No existen migraciones aplicadas. Ejecutando Migrate()...");
+        logger.LogInformation("Hay {Count} migración(es) pendiente(s). Ejecutando Migrate()...", pending.Count);
         db.Database.Migrate();
-        logger.LogInformation("Migraciones aplicadas correctamente.");
+        logger.LogInformation("Migraciones pendientes aplicadas correctamente.");
     }
     else
     {
-        logger.LogInformation("Ya hay {Count} migración(es) aplicada(s). No se ejecuta Migrate().", applied.Count());
+        logger.LogInformation("No hay migraciones pendientes. No se ejecuta Migrate().");
     }
 }
 
