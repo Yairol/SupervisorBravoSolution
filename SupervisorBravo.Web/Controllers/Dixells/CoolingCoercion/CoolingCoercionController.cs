@@ -92,7 +92,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
 
             if (dixell.SetPoint != dixellUpdate.SetPoint && dixellUpdate.SetPointWrite == false)
             {
-                dixellUpdate.ControlON_OFFWrite = true;
+                dixellUpdate.SetPointWrite = true;
                 dixellUpdate.SetPoint = dixell.SetPoint;
             }
 

@@ -20,7 +20,7 @@ namespace SupervisorBravo.Persistence.Abstracts.Dixells
         /// <param name="roomName">Sala que monitorea el Dixell.</param>
         /// <param name="moodbusId">Identificador en el bus moodbus del Dixell.</param>
         /// <returns></returns>
-        Task<DixellXR> CreateDixellXR60CX(string roomName, int moodbusId);
+        Task<DixellXR> CreateDixellXR60CX(string roomName, int moodbusId, string modelName);
         /// <summary>
         /// Obtencion de un Dixell por su id.
         /// </summary>

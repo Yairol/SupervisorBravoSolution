@@ -65,7 +65,7 @@
                             </td>
                         }
 
-                        @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+                        @if (User.IsInRole("Admin"))
                         {
                             <td>
                                 <a asp-controller="CoolingCoercion"

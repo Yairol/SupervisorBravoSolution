@@ -18,6 +18,8 @@
         /// </summary>
         public bool ThawingWrite { get; set; }
 
+        public string modelName { get; set; }
+
         #endregion
 
         #region Constructores
@@ -31,6 +33,7 @@
             ControlON_OFF = false;
             Thawing = false;
             SetPoint = 0.0;
+            modelName = "XR60CX";
         }
         /// <summary>
         /// Crea una instancia de la clase <see cref="DixellXR"/> con los valores especificados.
@@ -49,6 +52,7 @@
             Thawing = false;
             ThawingWrite = false;
             SetPoint = 5;
+            modelName = "XR60CX";
         }
         #endregion
     }

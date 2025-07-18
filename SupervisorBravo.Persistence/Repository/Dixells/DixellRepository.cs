@@ -14,9 +14,10 @@ namespace SupervisorBravo.Persistence.Repository
             await _context.AddAsync(dixellXT111C);
             return dixellXT111C;
         }
-        public async Task<DixellXR> CreateDixellXR60CX(string roomName, int moodbusId)
+        public async Task<DixellXR> CreateDixellXR60CX(string roomName, int moodbusId, string modelName)
         {
             DixellXR dixellXR60CX = new DixellXR(moodbusId, roomName);
+            dixellXR60CX.modelName = modelName;
             await _context.AddAsync(dixellXR60CX);
             return dixellXR60CX;
         }

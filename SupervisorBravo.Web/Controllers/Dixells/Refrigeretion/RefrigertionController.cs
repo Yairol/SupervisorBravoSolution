@@ -59,7 +59,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> CreateDixell(DixellXR dixell)
         {
             await _dixellRepository.BeginTransaction();
-            var newDixell = await _dixellRepository.CreateDixellXR60CX(dixell.RoomName, dixell.MoodbusId);
+            var newDixell = await _dixellRepository.CreateDixellXR60CX(dixell.RoomName, dixell.MoodbusId, dixell.modelName);
             await _dixellRepository.CommitTransaction();
             if (dixell == null)
             {
@@ -109,6 +109,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             dixellUpdate.RoomName = dixell.RoomName;
             dixellUpdate.MoodbusId = dixell.MoodbusId;
             dixellUpdate.Thawing = dixell.Thawing;
+            dixellUpdate.modelName = dixell.modelName;
 
             await _dixellRepository.UpdateDixell(dixellUpdate);
 

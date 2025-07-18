@@ -20,6 +20,11 @@
                 <span asp-validation-for="MoodbusId" class="text-danger"></span>
             </div>
             <div class="mb-3">
+                <label>Modelo del Dispositivo</label>
+                <input class="form-control" asp-for="modelName" type="text" required />
+                <span asp-validation-for="modelName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Crear</button>
                 <a asp-controller="Refrigertion" asp-action="Dixells" class="btn btn-warning">Volver</a>
             </div>
