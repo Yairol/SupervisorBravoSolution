@@ -1,0 +1,66 @@
+﻿@using SupervisorBravo.Domain.Entities.Schedule
+@model ScheduleTaskViewModel
+
+<h2>✏️ Editar Tarea Programada</h2>
+
+<form asp-controller="ScheduledTask" asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="SelectedDeviceId" class="form-label">Dispositivo</label>
+        <select asp-for="SelectedDeviceId" asp-items="Model.Devices" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SelectedAction" class="form-label">Acción</label>
+        <select asp-for="SelectedAction" asp-items="Model.ActionOptions" class="form-select" id="accionDropdown"></select>
+    </div>
+
+    <div class="mb-3" id="setPointContainer">
+        <label asp-for="SetPointValue" class="form-label">Set Point</label>
+        <input asp-for="SetPointValue" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ScheduledDateTime" class="form-label">Fecha/Hora</label>
+        <input asp-for="ScheduledDateTime" class="form-control" type="datetime-local" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsRecurring" class="form-check-input" />
+        <label asp-for="IsRecurring" class="form-check-label">¿Cíclica?</label>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RecurrenceEndDate" class="form-label">Fecha Fin de Ciclo</label>
+        <input asp-for="RecurrenceEndDate" class="form-control" type="datetime-local" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">Estado de la tarea</label>
+        <select asp-for="Status" class="form-select">
+            @foreach (var status in Enum.GetValues(typeof(ScheduledTaskStatus)))
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <script>
+        function toggleSetPoint() {
+            var selectedValue = document.getElementById("accionDropdown").value;
+            var container = document.getElementById("setPointContainer");
+            container.style.display = selectedValue === "ChangeSetPoint" ? "block" : "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleSetPoint();
+            document.getElementById("accionDropdown").addEventListener("change", toggleSetPoint);
+        });
+    </script>
+}

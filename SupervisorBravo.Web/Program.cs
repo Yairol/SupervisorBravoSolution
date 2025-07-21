@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
+using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Repository;
 using System.Linq;
@@ -17,6 +18,10 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 builder.WebHost.ConfigureKestrel(o => o.ListenAnyIP(5000));
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
+builder.Services.AddScoped<IScheduledTaskRepository, AplicationRepository>();
+builder.Services.AddScoped<IScheduledTaskRepository>(provider =>
+    (IScheduledTaskRepository)provider.GetRequiredService<IDixellRepository>());
+
 ExcelPackage.License.SetNonCommercialPersonal("Bravo");
 
 builder.Services.AddAuthentication("MiCookieAuth")

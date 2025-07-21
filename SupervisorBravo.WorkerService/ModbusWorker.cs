@@ -10,9 +10,9 @@ using System.IO.Ports;
 
 namespace SupervisorBravo.WorkerService
 {
-    public class Worker : BackgroundService
+    public class ModbusWorker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<ModbusWorker> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         //Registros de los dixells
         const ushort TEMPERATURA = 256;
@@ -24,7 +24,7 @@ namespace SupervisorBravo.WorkerService
         const ushort CONROL_ON_OFFXT_READ = 1280;
         const ushort THAWING_XR = 513;
 
-        public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
+        public ModbusWorker(ILogger<ModbusWorker> logger, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
             _scopeFactory = scopeFactory;

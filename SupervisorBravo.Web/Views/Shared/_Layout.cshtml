@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EFCoreWithAsp.netCore</title>
+    <title>@ViewData["Title"] - SupervisorBravo</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SupervisorBravo.web.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-    .sidebar-roja {
-            background-color: #b71c1c !important; /* rojo Bootstrap */
-    }
+        .sidebar-roja {
+            background-color: #b71c1c !important;
+        }
     </style>
 </head>
 <body>
@@ -20,6 +20,7 @@
         <div class="row flex-nowrap">
             <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar-roja d-flex flex-column" style="min-height: 100vh;">
                 <div class="d-flex flex-column justify-content-between flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white w-100">
+
                     <!-- LOGO + MENÚ -->
                     <div class="w-100">
                         <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -33,23 +34,25 @@
                                 </a>
                             </li>
 
+                            <!-- Refrigeración -->
                             <li>
                                 <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
                                     <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Refrigeración</span>
                                 </a>
                                 <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                     <li class="w-100">
-                                        <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white"> Estado Actual</a>
+                                        <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white">Estado Actual</a>
                                     </li>
                                     @if (User.IsInRole("Admin"))
                                     {
                                         <li>
-                                            <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white"> Añadir Dispositivo </a>
+                                            <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dispositivo</a>
                                         </li>
                                     }
                                 </ul>
                             </li>
 
+                            <!-- Cocción-Enfriamiento -->
                             <li>
                                 <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
                                     <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Cocción-Enfriamiento</span>
@@ -66,11 +69,13 @@
                                     }
                                 </ul>
                             </li>
+
+                            <!-- Funcionamiento -->
                             <li>
-                                <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+                                <a href="#submenuFuncionamiento" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
                                     <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Funcionamiento</span>
                                 </a>
-                                <ul class="collapse show nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
+                                <ul class="collapse show nav flex-column ms-1" id="submenuFuncionamiento" data-bs-parent="#menu">
                                     <li class="w-100">
                                         <a asp-controller="Alarm" asp-action="Alarms" class="nav-link px-0 text-white">Alarmas</a>
                                     </li>
@@ -80,10 +85,28 @@
                                 </ul>
                             </li>
 
+                            <!-- Programar tareas -->
+                            <li>
+                                <a href="#submenuTareas" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-calendar-check"></i>
+                                    <span class="ms-1 d-none d-sm-inline">Programar tareas</span>
+                                </a>
+                                <ul class="collapse show nav flex-column ms-1" id="submenuTareas" data-bs-parent="#menu">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li class="w-100">
+                                            <a asp-controller="ScheduledTask" asp-action="Create" class="nav-link px-0 text-white">Nueva tarea</a>
+                                        </li>
+                                    }
+                                    <li class="w-100">
+                                        <a asp-controller="ScheduledTask" asp-action="Index" class="nav-link px-0 text-white">Estado de las tareas</a>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </div>
 
-                    <!-- BOTÓN CERRAR SESIÓN -->
+                    <!-- Cerrar sesión -->
                     @if (User.Identity.IsAuthenticated)
                     {
                         <form asp-controller="Login" asp-action="Logout" method="post" class="w-100 mb-3">
@@ -107,19 +130,14 @@
             &copy; 2025 - SupervisorBravo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
-
-
-
     @await RenderSectionAsync("Scripts", required: false)
     <partial name="_ValidationScriptsPartial" />
-
 </body>
 </html>

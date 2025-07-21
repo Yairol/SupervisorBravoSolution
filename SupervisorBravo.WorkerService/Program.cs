@@ -14,6 +14,7 @@ using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
 using SupervisorBravo.WorkerService.Utilities;
+using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -90,9 +91,13 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(opts =>
 
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
+builder.Services.AddScoped<IScheduledTaskRepository, AplicationRepository>();
+
 // (Añade aquí otros repos, e.g. ITemperatureRepository, si los necesitas)
 
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<ModbusWorker>();
+builder.Services.AddHostedService<ScheduledTaskWorker>();
+
 
 // --------------------------------------------------
 // 8) Construir y ejecutar el Host

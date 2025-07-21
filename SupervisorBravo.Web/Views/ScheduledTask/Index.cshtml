@@ -1,0 +1,97 @@
+﻿@using SupervisorBravo.Domain.Entities.Schedule
+@model List<ScheduledTaskListItemViewModel>
+
+<h2>📋 Tareas Programadas</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark text-center align-middle">
+        <tr>
+            <th>Dispositivo</th>
+            <th>Acción</th>
+            <th>Fecha/Hora</th>
+            <th>¿Cíclica?</th>
+            <th>Estado</th>
+            @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+            {
+                <th>Editar</th>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <th>Eliminar</th>
+            }
+        </tr>
+    </thead>
+    <tbody class="text-center align-middle">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DeviceName</td>
+                <td>
+                    @{
+                        string accionTraducida = item.Action switch
+                        {
+                            ActionType.TurnOn => "Encender",
+                            ActionType.TurnOff => "Apagar",
+                            ActionType.ChangeSetPoint when item.SetPointValue.HasValue =>
+                            $"Cambiar Set Point → {item.SetPointValue.Value}°C",
+                            ActionType.ChangeSetPoint => "Cambiar Set Point",
+                            _ => item.Action.ToString()
+                        };
+                    }
+                    @accionTraducida
+                </td>
+                <td>@item.ScheduledDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    @if (item.IsRecurring)
+                    {
+                        <span class="badge bg-success">Sí</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">No</span>
+                    }
+                </td>
+
+                <td>
+                    <span class="badge bg-info text-dark">@item.Status</span>
+                </td>
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+                {
+                    <td>
+                        <a asp-controller="ScheduledTask"
+                           asp-action="Edit"
+                           asp-route-id="@item.Id"
+                           class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                    </td>
+                }
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <form asp-controller="ScheduledTask"
+                              asp-action="Delete"
+                              asp-route-id="@item.Id"
+                              method="post"
+                              onsubmit="return confirmar();"
+                              class="d-inline">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-trash-fill"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function confirmar() {
+            return confirm("¿Está seguro que desea eliminar permanentemente esta tarea programada?");
+        }
+    </script>
+}

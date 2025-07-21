@@ -4,6 +4,7 @@ using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.FluentConfigurations;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using SupervisorBravo.Domain.Entities.Schedule;
 
 
 namespace SupervisorBravo.Persistence
@@ -16,6 +17,8 @@ namespace SupervisorBravo.Persistence
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<Alarm> Alarms { get; set; }
         public DbSet<DeviceAlarm> DeviceAlarms { get; set; }
+        public DbSet<ScheduledTask> ScheduledTasks { get; set; }
+        public DbSet<ScheduledTaskExecutionLog> ScheduledTaskExecutionLogs { get; set; }
 
         public ApplicationDbContext() { }
 
@@ -40,6 +43,8 @@ namespace SupervisorBravo.Persistence
             modelBuilder.ApplyConfiguration(new DixellXT111CFluentConfiguration());
             modelBuilder.ApplyConfiguration(new AlarmFluentConfiguration());
             modelBuilder.ApplyConfiguration(new DeviceAlarmFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new ScheduledTaskFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new ScheduledTaskExecutionLogFluentConfiguration());
         }
     }
 }

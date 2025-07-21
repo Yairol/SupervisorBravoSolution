@@ -1,0 +1,98 @@
+﻿@model ScheduleTaskViewModel
+
+<h2>Programar nueva tarea</h2>
+
+<form asp-controller="ScheduledTask" asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-3">
+        <label>Dispositivo</label>
+        <select asp-for="SelectedDeviceId" asp-items="Model.Devices" class="form-control"></select>
+        <span asp-validation-for="SelectedDeviceId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Fecha y hora</label>
+        <input asp-for="ScheduledDateTime"
+               class="form-control"
+               type="datetime-local"
+               value="@Model.ScheduledDateTime.ToString("yyyy-MM-ddTHH:mm")" />
+        <span asp-validation-for="ScheduledDateTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Acción</label>
+        <select asp-for="SelectedAction" asp-items="Model.ActionOptions" class="form-control" id="SelectedAction"></select>
+        <span asp-validation-for="SelectedAction" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3" id="SetPointGroup" style="display:none;">
+        <label>Valor de SetPoint</label>
+        <input asp-for="SetPointValue" type="number" step="0.1" class="form-control" />
+        <span asp-validation-for="SetPointValue" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>¿Es cíclica?</label>
+        <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="IsRecurring" />
+        <span asp-validation-for="IsRecurring" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3" id="RecurrenceGroup" style="display:none;">
+        <label>Tipo de recurrencia</label>
+        <select asp-for="Recurrence" class="form-control">
+            <option value="">Seleccione...</option>
+            <option value="Daily">Diario</option>
+            <option value="Weekly">Semanal</option>
+            <option value="Monthly">Mensual</option>
+        </select>
+        <span asp-validation-for="Recurrence" class="text-danger"></span>
+
+        <div class="form-check mt-3">
+            <input asp-for="HasRecurrenceEnd" type="checkbox" class="form-check-input" id="HasRecurrenceEnd" />
+            <label class="form-check-label">¿Tiene fecha de finalización?</label>
+        </div>
+
+        <div class="mt-2" id="RecurrenceEndGroup" style="display:none;">
+            <label>Fecha fin de recurrencia</label>
+            <input asp-for="RecurrenceEndDate" type="date" class="form-control" />
+            <span asp-validation-for="RecurrenceEndDate" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Programar tarea</button>
+</form>
+
+@section Scripts {
+    <script>
+        function toggleSetPoint() {
+            const action = document.getElementById('SelectedAction').value;
+            document.getElementById('SetPointGroup').style.display =
+                (action === 'ChangeSetPoint') ? 'block' : 'none';
+        }
+
+        function toggleRecurrenceOptions() {
+            const isRecurring = document.getElementById('IsRecurring').checked;
+            const recurrenceGroup = document.getElementById('RecurrenceGroup');
+            recurrenceGroup.style.display = isRecurring ? 'block' : 'none';
+            toggleRecurrenceEnd(); // actualizar si cambia IsRecurring
+        }
+
+        function toggleRecurrenceEnd() {
+            const isRecurring = document.getElementById('IsRecurring').checked;
+            const hasEnd = document.getElementById('HasRecurrenceEnd').checked;
+            const endGroup = document.getElementById('RecurrenceEndGroup');
+            endGroup.style.display = (isRecurring && hasEnd) ? 'block' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleSetPoint();
+            toggleRecurrenceOptions();
+            toggleRecurrenceEnd();
+
+            document.getElementById('SelectedAction').addEventListener('change', toggleSetPoint);
+            document.getElementById('IsRecurring').addEventListener('change', toggleRecurrenceOptions);
+            document.getElementById('HasRecurrenceEnd').addEventListener('change', toggleRecurrenceEnd);
+        });
+    </script>
+}
