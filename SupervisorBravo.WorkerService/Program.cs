@@ -96,8 +96,6 @@ builder.Services.AddScoped<IScheduledTaskRepository, AplicationRepository>();
 // (Añade aquí otros repos, e.g. ITemperatureRepository, si los necesitas)
 
 builder.Services.AddHostedService<ModbusWorker>();
-builder.Services.AddHostedService<ScheduledTaskWorker>();
-
 
 // --------------------------------------------------
 // 8) Construir y ejecutar el Host

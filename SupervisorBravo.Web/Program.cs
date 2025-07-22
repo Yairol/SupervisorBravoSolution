@@ -18,6 +18,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 builder.WebHost.ConfigureKestrel(o => o.ListenAnyIP(5000));
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
+builder.Services.AddScoped<IScheduledTaskExecutionLogRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskRepository>(provider =>
     (IScheduledTaskRepository)provider.GetRequiredService<IDixellRepository>());

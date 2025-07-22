@@ -1,0 +1,59 @@
+﻿@model SupervisorBravo.Web.ViewModels.LogExportFilterViewModel
+
+@{
+    ViewData["Title"] = "Exportar registros a Excel";
+}
+
+<h2 class="mb-3">📥 Exportar registros de ejecución</h2>
+
+<form method="post" asp-action="ExportToExcel">
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <label>📈 Resultado</label>
+            <select name="SelectedOutcome" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var outcome in Model.AvailableOutcomes)
+                {
+                    <option value="@outcome" selected="@(Model.SelectedOutcome == outcome)">@outcome</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>🛠 Acción</label>
+            <select name="SelectedAction" class="form-select">
+                <option value="">Todas</option>
+                @foreach (var action in Model.AvailableActions)
+                {
+                    <option value="@action" selected="@(Model.SelectedAction == action)">@action</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>📟 Dispositivo</label>
+            <select name="SelectedDeviceName" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var device in Model.AvailableDeviceNames)
+                {
+                    <option value="@device" selected="@(Model.SelectedDeviceName == device)">@device</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <label>📅 Desde</label>
+            <input type="date" name="FromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>📅 Hasta</label>
+            <input type="date" name="ToDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">📤 Exportar a Excel</button>
+        </div>
+    </div>
+</form>

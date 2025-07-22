@@ -19,21 +19,37 @@
     <div class="mb-3" id="setPointContainer">
         <label asp-for="SetPointValue" class="form-label">Set Point</label>
         <input asp-for="SetPointValue" class="form-control" />
+        <span asp-validation-for="SetPointValue" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="ScheduledDateTime" class="form-label">Fecha/Hora</label>
         <input asp-for="ScheduledDateTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="ScheduledDateTime" class="text-danger"></span>
     </div>
 
     <div class="form-check mb-3">
-        <input asp-for="IsRecurring" class="form-check-input" />
+        <input asp-for="IsRecurring" type="checkbox" class="form-check-input" id="IsRecurring" />
         <label asp-for="IsRecurring" class="form-check-label">¿Cíclica?</label>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="RecurrenceEndDate" class="form-label">Fecha Fin de Ciclo</label>
-        <input asp-for="RecurrenceEndDate" class="form-control" type="datetime-local" />
+    <div id="recurrenceGroup" style="display:none;">
+        <div class="mb-3">
+            <label asp-for="Recurrence" class="form-label">Tipo de recurrencia</label>
+            <select asp-for="Recurrence" class="form-select">
+                <option value="">Seleccione...</option>
+                <option value="Daily">Diario</option>
+                <option value="Weekly">Semanal</option>
+                <option value="Monthly">Mensual</option>
+            </select>
+            <span asp-validation-for="Recurrence" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="RecurrenceEndDate" class="form-label">Fecha Fin de Ciclo</label>
+            <input asp-for="RecurrenceEndDate" class="form-control" type="datetime-local" />
+            <span asp-validation-for="RecurrenceEndDate" class="text-danger"></span>
+        </div>
     </div>
 
     <div class="mb-3">
@@ -44,6 +60,7 @@
                 <option value="@status">@status</option>
             }
         </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -53,14 +70,22 @@
 @section Scripts {
     <script>
         function toggleSetPoint() {
-            var selectedValue = document.getElementById("accionDropdown").value;
-            var container = document.getElementById("setPointContainer");
-            container.style.display = selectedValue === "ChangeSetPoint" ? "block" : "none";
+            const action = document.getElementById("accionDropdown").value;
+            document.getElementById("setPointContainer").style.display =
+                action === "ChangeSetPoint" ? "block" : "none";
+        }
+
+        function toggleRecurrenceOptions() {
+            const isRecurring = document.getElementById("IsRecurring").checked;
+            document.getElementById("recurrenceGroup").style.display = isRecurring ? "block" : "none";
         }
 
         document.addEventListener("DOMContentLoaded", function () {
             toggleSetPoint();
+            toggleRecurrenceOptions();
+
             document.getElementById("accionDropdown").addEventListener("change", toggleSetPoint);
+            document.getElementById("IsRecurring").addEventListener("change", toggleRecurrenceOptions);
         });
     </script>
 }

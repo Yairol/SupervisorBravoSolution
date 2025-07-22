@@ -11,25 +11,32 @@
         <span asp-validation-for="SelectedDeviceId" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-3">
-        <label>Fecha y hora</label>
-        <input asp-for="ScheduledDateTime"
-               class="form-control"
-               type="datetime-local"
-               value="@Model.ScheduledDateTime.ToString("yyyy-MM-ddTHH:mm")" />
-        <span asp-validation-for="ScheduledDateTime" class="text-danger"></span>
-    </div>
+    <div class="row mb-3 align-items-end">
+        <div class="col-md-3">
+            <label asp-for="ScheduledDateTime" class="form-label">Fecha y hora</label>
+            <input asp-for="ScheduledDateTime"
+                   class="form-control"
+                   type="datetime-local"
+                   value="@Model.ScheduledDateTime.ToString("yyyy-MM-ddTHH:mm")" />
+            <span asp-validation-for="ScheduledDateTime" class="text-danger"></span>
+        </div>
 
-    <div class="form-group mb-3">
-        <label>Acción</label>
-        <select asp-for="SelectedAction" asp-items="Model.ActionOptions" class="form-control" id="SelectedAction"></select>
-        <span asp-validation-for="SelectedAction" class="text-danger"></span>
-    </div>
+        <div class="col-md-4">
+            <label asp-for="SelectedAction" class="form-label">Acción</label>
+            <select asp-for="SelectedAction" class="form-select" id="SelectedAction">
+                <option value="">Seleccione...</option>
+                <option value="TurnOn">Encender</option>
+                <option value="TurnOff">Apagar</option>
+                <option value="ChangeSetPoint">Cambiar Set Point</option>
+            </select>
+            <span asp-validation-for="SelectedAction" class="text-danger"></span>
+        </div>
 
-    <div class="form-group mb-3" id="SetPointGroup" style="display:none;">
-        <label>Valor de SetPoint</label>
-        <input asp-for="SetPointValue" type="number" step="0.1" class="form-control" />
-        <span asp-validation-for="SetPointValue" class="text-danger"></span>
+        <div class="col-md-5" id="SetPointGroup" style="display:none;">
+            <label asp-for="SetPointValue" class="form-label">Valor de SetPoint</label>
+            <input asp-for="SetPointValue" type="number" step="0.1" class="form-control" />
+            <span asp-validation-for="SetPointValue" class="text-danger"></span>
+        </div>
     </div>
 
     <div class="form-group mb-3">
@@ -73,16 +80,15 @@
 
         function toggleRecurrenceOptions() {
             const isRecurring = document.getElementById('IsRecurring').checked;
-            const recurrenceGroup = document.getElementById('RecurrenceGroup');
-            recurrenceGroup.style.display = isRecurring ? 'block' : 'none';
-            toggleRecurrenceEnd(); // actualizar si cambia IsRecurring
+            document.getElementById('RecurrenceGroup').style.display = isRecurring ? 'block' : 'none';
+            toggleRecurrenceEnd();
         }
 
         function toggleRecurrenceEnd() {
             const isRecurring = document.getElementById('IsRecurring').checked;
             const hasEnd = document.getElementById('HasRecurrenceEnd').checked;
-            const endGroup = document.getElementById('RecurrenceEndGroup');
-            endGroup.style.display = (isRecurring && hasEnd) ? 'block' : 'none';
+            document.getElementById('RecurrenceEndGroup').style.display =
+                (isRecurring && hasEnd) ? 'block' : 'none';
         }
 
         document.addEventListener('DOMContentLoaded', function () {

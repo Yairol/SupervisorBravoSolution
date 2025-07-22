@@ -28,11 +28,12 @@ namespace SupervisorBravo.WorkerService
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("🔄 ScheduledTaskWorkerService iniciado.");
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    using (var scope = _services.CreateScope())        
+                    using (var scope = _services.CreateScope())
                     {
                         var repository = scope.ServiceProvider.GetRequiredService<IScheduledTaskRepository>();
                         await repository.BeginTransaction();
@@ -43,67 +44,79 @@ namespace SupervisorBravo.WorkerService
                         {
                             foreach (var task in pendingTask)
                             {
-                                var device = ((IDixellRepository)repository)
-                                    .GetDixellById<DixellBase>(task.DeviceId); 
-                                if (device == null)
+                                try
                                 {
-                                    _logger.LogWarning($"⚠️ Dispositivo no encontrado para realizar la tarea.");
-                                    return;
-                                }
-                                if(task.ScheduledDateTime <= DateTime.UtcNow.AddMinutes(2))
-                                {
-                                    await ExecuteScheduledTask(repository, task);
-                                    if (!task.IsRecurring)
+                                    var device = ((IDixellRepository)repository).GetDixellById<DixellBase>(task.DeviceId);
+                                    if (device == null)
                                     {
-                                        task.Status = ScheduledTaskStatus.Executed;
+                                        _logger.LogWarning($"⚠️ Dispositivo no encontrado para tarea {task.Id}.");
+                                        continue;
                                     }
-                                    else
+
+                                    if (task.ScheduledDateTime <= DateTime.UtcNow.AddMinutes(2))
                                     {
-                                        switch(task.Recurrence)
+                                        await ExecuteScheduledTask(repository, task);
+
+                                        if (!task.IsRecurring)
                                         {
-                                            case RecurrenceType.Daily:
-                                                task.ScheduledDateTime.AddDays(1).ToUniversalTime();
-                                                if (task.ScheduledDateTime > task.RecurrenceEndDate)
-                                                {
-                                                    task.Status = ScheduledTaskStatus.Executed;
-                                                }
-                                                break;
-                                            case RecurrenceType.Weekly:
-                                                task.ScheduledDateTime.AddDays(7).ToUniversalTime();
-                                                if (task.ScheduledDateTime > task.RecurrenceEndDate)
-                                                {
-                                                    task.Status = ScheduledTaskStatus.Executed;
-                                                }
-                                                break;
-                                            case RecurrenceType.Monthly:
-                                                task.ScheduledDateTime.AddMonths(1).ToUniversalTime();
-                                                if (task.ScheduledDateTime > task.RecurrenceEndDate)
-                                                {
-                                                    task.Status = ScheduledTaskStatus.Executed;
-                                                }
-                                                break;
-                                            default: throw new ArgumentException("Tipo de recurrencia inválida");
+                                            task.Status = ScheduledTaskStatus.Executed;
                                         }
+                                        else
+                                        {
+                                            switch (task.Recurrence)
+                                            {
+                                                case RecurrenceType.Daily:
+                                                    task.ScheduledDateTime = task.ScheduledDateTime.AddDays(1).ToUniversalTime();
+                                                    break;
+                                                case RecurrenceType.Weekly:
+                                                    task.ScheduledDateTime = task.ScheduledDateTime.AddDays(7).ToUniversalTime();
+                                                    break;
+                                                case RecurrenceType.Monthly:
+                                                    task.ScheduledDateTime = task.ScheduledDateTime.AddMonths(1).ToUniversalTime();
+                                                    break;
+                                                default:
+                                                    throw new ArgumentException("Tipo de recurrencia inválida");
+                                            }
+
+                                            if (task.RecurrenceEndDate.HasValue &&
+                                                task.ScheduledDateTime > task.RecurrenceEndDate.Value)
+                                            {
+                                                task.Status = ScheduledTaskStatus.Executed;
+                                            }
+                                        }
+
+                                        await repository.UpdateTask(task);
+
+                                        var successLog = new ScheduledTaskExecutionLog(task)
+                                        {
+                                            Timestamp = DateTime.UtcNow,
+                                            Message = $"✅ Acción realizada: {task.Action} en dispositivo {task.DeviceId}",
+                                            Outcome = ExecutionOutcome.Success,
+                                            AttemptIndex = 1
+                                        };
+                                        await ((IScheduledTaskExecutionLogRepository)repository).AddLog(successLog);
+
+                                        _logger.LogInformation($"✅ Tarea {task.Id} ejecutada para dispositivo {task.DeviceId}.");
                                     }
+                                }
+                                catch (Exception exTask)
+                                {
+                                    var failureLog = new ScheduledTaskExecutionLog(task)
+                                    {
+                                        Timestamp = DateTime.UtcNow,
+                                        Message = $"❌ Error al ejecutar tarea {task.Id}: {exTask.Message}",
+                                        Outcome = ExecutionOutcome.Failure,
+                                        AttemptIndex = 1
+                                    };
+                                    await ((IScheduledTaskExecutionLogRepository)repository).AddLog(failureLog);
 
-                                    ScheduledTaskExecutionLog Log = new ScheduledTaskExecutionLog(task);
-                                    DateTime LogTimeStamp= DateTime.UtcNow;
-                                    Log.Message = $"[{LogTimeStamp:HH:mm:ss}] Activada bandera para acción: {task.Action}\n";
-                                    Log.Timestamp = LogTimeStamp;
-                                    Log.AttemptIndex++;
-                                    Log.Outcome = ExecutionOutcome.Success;
-                                    _logger.LogInformation($"✅ Tarea {task.Id} ejecutada. Bandera activada para dispositivo {task.DeviceId}.");
-
+                                    _logger.LogError(exTask, $"❌ Error ejecutando tarea {task.Id}.");
                                 }
                             }
-                        
                         }
+
                         await repository.CommitTransaction();
-
                     }
-
-
-
                 }
                 catch (Exception ex)
                 {
@@ -113,6 +126,7 @@ namespace SupervisorBravo.WorkerService
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
         }
+
         private async Task ExecuteScheduledTask(IScheduledTaskRepository context, ScheduledTask task)
         {
             var device = await ((IDixellRepository)context)
@@ -122,28 +136,45 @@ namespace SupervisorBravo.WorkerService
                 _logger.LogWarning($"⚠️ Dispositivo {task.DeviceId} no encontrado para tarea {task.Id}.");
                 return;
             }
-            switch (task.Action)
+
+            try
             {
-                case ActionType.TurnOff:
-                    device.ControlON_OFFWrite = true;
-                    device.ControlON_OFF = false;
-                    break;
-                case ActionType.TurnOn:
-                    device.ControlON_OFFWrite = true;
-                    device.ControlON_OFF = true;
-                    break;
-                case ActionType.ChangeSetPoint:
-                    device.SetPointWrite = true;
-                    if (task.SetPointValue != null)
-                    {
-                        device.SetPoint = (double)task.SetPointValue;
-                    }
-                    break;
-                default:
-                    _logger.LogWarning($"❓ Acción no reconocida para tarea{task.Action}");
-                    break;
+                switch (task.Action)
+                {
+                    case ActionType.TurnOff:
+                        device.ControlON_OFFWrite = true;
+                        device.ControlON_OFF = false;
+                        _logger.LogInformation($"🔌 [OFF] Bandera escrita en dispositivo {task.DeviceId}.");
+                        break;
+
+                    case ActionType.TurnOn:
+                        device.ControlON_OFFWrite = true;
+                        device.ControlON_OFF = true;
+                        _logger.LogInformation($"⚡ [ON] Bandera escrita en dispositivo {task.DeviceId}.");
+                        break;
+
+                    case ActionType.ChangeSetPoint:
+                        device.SetPointWrite = true;
+                        if (task.SetPointValue.HasValue)
+                        {
+                            device.SetPoint = task.SetPointValue.Value;
+                            _logger.LogInformation($"🎛️ SetPoint aplicado: {task.SetPointValue.Value}°C al dispositivo {task.DeviceId}.");
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"⚠️ SetPoint no definido para tarea {task.Id}.");
+                        }
+                        break;
+
+                    default:
+                        _logger.LogWarning($"❓ Acción no reconocida para tarea {task.Action}");
+                        break;
+                }
+            }
+            catch (Exception exDevice)
+            {
+                _logger.LogError(exDevice, $"❌ Error físico al aplicar acción {task.Action} en dispositivo {task.DeviceId}.");
             }
         }
     }
-
 }

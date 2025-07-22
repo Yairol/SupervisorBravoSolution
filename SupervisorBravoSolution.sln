@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Domain", "SupervisorBravo.Domain\SupervisorBravo.Domain.csproj", "{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.Domain", "SupervisorBravo.Domain\SupervisorBravo.Domain.csproj", "{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Persistence", "SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj", "{6CB05085-BFF9-4457-94B0-3DE256DE8669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.Persistence", "SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj", "{6CB05085-BFF9-4457-94B0-3DE256DE8669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Web", "SupervisorBravo.Web\SupervisorBravo.Web.csproj", "{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.Web", "SupervisorBravo.Web\SupervisorBravo.Web.csproj", "{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.WorkerService", "SupervisorBravo.WorkerService\SupervisorBravo.WorkerService.csproj", "{1A2F5F55-4216-4467-80FF-1FE4134CE0F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.WorkerService", "SupervisorBravo.WorkerService\SupervisorBravo.WorkerService.csproj", "{1A2F5F55-4216-4467-80FF-1FE4134CE0F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.ScheduledTaskWorkerService", "SupervisorBravo.ScheduledTaskWorkerService\SupervisorBravo.ScheduledTaskWorkerService.csproj", "{8AA03BFD-EA34-417D-9AF0-485D661ECF2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1A2F5F55-4216-4467-80FF-1FE4134CE0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A2F5F55-4216-4467-80FF-1FE4134CE0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A2F5F55-4216-4467-80FF-1FE4134CE0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA03BFD-EA34-417D-9AF0-485D661ECF2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA03BFD-EA34-417D-9AF0-485D661ECF2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA03BFD-EA34-417D-9AF0-485D661ECF2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA03BFD-EA34-417D-9AF0-485D661ECF2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

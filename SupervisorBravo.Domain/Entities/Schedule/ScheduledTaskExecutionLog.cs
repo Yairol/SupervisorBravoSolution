@@ -2,6 +2,8 @@
 using SupervisorBravo.Domain.Entities.Schedule;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace SupervisorBravo.Domain.Entities.Schedule
+{
 public class ScheduledTaskExecutionLog : Entity
 {
 
@@ -41,5 +43,7 @@ public class ScheduledTaskExecutionLog : Entity
         Task = task;
         TaskId = task.Id;
     }
+
+}
 
 }

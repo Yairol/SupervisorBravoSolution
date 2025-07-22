@@ -1,0 +1,166 @@
+﻿@model SupervisorBravo.Web.ViewModels.ScheduledTaskLogFilterViewModel
+
+@{
+    ViewData["Title"] = "Registros de ejecución de tareas";
+    var currentPage = Model.CurrentPage;
+    var totalPages = Model.TotalPages;
+}
+
+<h2 class="mb-3 text-center">📜 Historial de ejecución</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["Error"]</div>
+}
+
+<!-- 🔍 Formulario de filtros -->
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">📈 Resultado</label>
+            <select name="outcome" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var o in Model.AvailableOutcomes)
+                {
+                    if (Model.SelectedOutcome == o)
+                    {
+                        <option value="@o" selected>@o</option>
+                    }
+                    else
+                    {
+                        <option value="@o">@o</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">🛠 Acción</label>
+            <select name="action" class="form-select">
+                <option value="">Todas</option>
+                @foreach (var a in Model.AvailableActions)
+                {
+                    if (Model.SelectedAction == a)
+                    {
+                        <option value="@a" selected>@a</option>
+                    }
+                    else
+                    {
+                        <option value="@a">@a</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">📟 Dispositivo</label>
+            <select name="deviceName" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var d in Model.AvailableDeviceNames)
+                {
+                    if (Model.SelectedDeviceName == d)
+                    {
+                        <option value="@d" selected>@d</option>
+                    }
+                    else
+                    {
+                        <option value="@d">@d</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtrar 🔍</button>
+        </div>
+    </div>
+</form>
+
+<!-- 🧾 Tabla de registros -->
+<table class="table table-bordered table-striped text-center">
+    <thead class="table-dark">
+        <tr>
+            <th>🕒 Fecha</th>
+            <th>🛠 Acción</th>
+            <th>📟 Dispositivo</th>
+            <th>📈 Resultado</th>
+            <th class="text-center">📝 Mensaje</th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>🗑 Eliminar</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model.Logs)
+        {
+            var colorClass = log.Outcome == "Success" ? "table-success"
+            : log.Outcome == "Failure" ? "table-danger"
+            : "";
+
+            <tr class="@colorClass">
+                <td>@log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                <td>@log.Action</td>
+                <td>@log.RoomName</td>
+                <td>@log.Outcome</td>
+                <td class="text-start">@log.Message</td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <form asp-controller="ScheduledTaskLog" asp-action="Delete" method="post" asp-route-id="@log.Id" onsubmit="return confirm('¿Estás seguro que deseas eliminar este registro?');">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="row">
+    @if (User.IsInRole("Admin") && Model.Logs.Any())
+    {
+        <div class="col-md-6 d-flex justify-content-start">
+            <form method="get" asp-controller="ScheduledTaskLog" asp-action="Export">
+                <button type="submit" class="btn btn-outline-success mb-3">
+                    📥 Exportar registros a Excel
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-6 d-flex justify-content-end">
+            <form method="post" asp-controller="ScheduledTaskLog" asp-action="DeletePageLogs" onsubmit="return confirm('¿Eliminar todos los registros de esta página?');">
+                <input type="hidden" name="logIds" value="@string.Join(",", Model.Logs.Select(l => l.Id))" />
+                <button type="submit" class="btn btn-danger mb-3">🗑 Eliminar todos los registros de esta página</button>
+            </form>
+        </div>
+    }
+</div>
+
+<!-- ⏱ Paginación -->
+<nav aria-label="Paginación de logs">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new {
+                page = currentPage - 1,
+                outcome = Model.SelectedOutcome,
+                action = Model.SelectedAction,
+                deviceName = Model.SelectedDeviceName
+            })">⏪ Anterior</a>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">Página @currentPage de @totalPages</span>
+        </li>
+        <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new {
+                page = currentPage + 1,
+                outcome = Model.SelectedOutcome,
+                action = Model.SelectedAction,
+                deviceName = Model.SelectedDeviceName
+            })">Siguiente ⏩</a>
+        </li>
+    </ul>
+</nav>
