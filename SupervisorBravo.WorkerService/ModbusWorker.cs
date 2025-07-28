@@ -56,89 +56,95 @@ namespace SupervisorBravo.WorkerService
 
                             #region Lecturas Dixell XR
                             //Operaciones sobre Dixells --------------------------------- XR
-                            var dixellXRs = await repository.GetAllDixellsWithoutTemperatures<DixellXR>();
-                            foreach (var dixellx in dixellXRs)
-                            {
-                                var dixell = await repository.GetDixellById<DixellXR>(dixellx.Id);
-                                try
-                                {
-                                    if((await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null))
-                                    {
-                                        //Escritura del control de deshielo
-                                        if (dixell.ThawingWrite)
-                                        {
-                                            await Task.Delay(250);
-                                            dixell.ThawingWrite = false;
-                                            await WriteThawingXR(master, dixell.MoodbusId, dixell.Thawing, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
+var dixellXRs = await repository.GetAllDixellsWithoutTemperatures<DixellXR>();
 
-                                            await repository.UpdateDixell<DixellXR>(dixell);
-                                            await repository.PartialCommit();
-                                        }
-                                        //Escritura de control on off
-                                        if (dixell.ControlON_OFFWrite)
-                                        {
-                                            await Task.Delay(250);
-                                            await WriteControlON_OFFXR(master, dixell.MoodbusId, dixell.ControlON_OFF, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
-                                            dixell.ControlON_OFFWrite = false;
-                                            await repository.UpdateDixell<DixellXR>(dixell);
-                                            await repository.PartialCommit();
-                                        }
+foreach (var dixellx in dixellXRs)
+{
+    var dixell = await repository.GetDixellById<DixellXR>(dixellx.Id);
 
-                                        //Escritura de SetPoint
-                                        if (dixell.SetPointWrite)
-                                        {
-                                            await Task.Delay(250);
-                                            await WriteSetPointXR(master, dixell.MoodbusId, dixell.SetPoint, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
-                                            dixell.SetPointWrite = false;
-                                            await repository.UpdateDixell<DixellXR>(dixell);
-                                            await repository.PartialCommit();
+    try
+    {
+        // 🚨 Validación de alarma activa — omitir si hay alarma
+        var alarma = await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName);
+        if (alarma != null)
+            continue;
 
-                                        }
+        // 🎯 1. Escritura de Thawing si corresponde
+        bool wroteThawing = false;
+        if (dixell.ThawingWrite)
+        {
+            await Task.Delay(250);
+            await WriteThawingXR(master, dixell.MoodbusId, dixell.Thawing, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
+            dixell.ThawingWrite = false;
+            wroteThawing = true;
+            await repository.UpdateDixell<DixellXR>(dixell);
+            await repository.PartialCommit();
+        }
 
-                                        //Lectura del SetPoint
-                                        await Task.Delay(250);
-                                        double? setPointValueXr = await ReadSetPointXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
-                                        if (setPointValueXr != null)
-                                        {
-                                            dixell.SetPoint = setPointValueXr.Value;
-                                            await repository.UpdateDixell<DixellXR>(dixell);
-                                            await repository.PartialCommit();
-                                        }
+        // 🎯 2. Escritura de ON/OFF si corresponde
+        bool wroteOnOff = false;
+        if (dixell.ControlON_OFFWrite)
+        {
+            await Task.Delay(250);
+            await WriteControlON_OFFXR(master, dixell.MoodbusId, dixell.ControlON_OFF, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
+            dixell.ControlON_OFFWrite = false;
+            wroteOnOff = true;
+            await repository.UpdateDixell<DixellXR>(dixell);
+            await repository.PartialCommit();
+        }
 
-                                        //Lectura Thawing
-                                        await Task.Delay(250);
-                                        bool? thawing = await ReadThawingXR(master, dixell.MoodbusId, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
-                                        if (thawing != null)
-                                        {
-                                            dixell.Thawing = thawing.Value;
-                                            await repository.UpdateDixell<DixellXR>(dixell);
-                                            await repository.PartialCommit();
-                                        }
+        // 🎯 3. Escritura de SetPoint si corresponde
+        bool wroteSetPoint = false;
+        if (dixell.SetPointWrite)
+        {
+            await Task.Delay(250);
+            await WriteSetPointXR(master, dixell.MoodbusId, dixell.SetPoint, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
+            dixell.SetPointWrite = false;
+            wroteSetPoint = true;
+            await repository.UpdateDixell<DixellXR>(dixell);
+            await repository.PartialCommit();
+        }
 
-                                        //Lectura On/Off
-                                        await Task.Delay(250);
-                                        bool? controlOn_Off = await ReadControlOnOffXR(master, dixell.MoodbusId, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
-                                        if (controlOn_Off != null)
-                                        {
+        // 📥 4. Lectura del SetPoint — evitar sobrescribir si se acaba de escribir
+        await Task.Delay(250);
+        var setPointValue = await ReadSetPointXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
+        if (!wroteSetPoint)
+        {
+            dixell.SetPoint = setPointValue;
+            await repository.UpdateDixell<DixellXR>(dixell);
+            await repository.PartialCommit();
+        }
 
-                                            dixell.ControlON_OFF = controlOn_Off.Value;
-                                            await repository.UpdateDixell<DixellXR>(dixell);
-                                            await repository.PartialCommit();
-                                        }
+        // 📥 5. Lectura de Thawing — evitar sobrescribir si se acaba de escribir
+        await Task.Delay(250);
+        var thawing = await ReadThawingXR(master, dixell.MoodbusId, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
+        if (!wroteThawing)
+        {
+            dixell.Thawing = thawing;
+            await repository.UpdateDixell<DixellXR>(dixell);
+            await repository.PartialCommit();
+        }
 
+        // 📥 6. Lectura de ON/OFF — evitar sobrescribir si se acaba de escribir
+        await Task.Delay(250);
+        var controlOnOff = await ReadControlOnOffXR(master, dixell.MoodbusId, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
+        if (!wroteOnOff)
+        {
+            dixell.ControlON_OFF = controlOnOff;
+            await repository.UpdateDixell<DixellXR>(dixell);
+            await repository.PartialCommit();
+        }
+    }
+    catch (TimeoutException)
+    {
+        _logger.LogWarning($"⏱ Tiempo de espera agotado al comunicar con {dixell.RoomName} (ID {dixell.MoodbusId})");
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, $"❌ Error general al procesar Dixell {dixell.RoomName} (ID {dixell.MoodbusId})");
+    }
+}
 
-                                    }
-                                   
-                                }
-                                catch (TimeoutException)
-                                {
-                                    _logger.LogWarning($"Tiempo de espera agotado al leer SetPoint del dispositivo ID {dixell.MoodbusId}");
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogError(ex, $"Error leyendo Dixell ID {dixell.MoodbusId}");
-                                }
-                            }
                             #endregion
                             await repository.PartialCommit();
                             #region Lecturas Dixell XT
@@ -149,61 +155,74 @@ namespace SupervisorBravo.WorkerService
                                 var dixell = await repository.GetDixellById<DixellXT>(dixellx.Id);
                                 try
                                 {
-                                    if((await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null))
+                                    if ((await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName)) == null)
                                     {
-                                        //Escritura de control on off
+                                        bool updated = false;
+                                        bool justWroteControl = false;
+                                        bool justWroteSetPoint = false;
+
+                                        // Escritura Control ON/OFF
                                         if (dixell.ControlON_OFFWrite)
                                         {
                                             await Task.Delay(250);
                                             dixell.ControlON_OFFWrite = false;
-                                            await repository.UpdateDixell<DixellXT>(dixell);
-                                            await repository.PartialCommit();
-                                            await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF).WaitAsync(TimeSpan.FromSeconds(1));
-
+                                            justWroteControl = true;
+                                            await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF)
+                                                .WaitAsync(TimeSpan.FromSeconds(1));
+                                            _logger.LogInformation($"Se escribió ControlON_OFF en {dixell.MoodbusId} = {dixell.ControlON_OFF}");
+                                            updated = true;
                                         }
-                                        //Escritura SetPoint.
+
+                                        // Escritura SetPoint
                                         if (dixell.SetPointWrite)
                                         {
                                             await Task.Delay(250);
                                             dixell.SetPointWrite = false;
-                                            await repository.UpdateDixell<DixellXT>(dixell);
-                                            await repository.PartialCommit();
+                                            justWroteSetPoint = true;
                                             await WriteSetPointXT(master, dixell.MoodbusId, SETPOINT_XT);
+                                            _logger.LogInformation($"Se escribió SetPoint en {dixell.MoodbusId} = {SETPOINT_XT}");
+                                            updated = true;
                                         }
 
+                                        // Persistencia si hubo escritura
+                                        if (updated)
+                                        {
+                                            await repository.UpdateDixell<DixellXT>(dixell);
+                                            await repository.PartialCommit();
+                                        }
 
-
-                                        //Lectura del SetPoint
+                                        // Lectura SetPoint, evitando sobrescritura post escritura
                                         await Task.Delay(250);
-                                        double? setPointValueXr = await ReadSetPointXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
-                                        if (setPointValueXr != null)
+                                        double? setPointValueXr = await ReadSetPointXT(master, dixell.MoodbusId)
+                                            .WaitAsync(TimeSpan.FromSeconds(1));
+                                        if (setPointValueXr != null && !justWroteSetPoint)
                                         {
                                             dixell.SetPoint = setPointValueXr.Value;
                                             await repository.UpdateDixell<DixellXT>(dixell);
                                             await repository.PartialCommit();
+                                            _logger.LogInformation($"Se leyó SetPoint en {dixell.MoodbusId} = {setPointValueXr.Value}");
                                         }
 
-
-
-                                        //Lectura del Control On/Off.
+                                        // Lectura Control ON/OFF, evitando sobrescritura post escritura
                                         await Task.Delay(250);
-                                        bool? controlOn_Off = await ReadControlOnOffXT(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
-                                        if (controlOn_Off != null)
+                                        bool? controlOnOff = await ReadControlOnOffXT(master, dixell.MoodbusId)
+                                            .WaitAsync(TimeSpan.FromSeconds(1));
+                                        if (controlOnOff != null && !justWroteControl)
                                         {
-                                            dixell.ControlON_OFF = controlOn_Off.Value;
+                                            dixell.ControlON_OFF = controlOnOff.Value;
                                             await repository.UpdateDixell<DixellXT>(dixell);
                                             await repository.PartialCommit();
+                                            _logger.LogInformation($"Se leyó ControlON_OFF en {dixell.MoodbusId} = {controlOnOff.Value}");
                                         }
                                     }
-                                   
                                 }
                                 catch (TimeoutException)
                                 {
-                                    _logger.LogWarning($"Tiempo de espera agotado al leer SetPoint del dispositivo ID {dixell.MoodbusId}");
+                                    _logger.LogWarning($"Tiempo de espera agotado al acceder al dispositivo ID {dixell.MoodbusId}");
                                 }
                                 catch (Exception ex)
                                 {
-                                    _logger.LogError(ex, $"Error leyendo Dixell ID {dixell.MoodbusId}");
+                                    _logger.LogError(ex, $"Error leyendo/escribiendo Dixell ID {dixell.MoodbusId}");
                                 }
                             }
                             #endregion
@@ -238,8 +257,16 @@ namespace SupervisorBravo.WorkerService
                                     _logger.LogWarning($"Tiempo de espera agotado al leer temperatura del dispositivo ID {dixell.MoodbusId}");
                                     //var DeviceToFix = await repository.GetDixellByMoodbusId<DixellBase>(dixell.MoodbusId);
                                     var temperaturas = await ((ITemperatureRepository)repository).GetAllTemperaturesByDixell(dixell);
-                                    var ultimoMuestreo = temperaturas.OrderByDescending(t => t.MeasurementTime).First();
-                                    await ((ITemperatureRepository)repository).CreateTemperature(ultimoMuestreo.TemperatureMeasurement, dixell.Id, true);
+                                    if (temperaturas.Any())
+                                    {
+                                        var ultimoMuestreo = temperaturas.OrderByDescending(t => t.MeasurementTime).First();
+                                        await ((ITemperatureRepository)repository).CreateTemperature(ultimoMuestreo.TemperatureMeasurement, dixell.Id, true);
+                                    }
+                                    else
+                                    {
+                                        _logger.LogWarning($"📭 No se encontraron temperaturas previas para el dispositivo {dixell.RoomName}. Se omite muestreo simulado.");
+                                    }
+                            
                                     if (await ((IDeviceAlarm)repository).GetDeviceAlarmByDeviceNamme(dixell.RoomName) == null)
                                     {
                                         await ((IDeviceAlarm)repository).CreateDeviceAlarm("Error de desconexion.", "Esta alarma se produce debido a que el dispositivo se encuentra apagado o se desconecto de el bus modbus.", dixell.RoomName);

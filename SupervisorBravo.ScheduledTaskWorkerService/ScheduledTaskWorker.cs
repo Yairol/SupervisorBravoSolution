@@ -8,6 +8,7 @@ using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Persistence.Abstracts.Temperatures;
 
 namespace SupervisorBravo.WorkerService
 {
@@ -51,9 +52,9 @@ namespace SupervisorBravo.WorkerService
 
                                 var roomName = device?.RoomName ?? "(desconocido)";
 
+                                // 🚫 Si el dispositivo no existe
                                 if (device == null)
                                 {
-                                    _logger.LogWarning($"⚠️ Dispositivo {task.DeviceId} no encontrado para tarea {task.Id}.");
                                     var warningLog = new ScheduledTaskExecutionLog(task)
                                     {
                                         Timestamp = DateTime.UtcNow,
@@ -62,10 +63,75 @@ namespace SupervisorBravo.WorkerService
                                         Message = $"⚠️ Dispositivo no encontrado para tarea {task.Id}."
                                     };
                                     await ((IScheduledTaskExecutionLogRepository)taskRepo).AddLog(warningLog);
+                                    _logger.LogWarning(warningLog.Message);
                                     continue;
                                 }
 
-                                if (task.ScheduledDateTime <= DateTime.UtcNow.AddMinutes(2))
+                                var scheduledTime = task.ScheduledDateTime;
+                                var nowUtc = DateTime.UtcNow;
+                                var marginUtc = scheduledTime.AddMinutes(5);
+
+                                // ⏩ Si ya se venció el tiempo de ejecución permitido
+                                if (nowUtc > marginUtc)
+                                {
+                                    if (!task.IsRecurring)
+                                        task.Status = ScheduledTaskStatus.Cancelled;
+                                    else
+                                        task.ScheduledDateTime = task.Recurrence switch
+                                        {
+                                            RecurrenceType.Daily => scheduledTime.AddDays(1).ToUniversalTime(),
+                                            RecurrenceType.Weekly => scheduledTime.AddDays(7).ToUniversalTime(),
+                                            RecurrenceType.Monthly => scheduledTime.AddMonths(1).ToUniversalTime(),
+                                            _ => throw new ArgumentException("Recurrencia inválida")
+                                        };
+
+                                    if (task.RecurrenceEndDate.HasValue &&
+                                        task.ScheduledDateTime > task.RecurrenceEndDate.Value)
+                                    {
+                                        task.Status = ScheduledTaskStatus.Executed;
+                                    }
+
+                                    await taskRepo.UpdateTask(task);
+
+                                    var skippedLog = new ScheduledTaskExecutionLog(task)
+                                    {
+                                        Timestamp = nowUtc,
+                                        Outcome = ExecutionOutcome.Skipped,
+                                        AttemptIndex = 1,
+                                        Message = $"⏩ Tarea {task.Action} en dispositivo ({roomName}) fue saltada por exceder su tiempo de ejecución programado."
+                                    };
+                                    await ((IScheduledTaskExecutionLogRepository)taskRepo).AddLog(skippedLog);
+                                    _logger.LogInformation(skippedLog.Message);
+                                    continue;
+                                }
+
+                                // 🔌 Verificar si el dispositivo está desconectado según lecturas recientes
+                                using var tempScope = _services.CreateScope();
+
+                                var lecturaDesde = nowUtc.AddMinutes(-2);
+                                var lecturaHasta = nowUtc;
+                                await dixellRepo.BeginTransaction();
+                                var muestreos = await ((ITemperatureRepository)dixellRepo).GetTemperaturesByDateRange(lecturaDesde, lecturaHasta, device.Id);
+                                await dixellRepo.CommitTransaction();
+
+                                var ultimoMuestreo = muestreos.LastOrDefault();
+
+                                if (ultimoMuestreo == null || ultimoMuestreo.DisconnectDixell)
+                                {
+                                    var disconnectLog = new ScheduledTaskExecutionLog(task)
+                                    {
+                                        Timestamp = nowUtc,
+                                        Outcome = ExecutionOutcome.Failure,
+                                        AttemptIndex = 1,
+                                        Message = $"❌ Dispositivo desconectado según último muestreo recibido ({roomName}). La tarea {task.Action} no se ejecutó."
+                                    };
+                                    await ((IScheduledTaskExecutionLogRepository)taskRepo).AddLog(disconnectLog);
+                                    _logger.LogWarning(disconnectLog.Message);
+                                    continue;
+                                }
+
+                                // ✅ Ejecutar tarea si está dentro del margen permitido
+                                if (task.ScheduledDateTime <= nowUtc.AddMinutes(2))
                                 {
                                     await ApplyActionAndPersistDevice(device, task, dixellRepo);
 
@@ -77,9 +143,9 @@ namespace SupervisorBravo.WorkerService
                                     {
                                         task.ScheduledDateTime = task.Recurrence switch
                                         {
-                                            RecurrenceType.Daily => task.ScheduledDateTime.AddDays(1).ToUniversalTime(),
-                                            RecurrenceType.Weekly => task.ScheduledDateTime.AddDays(7).ToUniversalTime(),
-                                            RecurrenceType.Monthly => task.ScheduledDateTime.AddMonths(1).ToUniversalTime(),
+                                            RecurrenceType.Daily => scheduledTime.AddDays(1).ToUniversalTime(),
+                                            RecurrenceType.Weekly => scheduledTime.AddDays(7).ToUniversalTime(),
+                                            RecurrenceType.Monthly => scheduledTime.AddMonths(1).ToUniversalTime(),
                                             _ => throw new ArgumentException("Recurrencia inválida")
                                         };
 
@@ -94,7 +160,7 @@ namespace SupervisorBravo.WorkerService
 
                                     var successLog = new ScheduledTaskExecutionLog(task)
                                     {
-                                        Timestamp = DateTime.UtcNow,
+                                        Timestamp = nowUtc,
                                         Outcome = ExecutionOutcome.Success,
                                         AttemptIndex = 1,
                                         Message = $"✅ Acción aplicada: {task.Action} en el dispositivo ({roomName})"
@@ -127,14 +193,16 @@ namespace SupervisorBravo.WorkerService
                     _logger.LogError(ex, "❌ Error general en ciclo de ejecución.");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); // Ajustable
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); // 🔁 Ciclo ajustable
             }
         }
+
 
         private async Task ApplyActionAndPersistDevice(DixellBase device, ScheduledTask task, IDixellRepository dixellRepo)
         {
             try
             {
+                // 🖊 Aplicar acción al dispositivo según tipo
                 switch (task.Action)
                 {
                     case ActionType.TurnOff:
@@ -164,6 +232,7 @@ namespace SupervisorBravo.WorkerService
                         return;
                 }
 
+                // 💾 Persistir estado actualizado del dispositivo en PostgreSQL (tiempos en UTC)
                 await dixellRepo.BeginTransaction();
                 await dixellRepo.UpdateDixell(device);
                 await dixellRepo.CommitTransaction();

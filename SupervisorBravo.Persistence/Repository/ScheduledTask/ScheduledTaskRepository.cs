@@ -76,6 +76,22 @@ namespace SupervisorBravo.Persistence.Repository
                 .Include(t => t.Device)
                 .ToListAsync();
         }
+        public async Task<List<string>> GetAllTasksDeviceNamesAsync()
+        {
+            return await _context.Set<ScheduledTask>()
+                .Include(t => t.Device)
+                .Where(t => t.Device != null && !string.IsNullOrWhiteSpace(t.Device.RoomName))
+                .Select(t => t.Device.RoomName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToListAsync();
+        }
+        public IQueryable<ScheduledTask> QueryScheduledTasks()
+        {
+            return _context.Set<ScheduledTask>().AsQueryable();
+        }
+
+
 
     }
 

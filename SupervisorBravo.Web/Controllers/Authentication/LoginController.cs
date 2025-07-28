@@ -20,7 +20,6 @@ namespace SupervisorBravo.Web.Controllers.Authentication
                 "visitante" when password == "visitante123" => "Visitante",
                 _ => null
             };
-
             if (role == null)
             {
                 ViewBag.Error = "Credenciales inválidas";

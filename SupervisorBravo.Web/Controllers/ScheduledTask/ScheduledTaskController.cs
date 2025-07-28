@@ -4,6 +4,7 @@ using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
+using Microsoft.EntityFrameworkCore;
 
 public class ScheduledTaskController : Controller
 {
@@ -104,24 +105,65 @@ public class ScheduledTaskController : Controller
 
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+    string? deviceName,
+    string? action,
+    string? status,
+    int page = 1)
     {
         await _repository.BeginTransaction();
-        var tasks = await _repository.GetAllTasks(); // usa Include para traer el nombre del dispositivo
+        const int pageSize = 25;
+        var query = _repository.QueryScheduledTasks(); // IQueryable
 
-        var viewModel = tasks.Select(t => new ScheduledTaskListItemViewModel
+        if (!string.IsNullOrWhiteSpace(deviceName))
+            query = query.Where(t => t.Device.RoomName == deviceName);
+        if (!string.IsNullOrWhiteSpace(action) &&
+            Enum.TryParse<ActionType>(action, ignoreCase: true, out var parsedAction))
         {
-            Id = t.Id,
-            DeviceName = t.Device?.RoomName ?? $"#{t.DeviceId}",
-            Action = t.Action,
-            ScheduledDateTime = t.ScheduledDateTime.ToLocalTime(),
-            IsRecurring = t.IsRecurring,
-            Status = (ScheduledTaskStatus)t.Status,
-            SetPointValue = t.SetPointValue
-        }).ToList();
+            query = query.Where(t => t.Action == parsedAction);
+        }
+
+        if (!string.IsNullOrWhiteSpace(status) &&
+            Enum.TryParse<ScheduledTaskStatus>(status, out var parsedStatus))
+            query = query.Where(t => t.Status == parsedStatus);
+
+        var totalCount = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        var currentPage = Math.Clamp(page, 1, Math.Max(1, totalPages));
+
+        var items = await query
+            .Include(t => t.Device)
+            .OrderBy(t => t.ScheduledDateTime)
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .Select(t => new ScheduledTaskListItemViewModel
+            {
+                Id = t.Id,
+                DeviceName = t.Device.RoomName,
+                Action = t.Action,
+                SetPointValue = t.SetPointValue,
+                ScheduledDateTime = t.ScheduledDateTime.ToLocalTime(),
+                IsRecurring = t.IsRecurring,
+                Status = t.Status
+            })
+            .ToListAsync();
+
+        var viewModel = new ScheduledTaskListFilterViewModel
+        {
+            Items = items,
+            SelectedDeviceName = deviceName,
+            SelectedAction = action,
+            SelectedStatus = status,
+            AvailableDeviceNames = await _repository.GetAllTasksDeviceNamesAsync(),
+            AvailableActions = Enum.GetNames(typeof(ActionType)).ToList(),
+            AvailableStatuses = Enum.GetNames(typeof(ScheduledTaskStatus)).ToList(),
+            CurrentPage = currentPage,
+            TotalPages = totalPages
+        };
         await _repository.CommitTransaction();
         return View(viewModel);
     }
+
     [HttpPost]
     public async Task<IActionResult> Delete(Guid id)
     {
