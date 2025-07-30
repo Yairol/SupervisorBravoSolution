@@ -18,4 +18,8 @@
     <ProjectReference Include="..\SupervisorBravo.Domain\SupervisorBravo.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstracts\PLC\Measurements\" />
+  </ItemGroup>
+
 </Project>

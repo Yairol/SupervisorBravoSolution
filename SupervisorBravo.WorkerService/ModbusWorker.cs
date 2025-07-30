@@ -107,7 +107,7 @@ foreach (var dixellx in dixellXRs)
 
         // 📥 4. Lectura del SetPoint — evitar sobrescribir si se acaba de escribir
         await Task.Delay(250);
-        var setPointValue = await ReadSetPointXR(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1));
+        var setPointValue = await ReadSetPointXR(master, dixell.MoodbusId, dixell.modelName).WaitAsync(TimeSpan.FromSeconds(1));
         if (!wroteSetPoint)
         {
             dixell.SetPoint = setPointValue;
@@ -321,15 +321,16 @@ foreach (var dixellx in dixellXRs)
         /// <param name="master">Configuracion del maestro.</param>
         /// <param name="modbusId">Identificador del dixell en el bus modbus.</param>
         /// <returns>El valor del SetPoint.</returns>
-        public async Task<double> ReadSetPointXR(IModbusSerialMaster master, int modbusId)
+        public async Task<double> ReadSetPointXR(IModbusSerialMaster master, int modbusId, string modelName)
         {
             var modbusidbyte = (byte)modbusId;
-            var setPointUshort = await master.ReadHoldingRegistersAsync(modbusidbyte, SETPOINT_XR, 1);
+            var setPointUshort = await master.ReadHoldingRegistersAsync(modbusidbyte, GetRegistersbyModel.GetXRSetPointRegisterByModel(modelName), 1);
+            Console.WriteLine($"se leyo la direccion {GetRegistersbyModel.GetXRSetPointRegisterByModel(modelName)}");
             //Esto es para leer los XR160 porque el set point es otro registro
-            if (setPointUshort[0] == (ushort)144)
-            {
-                setPointUshort = await master.ReadHoldingRegistersAsync(modbusidbyte, 876, 1);
-            }
+            /* if (setPointUshort[0] == (ushort)144)
+             {
+                 setPointUshort = await master.ReadHoldingRegistersAsync(modbusidbyte, 876, 1);
+             }*/
             double setPointValue = ((short)setPointUshort[0]) / 10.0;
             return setPointValue;
         }

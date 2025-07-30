@@ -19,6 +19,11 @@ namespace SupervisorBravo.Persistence
         public DbSet<DeviceAlarm> DeviceAlarms { get; set; }
         public DbSet<ScheduledTask> ScheduledTasks { get; set; }
         public DbSet<ScheduledTaskExecutionLog> ScheduledTaskExecutionLogs { get; set; }
+        public DbSet<PLCDevice> PLCDevices { get; set; }
+        public DbSet<PLCAnalogVariable> AnalogVariables { get; set; }
+        public DbSet<PLCDigitalVariable> DigitalVariables { get; set; }
+        public DbSet<AnalogMeasurement> AnalogMeasurements { get; set; }
+        public DbSet<DigitalMeasurement> DigitalMeasurements { get; set; }
 
         public ApplicationDbContext() { }
 
@@ -45,6 +50,13 @@ namespace SupervisorBravo.Persistence
             modelBuilder.ApplyConfiguration(new DeviceAlarmFluentConfiguration());
             modelBuilder.ApplyConfiguration(new ScheduledTaskFluentConfiguration());
             modelBuilder.ApplyConfiguration(new ScheduledTaskExecutionLogFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new AnalogMeasurementFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new DigitalMeasurementFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new PLCAnalogVariableFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new PLCDigitalVariableFLuentConfiguration());
+            modelBuilder.ApplyConfiguration(new PLCDeviceFluentConfiguration());
+            modelBuilder.ApplyConfiguration(new PLCVariableFluentConfiguration());
+
         }
     }
 }
