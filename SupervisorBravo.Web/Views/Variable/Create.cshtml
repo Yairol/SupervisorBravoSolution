@@ -1,0 +1,61 @@
+﻿@model SupervisorBravo.Web.Models.Variable.VariableCreateViewModel
+@{
+    ViewData["Title"] = "Crear Variable";
+}
+
+<h2 class="mb-4 text-center">🆕 Crear Nueva Variable</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="PlcId" />
+
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label">Tipo de Variable</label>
+        <select asp-for="Type" class="form-select" onchange="toggleBitIndex()" id="tipoVariable">
+            <option value="Digital">Digital</option>
+            <option value="Analogica">Analógica</option>
+        </select>
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Nombre</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label">Registro Modbus</label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="IsWritable" class="form-check-input" />
+        <label asp-for="IsWritable" class="form-check-label">¿Acepta Escritura?</label>
+    </div>
+
+    <div class="mb-3" id="bitIndexGroup">
+        <label asp-for="BitIndex" class="form-label">Bit Index (0–7)</label>
+        <input asp-for="BitIndex" class="form-control" />
+        <span asp-validation-for="BitIndex" class="text-danger"></span>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-save"></i> Guardar
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+        <script>
+            function toggleBitIndex() {
+                const tipo = document.getElementById("tipoVariable").value;
+                document.getElementById("bitIndexGroup").style.display = (tipo === "Digital") ? "block" : "none";
+            }
+
+            document.addEventListener("DOMContentLoaded", toggleBitIndex);
+        </script>
+
+        <partial name="_ValidationScriptsPartial" />
+}

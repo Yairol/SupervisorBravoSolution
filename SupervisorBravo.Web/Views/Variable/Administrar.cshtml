@@ -1,0 +1,101 @@
+﻿@model SupervisorBravo.Web.Models.Variable.AdministrarVariablesViewModel
+
+@{
+    ViewData["Title"] = "Administrar Variables";
+}
+
+<h2 class="mb-4 text-center">🎛️ Variables del PLC: @Model.PlcName</h2>
+
+<!-- Botón global -->
+<div class="mb-4 text-end">
+    <a asp-controller="Variable"
+       asp-action="Create"
+       asp-route-id="@Model.PlcId"
+       class="btn btn-success btn-lg">
+        <i class="bi bi-plus-circle"></i> Añadir Variable
+    </a>
+</div>
+
+<!-- Tabla de variables digitales -->
+<h4>💡 Variables Digitales</h4>
+<table class="table table-bordered table-hover">
+    <thead class="table-secondary">
+        <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>BitIndex</th>
+            <th>Acepta Escritura</th>
+            <th style="width: 100px">Editar</th>
+            <th style="width: 100px">Eliminar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var v in Model.Digitales)
+        {
+                <tr>
+                    <td>@v.Name</td>
+                    <td>@v.Address</td>
+                    <td>@v.BitIndex</td>
+                    <td>
+                        <span class="badge bg-@(v.IsWritable ? "success" : "secondary")">
+                        @(v.IsWritable ? "Sí" : "No")
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <a asp-action="EditarDigital" asp-route-id="@v.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <form asp-action="DigitalDelete" asp-route-id="@v.Id" method="post"
+                              onsubmit="return confirm('¿Eliminar variable digital?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Tabla de variables analógicas -->
+<h4 class="mt-5">📈 Variables Analógicas</h4>
+<table class="table table-bordered table-hover">
+    <thead class="table-secondary">
+        <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Acepta Escritura</th>
+            <th style="width: 100px">Editar</th>
+            <th style="width: 100px">Eliminar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.Analogicas)
+        {
+                <tr>
+                    <td>@a.Name</td>
+                    <td>@a.Address</td>
+                    <td>
+                        <span class="badge bg-@(a.IsWritable ? "success" : "secondary")">
+                        @(a.IsWritable ? "Sí" : "No")
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <a asp-action="EditarAnalogica" asp-route-id="@a.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <form asp-action="AnalogDelete" asp-route-id="@a.Id" method="post"
+                              onsubmit="return confirm('¿Eliminar variable analógica?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

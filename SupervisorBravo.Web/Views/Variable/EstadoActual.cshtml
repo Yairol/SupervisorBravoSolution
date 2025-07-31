@@ -1,0 +1,19 @@
+﻿@using SupervisorBravo.Web.Models.PLC
+@model EstadoActualPlcViewModel
+
+@{
+    ViewData["Title"] = "Estado Actual del PLC";
+}
+
+<h2 class="mb-3 text-center">📊 Estado Actual del PLC</h2>
+
+<h5 class="text-muted text-center">🔧 Dispositivo: @Model.PlcName</h5>
+
+<div class="text-center mt-4">
+    <a asp-controller="Variable"
+       asp-action="Administrar"
+       asp-route-id="@Model.PlcId"
+       class="btn btn-secondary btn-lg">
+        <i class="bi bi-sliders"></i> Administrar Variables
+    </a>
+</div>
