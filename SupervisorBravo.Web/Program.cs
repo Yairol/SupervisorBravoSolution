@@ -15,11 +15,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("connectionString"))
 );
+
 builder.WebHost.ConfigureKestrel(o => o.ListenAnyIP(5000));
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskExecutionLogRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskRepository, AplicationRepository>();
+builder.Services.AddScoped<IPLCDeviceRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskRepository>(provider =>
     (IScheduledTaskRepository)provider.GetRequiredService<IDixellRepository>());
 

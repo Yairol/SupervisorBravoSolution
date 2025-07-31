@@ -7,6 +7,7 @@
     #endregion
 
     #region builders
+    public PLCDigitalVariable() { }
     public PLCDigitalVariable(string name, ushort address, bool isWritable, int bitIndex, PLCDevice device)
     : base(name, address, isWritable, device)
     {

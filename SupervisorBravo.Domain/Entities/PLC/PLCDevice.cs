@@ -13,6 +13,7 @@ public class PLCDevice : Entity
 
 
     #region builders
+    public PLCDevice() { }
     public PLCDevice(string name, byte modbusId, string? ipAddress = null)
     {
         Name = name;

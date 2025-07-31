@@ -1,0 +1,32 @@
+﻿@using SupervisorBravo.Web.Models.PLC
+@model PLCDeviceViewModel
+
+<h2>🛠️ Crear nuevo PLC</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ModbusAddress"></label>
+        <input asp-for="ModbusAddress" class="form-control" type="number" />
+        <span asp-validation-for="ModbusAddress" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IPAddress"></label>
+        <input asp-for="IPAddress" class="form-control" />
+        <span asp-validation-for="IPAddress" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar PLC</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

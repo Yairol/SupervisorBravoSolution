@@ -7,6 +7,8 @@ public abstract class Measurement : Entity
     #endregion
 
     #region builders
+    public Measurement() { }
+
     protected Measurement(DateTime? time = null)
     {
         MeasurementTime = time ?? DateTime.UtcNow;

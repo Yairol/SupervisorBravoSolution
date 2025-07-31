@@ -16,6 +16,7 @@ public abstract class PLCVariable : Entity
     #endregion
 
     #region builders
+    public PLCVariable() { }
     protected PLCVariable(string name, ushort address, bool isWritable, PLCDevice device)
     {
         Name = name;
@@ -24,5 +25,6 @@ public abstract class PLCVariable : Entity
         PLCDevice = device;
         PLCDeviceId = device.Id;
     }
+
     #endregion
 }

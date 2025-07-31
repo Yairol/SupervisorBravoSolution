@@ -5,9 +5,12 @@
     #endregion
 
     #region builders
+    public PLCAnalogVariable() { }
     public PLCAnalogVariable(string name, ushort address, bool isWritable, PLCDevice device)
         : base(name, address, isWritable, device)
     {
     }
+
+
     #endregion
 }

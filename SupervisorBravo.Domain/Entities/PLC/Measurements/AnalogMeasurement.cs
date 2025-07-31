@@ -12,6 +12,7 @@ public class AnalogMeasurement : Measurement
     #endregion
 
     #region builders
+    public AnalogMeasurement() { }
     public AnalogMeasurement(double value, PLCAnalogVariable variable, DateTime? time = null)
     : base(time)
     {

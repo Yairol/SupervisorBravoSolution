@@ -13,6 +13,8 @@ public class DigitalMeasurement : Measurement
     #endregion
 
     #region #builders
+    public DigitalMeasurement() { }
+
     public DigitalMeasurement(bool value, PLCDigitalVariable variable, DateTime? time = null)
     : base(time)
     {

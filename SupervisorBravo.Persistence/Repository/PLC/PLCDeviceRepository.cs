@@ -5,7 +5,7 @@ namespace SupervisorBravo.Persistence.Repository
 {
     public partial class AplicationRepository : IPLCDeviceRepository
     {
-        public async Task<List<PLCDevice>> GetAllAsync(bool includeVariables = false)
+        public async Task<List<PLCDevice>> GetAllPLCDeviceAsync(bool includeVariables = false)
         {
             var query = _context.Set<PLCDevice>().AsQueryable();
 
@@ -15,7 +15,7 @@ namespace SupervisorBravo.Persistence.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<PLCDevice?> GetByIdAsync(Guid id, bool includeVariables = false)
+        public async Task<PLCDevice?> GetPLCDeviceByIdAsync(Guid id, bool includeVariables = false)
         {
             var query = _context.Set<PLCDevice>().AsQueryable();
 
@@ -25,26 +25,26 @@ namespace SupervisorBravo.Persistence.Repository
             return await query.FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public async Task<List<PLCDevice>> GetByNameAsync(string namePart)
+        public async Task<List<PLCDevice>> GetPLCDeviceByNameAsync(string namePart)
         {
             return await _context.PLCDevices
                 .Where(d => d.Name.Contains(namePart))
                 .ToListAsync();
         }
 
-        public async Task AddAsync(PLCDevice device)
+        public async Task AddPLCDeviceAsync(PLCDevice device)
         {
             await _context.Set<PLCDevice>().AddAsync(device);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(PLCDevice device)
+        public async Task UpdatePLCDeviceAsync(PLCDevice device)
         {
             _context.PLCDevices.Update(device);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeletePLCDeviceAsync(Guid id)
         {
             var device = await _context.Set<PLCDevice>().FindAsync(id);
             if (device is not null)

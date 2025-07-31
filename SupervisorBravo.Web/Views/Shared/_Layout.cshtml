@@ -28,6 +28,7 @@
                         </a>
 
                         <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                            <!-- Inicio -->
                             <li class="nav-item">
                                 <a asp-controller="Home" asp-action="Index" class="nav-link align-middle px-0 text-white">
                                     <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Inicio</span>
@@ -82,6 +83,25 @@
                                     <li class="w-100">
                                         <a asp-controller="Performance" asp-action="Performance" class="nav-link px-0 text-white">Medida de Desempeño</a>
                                     </li>
+                                </ul>
+                            </li>
+
+                            <!-- PLC -->
+                            <li>
+                                <a href="#submenuPLC" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-cpu-fill"></i>
+                                    <span class="ms-1 d-none d-sm-inline">PLC</span>
+                                </a>
+                                <ul class="collapse show nav flex-column ms-1" id="submenuPLC" data-bs-parent="#menu">
+                                    <li class="w-100">
+                                        <a asp-controller="PLC" asp-action="Index" class="nav-link px-0 text-white">Ver todos los controladores</a>
+                                    </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li class="w-100">
+                                            <a asp-controller="PLC" asp-action="Create" class="nav-link px-0 text-white">Crear Controlador</a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
 
