@@ -42,6 +42,13 @@ namespace SupervisorBravo.Persistence.Repository
                 .Where(v => v.PLCDeviceId == deviceId)
                 .ToListAsync();
         }
+        public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithMeasurementsAsync(Guid deviceId)
+        {
+            return await _context.Set<PLCAnalogVariable>()
+                .Where(v => v.PLCDeviceId == deviceId)
+                .Include(v => v.Measurements)
+                .ToListAsync();
+        }
     }
 }
 

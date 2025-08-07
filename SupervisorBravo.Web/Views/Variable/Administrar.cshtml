@@ -6,8 +6,15 @@
 
 <h2 class="mb-4 text-center">🎛️ Variables del PLC: @Model.PlcName</h2>
 
-<!-- Botón global -->
-<div class="mb-4 text-end">
+<!-- Botones globales -->
+<div class="mb-4 d-flex justify-content-between">
+    <a asp-controller="Variable"
+       asp-action="EstadoActual"
+       asp-route-id="@Model.PlcId"
+       class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-arrow-left-circle"></i> Volver a Estado Actual
+    </a>
+
     <a asp-controller="Variable"
        asp-action="Create"
        asp-route-id="@Model.PlcId"
@@ -30,31 +37,31 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var v in Model.Digitales)
+        @foreach (var v in Model.Digitales.OrderBy(x => x.Name))
         {
-                <tr>
-                    <td>@v.Name</td>
-                    <td>@v.Address</td>
-                    <td>@v.BitIndex</td>
-                    <td>
-                        <span class="badge bg-@(v.IsWritable ? "success" : "secondary")">
+            <tr>
+                <td>@v.Name</td>
+                <td>@v.Address</td>
+                <td>@v.BitIndex</td>
+                <td>
+                    <span class="badge bg-@(v.IsWritable ? "success" : "secondary")">
                         @(v.IsWritable ? "Sí" : "No")
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <a asp-action="EditarDigital" asp-route-id="@v.Id" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                    </td>
-                    <td class="text-center">
-                        <form asp-action="DigitalDelete" asp-route-id="@v.Id" method="post"
-                              onsubmit="return confirm('¿Eliminar variable digital?');">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                    </span>
+                </td>
+                <td class="text-center">
+                    <a asp-action="EditarDigital" asp-route-id="@v.Id" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+                <td class="text-center">
+                    <form asp-action="DigitalDelete" asp-route-id="@v.Id" method="post"
+                          onsubmit="return confirm('¿Eliminar variable digital?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
@@ -72,30 +79,30 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var a in Model.Analogicas)
+        @foreach (var a in Model.Analogicas.OrderBy(x => x.Name))
         {
-                <tr>
-                    <td>@a.Name</td>
-                    <td>@a.Address</td>
-                    <td>
-                        <span class="badge bg-@(a.IsWritable ? "success" : "secondary")">
+            <tr>
+                <td>@a.Name</td>
+                <td>@a.Address</td>
+                <td>
+                    <span class="badge bg-@(a.IsWritable ? "success" : "secondary")">
                         @(a.IsWritable ? "Sí" : "No")
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <a asp-action="EditarAnalogica" asp-route-id="@a.Id" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                    </td>
-                    <td class="text-center">
-                        <form asp-action="AnalogDelete" asp-route-id="@a.Id" method="post"
-                              onsubmit="return confirm('¿Eliminar variable analógica?');">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                    </span>
+                </td>
+                <td class="text-center">
+                    <a asp-action="EditarAnalogica" asp-route-id="@a.Id" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+                <td class="text-center">
+                    <form asp-action="AnalogDelete" asp-route-id="@a.Id" method="post"
+                          onsubmit="return confirm('¿Eliminar variable analógica?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

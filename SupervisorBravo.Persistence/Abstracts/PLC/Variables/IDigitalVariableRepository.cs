@@ -8,5 +8,6 @@ public interface IDigitalVariableRepository : IRepository
     Task AddDigitalVariableAsync(PLCDigitalVariable variable);
     Task UpdateDigitalVariableAsync(PLCDigitalVariable variable);
     Task DeleteDigitalVariableAsync(Guid id);
+    Task<List<PLCDigitalVariable>> GetDigitalVariableByDeviceIdWithMeasurementsAsync(Guid deviceId);
 
 }

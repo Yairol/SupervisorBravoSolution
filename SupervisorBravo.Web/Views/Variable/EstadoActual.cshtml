@@ -1,19 +1,69 @@
-﻿@using SupervisorBravo.Web.Models.PLC
-@model EstadoActualPlcViewModel
-
+﻿@model SupervisorBravo.Web.Models.PLC.EstadoActualPlcViewModel
 @{
     ViewData["Title"] = "Estado Actual del PLC";
 }
 
 <h2 class="mb-3 text-center">📊 Estado Actual del PLC</h2>
-
 <h5 class="text-muted text-center">🔧 Dispositivo: @Model.PlcName</h5>
 
-<div class="text-center mt-4">
-    <a asp-controller="Variable"
-       asp-action="Administrar"
-       asp-route-id="@Model.PlcId"
-       class="btn btn-secondary btn-lg">
-        <i class="bi bi-sliders"></i> Administrar Variables
+<!-- Botón para administrar variables -->
+<div class="text-end mb-4">
+    <a asp-action="Administrar" asp-route-id="@Model.PlcId" class="btn btn-warning">
+        ⚙️ Administrar Variables
     </a>
 </div>
+
+<!-- Variables digitales -->
+<h4 class="mt-4">💡 Variables Digitales</h4>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nombre</th>
+            <th>Último Valor</th>
+            <th>Fecha Muestreo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model.VariablesDigitales.OrderBy(x => x.Nombre))
+        {
+            <tr>
+                <td>@d.Nombre</td>
+                <td>
+                    @if (d.UltimoValor.HasValue)
+                    {
+                        <span title="Valor lógico: @(d.UltimoValor.Value)">
+                            @(d.UltimoValor.Value ? "🟢 ON" : "🔴 OFF")
+                        </span>
+                    }
+                    else
+                    {
+                        @("—")
+                    }
+                </td>
+                <td>@(d.FechaMuestreo?.ToString("dd/MM/yyyy HH:mm:ss") ?? "—")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Variables analógicas -->
+<h4 class="mt-5">📈 Variables Analógicas</h4>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nombre</th>
+            <th>Último Valor</th>
+            <th>Fecha Muestreo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.VariablesAnalogicas.OrderBy(x => x.Nombre))
+        {
+            <tr>
+                <td>@a.Nombre</td>
+                <td>@(a.UltimoValor?.ToString("F2") ?? "—")</td>
+                <td>@(a.FechaMuestreo?.ToString("dd/MM/yyyy HH:mm:ss") ?? "—")</td>
+            </tr>
+        }
+    </tbody>
+</table>

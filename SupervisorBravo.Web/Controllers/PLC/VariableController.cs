@@ -13,21 +13,49 @@ namespace SupervisorBravo.Web.Controllers
             _plcDeviceRepository = plcDeviceRepository;
         }
 
-        [HttpGet]
         public async Task<IActionResult> EstadoActual(Guid id)
         {
             await _plcDeviceRepository.BeginTransaction();
             var plc = await _plcDeviceRepository.GetPLCDeviceByIdAsync(id);
             if (plc == null) return NotFound();
 
+            var digitales = await ((IDigitalVariableRepository)_plcDeviceRepository)
+                .GetDigitalVariableByDeviceIdWithMeasurementsAsync(id);
+
+            var analogicas = await ((IAnalogVariableRepository)_plcDeviceRepository)
+                .GetAnalogVariableByDeviceIdWithMeasurementsAsync(id);
+
             var modelo = new EstadoActualPlcViewModel
             {
                 PlcId = plc.Id,
                 PlcName = plc.Name,
+                VariablesDigitales = digitales.Select(v => new VariableDigitalEstadoDto
+                {
+                    Nombre = v.Name,
+                    UltimoValor = v.Measurements?
+        .           OrderByDescending(m => m.MeasurementTime)
+                    .FirstOrDefault()?.MeasurementValue,
+                    FechaMuestreo = v.Measurements?
+                    .OrderByDescending(m => m.MeasurementTime)
+        .               FirstOrDefault()?.MeasurementTime.ToLocalTime()
+                }).ToList(),
+
+                VariablesAnalogicas = analogicas.Select(v => new VariableAnalogicaEstadoDto
+                {
+                    Nombre = v.Name,
+                    UltimoValor = v.Measurements?
+                        .OrderByDescending(m => m.MeasurementTime)
+                        .FirstOrDefault()?.MeasurementValue,
+                    FechaMuestreo = v.Measurements?
+                        .OrderByDescending(m => m.MeasurementTime)
+                        .FirstOrDefault()?.MeasurementTime.ToLocalTime(),
+                }).ToList()
+
             };
             await _plcDeviceRepository.CommitTransaction();
             return View(modelo);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Administrar(Guid id)

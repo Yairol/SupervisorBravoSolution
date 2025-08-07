@@ -8,5 +8,5 @@ public interface IAnalogVariableRepository : IRepository
     Task AddAnalogVariableAsync(PLCAnalogVariable variable);
     Task UpdateAnalogVariableAsync(PLCAnalogVariable variable);
     Task DeleteAnalogVariableAsync(Guid id);
-
+    Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithMeasurementsAsync(Guid deviceId);
 }
