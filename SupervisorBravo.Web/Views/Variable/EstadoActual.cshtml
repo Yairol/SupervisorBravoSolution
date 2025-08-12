@@ -6,14 +6,35 @@
 <h2 class="mb-3 text-center">📊 Estado Actual del PLC</h2>
 <h5 class="text-muted text-center">🔧 Dispositivo: @Model.PlcName</h5>
 
-<!-- Botón para administrar variables -->
-<div class="text-end mb-4">
-    <a asp-action="Administrar" asp-route-id="@Model.PlcId" class="btn btn-warning">
-        ⚙️ Administrar Variables
-    </a>
+<!-- 🔘 Botones de navegación -->
+<div class="row mb-4 align-items-center">
+    <div class="col-4 text-start">
+        <a asp-controller="PLC" asp-action="Index" class="btn btn-secondary">
+            ↩️ Volver
+        </a>
+    </div>
+    <div class="col-4 text-center">
+        <a asp-controller="VariableChart"
+           asp-action="Index"
+           asp-route-plcId="@Model.PlcId"
+           class="btn btn-primary">
+            📈 Graficar
+        </a>
+    </div>
+
+
+    <div class="col-4 text-end">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Administrar" asp-route-id="@Model.PlcId" class="btn btn-warning">
+                ⚙️ Administrar Variables
+            </a>
+        }
+    </div>
 </div>
 
-<!-- Variables digitales -->
+
+<!-- 💡 Variables digitales -->
 <h4 class="mt-4">💡 Variables Digitales</h4>
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
@@ -46,7 +67,7 @@
     </tbody>
 </table>
 
-<!-- Variables analógicas -->
+<!-- 📈 Variables analógicas -->
 <h4 class="mt-5">📈 Variables Analógicas</h4>
 <table class="table table-bordered table-striped">
     <thead class="table-dark">

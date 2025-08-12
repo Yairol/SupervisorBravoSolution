@@ -6,6 +6,7 @@ using System;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.PLCModbusRTUReaderWorkerService.Services;
 using Microsoft.Extensions.DependencyInjection;
+using SupervisorBravo.Domain.Entities.PLC.Variables;
 
 public class Worker : BackgroundService
 {
@@ -74,7 +75,7 @@ public class Worker : BackgroundService
                             var uValor = await _modbus.ReadHoldingRegisterAsync(plc.ModbusId, analogica.Address);
                             double valor;
                             //En caso de que sea distinto de 0 se refiere a un registro INT
-                            if (uValor[0]==0)
+                            if (analogica.Type == HoldingDataType.floating)
                             {
                                 valor = Helpers.ConvertModbusToFloat(uValor[1], uValor[0]);
                             }

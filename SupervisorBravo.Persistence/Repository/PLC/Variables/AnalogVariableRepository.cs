@@ -49,6 +49,48 @@ namespace SupervisorBravo.Persistence.Repository
                 .Include(v => v.Measurements)
                 .ToListAsync();
         }
+        public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithMeasurementsAsync(
+            Guid deviceId, DateTime fromUtc, DateTime toUtc)
+        {
+            // Normaliza a UTC para que el filtro sea consistente con PostgreSQL
+            if (fromUtc.Kind != DateTimeKind.Utc) fromUtc = fromUtc.ToUniversalTime();
+            if (toUtc.Kind != DateTimeKind.Utc) toUtc = toUtc.ToUniversalTime();
+
+            // Garantiza rango correcto
+            if (fromUtc > toUtc) (fromUtc, toUtc) = (toUtc, fromUtc);
+
+            return await _context.Set<PLCAnalogVariable>()
+                .Where(v => v.PLCDeviceId == deviceId)
+                .Include(v => v.Measurements
+                    .Where(m => m.MeasurementTime >= fromUtc && m.MeasurementTime <= toUtc)
+                    .OrderBy(m => m.MeasurementTime))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+        public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithLastMeasurementAsync(Guid deviceId)
+        {
+            return await _context.Set<PLCAnalogVariable>()
+                .Where(v => v.PLCDeviceId == deviceId)
+                .Select(v => new PLCAnalogVariable
+                {
+                    Id = v.Id,
+                    Name = v.Name,
+                    Address = v.Address,
+                    Type = v.Type,
+                    IsWritable = v.IsWritable,
+                    PLCDeviceId = v.PLCDeviceId,
+                    Measurements = v.Measurements
+                        .OrderByDescending(m => m.MeasurementTime)
+                        .Take(1)
+                        .ToList()
+                })
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+
+
+
     }
 }
 

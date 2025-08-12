@@ -45,6 +45,12 @@ public partial class AplicationRepository : IAnalogMeasurementRepository
 
     public async Task<List<AnalogMeasurement>> GetAnalogMeasurementsByTimeRangeAsync(Guid analogVariableId, DateTime from, DateTime to)
     {
+        if (from > to)
+        {
+            DateTime save = to;
+            to = from;
+            from = save;
+        }
         return await _context.Set<AnalogMeasurement>()
             .Where(m => m.PLCAnalogVariableId == analogVariableId &&
                         m.MeasurementTime >= from && m.MeasurementTime <= to)

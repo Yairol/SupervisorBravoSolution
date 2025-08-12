@@ -3,44 +3,47 @@
 *@
 @model SupervisorBravo.Web.Models.DTOs.DixellReporteViewModel
 
-
 <h2>Medida de Desempeño</h2>
 
 <form asp-action="Performance" method="post">
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label>Dispositivo</label>
         <select name="Room" class="form-control" required>
             <option value="">Seleccione una sala</option>
             <option value="Refrigeracion" selected="@(Model.Room == "Refrigeracion")">Refrigeración</option>
             <option value="Coccion-Enfriamiento" selected="@(Model.Room == "Coccion-Enfriamiento")">Cocción-Enfriamiento</option>
         </select>
+    </div>
 
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label>Desde</label>
+            <input type="datetime-local" name="StartDateReport" class="form-control"
+                   value="@Model.StartDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
+        </div>
+        <div class="col-md-6">
+            <label>Hasta</label>
+            <input type="datetime-local" name="EndDateReport" class="form-control"
+                   value="@Model.EndDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
+        </div>
     </div>
-    <div class="form-group">
-        <label>Desde</label>
-        <input type="datetime-local" name="StartDateReport" class="form-control" value="@Model.StartDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
-    </div>
-    <div class="form-group">
-        <label>Hasta</label>
-        <input type="datetime-local" name="EndDateReport" class="form-control" value="@Model.EndDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
-    </div>
-    <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+
+    <button type="submit" class="btn btn-primary">Filtrar</button>
 </form>
 
 @if (Model.Reports.Any())
 {
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-sm-8 offset-sm-2">
-            <h2>Parametros de @(Model.Room == "Refrigeracion" ? "Refrigeración" : "Cocción-Enfriamineto")</h2>
-            @if (Model.Reports.Any())
-            {
-                <form asp-action="ExportToExcel" method="post" class="mb-3">
-                    <input type="hidden" name="StartDateReport" value="@Model.StartDateReport.ToString("o")" />
-                    <input type="hidden" name="EndDateReport" value="@Model.EndDateReport.ToString("o")" />
-                    <input type="hidden" name="Room" value="@Model.Room" />
-                    <button type="submit" class="btn btn-success">Exportar a Excel</button>
-                </form>
-            }
+            <h2>Parámetros de @(Model.Room == "Refrigeracion" ? "Refrigeración" : "Cocción-Enfriamiento")</h2>
+
+            <form asp-action="ExportToExcel" method="post" class="mb-3">
+                <input type="hidden" name="StartDateReport" value="@Model.StartDateReport.ToString("o")" />
+                <input type="hidden" name="EndDateReport" value="@Model.EndDateReport.ToString("o")" />
+                <input type="hidden" name="Room" value="@Model.Room" />
+                <button type="submit" class="btn btn-success">Exportar a Excel</button>
+            </form>
+
             <table class="table table-bordered border border-dark">
                 <thead class="text-center align-middle">
                     <tr>
@@ -49,9 +52,9 @@
                         <th style="background-color: yellow;">AVG</th>
                         <th style="background-color: yellow;">Min</th>
                         <th style="background-color: yellow;">Max</th>
-                        <th style="background-color: yellow;">@((Model.Room == "Refrigeracion") ? "%Cool" : "Electro Valvula") </th>
-                        <th style="background-color: yellow;">Tiempo Desconectado(horas)/% del intervalo</th>
-                        <th style="background-color: yellow;">Tiempo Apagado(Off)(horas)/% del intervalo</th>
+                        <th style="background-color: yellow;">@((Model.Room == "Refrigeracion") ? "%Cool" : "Electro Válvula")</th>
+                        <th style="background-color: yellow;">Tiempo Desconectado (horas) / % del intervalo</th>
+                        <th style="background-color: yellow;">Tiempo Apagado (Off) (horas) / % del intervalo</th>
                     </tr>
                 </thead>
                 <tbody class="text-center align-middle">
@@ -68,9 +71,8 @@
                             <td>@item.OffTime.TotalHours.ToString("F1")/@item.AvgOffTime.ToString("F1")%</td>
                         </tr>
                     }
+                </tbody>
             </table>
         </div>
     </div>
-
 }
-

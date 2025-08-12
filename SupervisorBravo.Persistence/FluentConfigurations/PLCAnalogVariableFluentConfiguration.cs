@@ -11,5 +11,8 @@ public class PLCAnalogVariableFluentConfiguration : IEntityTypeConfiguration<PLC
             .WithOne(m => m.PLCAnalogVariable)
             .HasForeignKey(m => m.PLCAnalogVariableId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(a => a.Type)
+            .HasConversion<string>();
     }
 }

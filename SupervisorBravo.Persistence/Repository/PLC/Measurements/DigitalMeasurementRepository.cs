@@ -45,6 +45,12 @@ public partial class AplicationRepository : IDigitalMeasurementRepository
 
     public async Task<List<DigitalMeasurement>> GetDigitalMeasurementsByTimeRangeAsync(Guid digitalVariableId, DateTime from, DateTime to)
     {
+        if (from > to)
+        {
+            DateTime save = to;
+            to = from;
+            from = save;
+        }
         return await _context.Set<DigitalMeasurement>()
             .Where(m => m.PLCDigitalVariableId == digitalVariableId &&
                         m.MeasurementTime >= from && m.MeasurementTime <= to)

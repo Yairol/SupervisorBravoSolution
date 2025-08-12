@@ -37,53 +37,18 @@
 
                             <!-- Refrigeración -->
                             <li>
-                                <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Refrigeración</span>
+                                <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-building-fill-gear"></i>
+                                    <span class="ms-1 d-none d-sm-inline">Refrigeración</span>
                                 </a>
-                                <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
-                                    <li class="w-100">
-                                        <a asp-controller="Refrigertion" asp-action="Dixells" class="nav-link px-0 text-white">Estado Actual</a>
-                                    </li>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <li>
-                                            <a asp-controller="Refrigertion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dispositivo</a>
-                                        </li>
-                                    }
-                                </ul>
                             </li>
 
                             <!-- Cocción-Enfriamiento -->
                             <li>
-                                <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Cocción-Enfriamiento</span>
+                                <a asp-controller="CoolingCoercion" asp-action="Dixells" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-building-fill-gear"></i>
+                                    <span class="ms-1 d-none d-sm-inline">Cocción-Enfriamiento</span>
                                 </a>
-                                <ul class="collapse show nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
-                                    <li class="w-100">
-                                        <a asp-controller="CoolingCoercion" asp-action="Dixells" class="nav-link px-0 text-white">Estado Actual</a>
-                                    </li>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <li>
-                                            <a asp-controller="CoolingCoercion" asp-action="CreateDixell" class="nav-link px-0 text-white">Añadir Dispositivo</a>
-                                        </li>
-                                    }
-                                </ul>
-                            </li>
-
-                            <!-- Funcionamiento -->
-                            <li>
-                                <a href="#submenuFuncionamiento" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
-                                    <i class="fs-4 bi bi-building-fill-gear"></i><span class="ms-1 d-none d-sm-inline">Funcionamiento</span>
-                                </a>
-                                <ul class="collapse show nav flex-column ms-1" id="submenuFuncionamiento" data-bs-parent="#menu">
-                                    <li class="w-100">
-                                        <a asp-controller="Alarm" asp-action="Alarms" class="nav-link px-0 text-white">Alarmas</a>
-                                    </li>
-                                    <li class="w-100">
-                                        <a asp-controller="Performance" asp-action="Performance" class="nav-link px-0 text-white">Medida de Desempeño</a>
-                                    </li>
-                                </ul>
                             </li>
 
                             <!-- PLC -->
@@ -96,12 +61,22 @@
                                     <li class="w-100">
                                         <a asp-controller="PLC" asp-action="Index" class="nav-link px-0 text-white">Ver todos los controladores</a>
                                     </li>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <li class="w-100">
-                                            <a asp-controller="PLC" asp-action="Create" class="nav-link px-0 text-white">Crear Controlador</a>
-                                        </li>
-                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Funcionamiento -->
+                            <li>
+                                <a href="#submenuFuncionamiento" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white">
+                                    <i class="fs-4 bi bi-activity"></i>
+                                    <span class="ms-1 d-none d-sm-inline">Funcionamiento</span>
+                                </a>
+                                <ul class="collapse show nav flex-column ms-1" id="submenuFuncionamiento" data-bs-parent="#menu">
+                                    <li class="w-100">
+                                        <a asp-controller="Alarm" asp-action="Alarms" class="nav-link px-0 text-white">Estado del Sistema</a>
+                                    </li>
+                                    <li class="w-100">
+                                        <a asp-controller="Performance" asp-action="Performance" class="nav-link px-0 text-white">Medida de Desempeño</a>
+                                    </li>
                                 </ul>
                             </li>
 
@@ -112,12 +87,6 @@
                                     <span class="ms-1 d-none d-sm-inline">Programar tareas</span>
                                 </a>
                                 <ul class="collapse show nav flex-column ms-1" id="submenuTareas" data-bs-parent="#menu">
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <li class="w-100">
-                                            <a asp-controller="ScheduledTask" asp-action="Create" class="nav-link px-0 text-white">Nueva tarea</a>
-                                        </li>
-                                    }
                                     <li class="w-100">
                                         <a asp-controller="ScheduledTask" asp-action="Index" class="nav-link px-0 text-white">Estado de las tareas</a>
                                     </li>

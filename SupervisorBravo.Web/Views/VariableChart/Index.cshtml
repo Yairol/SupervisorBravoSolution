@@ -1,0 +1,295 @@
+﻿@model SupervisorBravo.Web.Models.Variable.VariableChartViewModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Variable Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var datasets = new List<object>();
+
+    datasets.AddRange(Model.AnalogSeries.Select(s => new
+    {
+        type = "line",
+        label = s.Name,
+        borderColor = s.Color,
+        backgroundColor = "transparent",
+        fill = false,
+        stepped = false,
+        tension = 0,
+        data = s.Points.Select(p => new { x = p.Timestamp.ToUniversalTime(), y = p.Value })
+    }));
+
+    datasets.AddRange(Model.DigitalSeries.Select(s => new
+    {
+        type = "line",
+        label = s.Name,
+        borderColor = s.Color,
+        backgroundColor = "transparent",
+        fill = false,
+        stepped = true,
+        tension = 0,
+        data = s.Points.Select(p => new { x = p.Timestamp.ToUniversalTime(), y = (p.Value ? 1 : 0) })
+    }));
+
+    var datasetsJson = JsonSerializer.Serialize(datasets);
+}
+
+<h2>PLC: @Model.PlcName</h2>
+
+<form asp-action="Plot" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PlcId" />
+
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label asp-for="StartDate">Start Date</label>
+            <input asp-for="StartDate"
+                   type="datetime-local"
+                   class="form-control"
+                   asp-format="{0:yyyy-MM-ddTHH:mm}"
+                   step="60" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="EndDate">End Date</label>
+            <input asp-for="EndDate"
+                   type="datetime-local"
+                   class="form-control"
+                   asp-format="{0:yyyy-MM-ddTHH:mm}"
+                   step="60" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4>Analog Variables</h4>
+            @foreach (var variable in Model.AnalogVariables)
+            {
+                <div class="form-check mb-1">
+                    <input type="checkbox" class="form-check-input" name="SelectedAnalogIds"
+                           value="@variable.Id"
+                    @(Model.SelectedAnalogIds.Contains(variable.Id) ? "checked" : null) />
+                    <label class="form-check-label">@variable.Name</label>
+                </div>
+            }
+        </div>
+        <div class="col-md-6">
+            <h4>Digital Variables</h4>
+            @foreach (var variable in Model.DigitalVariables)
+            {
+                <div class="form-check mb-1">
+                    <input type="checkbox" class="form-check-input" name="SelectedDigitalIds"
+                           value="@variable.Id"
+                    @(Model.SelectedDigitalIds.Contains(variable.Id) ? "checked" : null) />
+                    <label class="form-check-label">@variable.Name</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Plot</button>
+</form>
+
+<hr />
+
+@{
+    var hasSeries = Model.AnalogSeries.Any() || Model.DigitalSeries.Any();
+    var hasData = Model.AnalogSeries.Any(s => s.Points?.Any() == true)
+               || Model.DigitalSeries.Any(s => s.Points?.Any() == true);
+}
+
+@if (hasSeries)
+{
+    <style>
+        /* Tooltip HTML externo */
+        .chartjs-tooltip {
+            position: absolute;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            pointer-events: none;
+            transform: translate(-50%, -120%);
+            min-width: 200px;
+            font-size: 12px;
+            color: #333;
+        }
+
+            .chartjs-tooltip .title {
+                font-weight: 600;
+                margin-bottom: 6px;
+                color: #111;
+            }
+
+            .chartjs-tooltip .row {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                gap: 12px;
+                margin: 2px 0;
+            }
+
+            .chartjs-tooltip .dot {
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                margin-right: 6px;
+            }
+    </style>
+
+    <div class="mt-4">
+        <h4>Gráfico</h4>
+        <div id="chartContainer" style="height:360px; width:100%; max-width:1280px; margin:auto; position:relative;">
+            <canvas id="variableChart"></canvas>
+        </div>
+
+        @if (!hasData)
+        {
+            <div class="alert alert-warning mt-3">⚠️ No hay datos disponibles en el rango seleccionado.</div>
+        }
+    </div>
+
+    <div class="mt-3">
+        <h5>Leyenda</h5>
+        <ul class="list-unstyled">
+            @foreach (var s in Model.AnalogSeries)
+            {
+                <li><span style="display:inline-block;width:12px;height:12px;background:@s.Color;margin-right:6px;"></span>@s.Name</li>
+            }
+            @foreach (var s in Model.DigitalSeries)
+            {
+                <li><span style="display:inline-block;width:12px;height:12px;background:@s.Color;margin-right:6px;"></span>@s.Name</li>
+            }
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+
+    <script>
+        const datasets = @Html.Raw(datasetsJson);
+
+        // Plugin: línea vertical guía al mover el mouse
+        const hoverLinePlugin = {
+            id: 'hoverLine',
+            afterDatasetsDraw(chart, args, pluginOptions) {
+                const { ctx, tooltip, chartArea: { top, bottom } } = chart;
+                if (!tooltip || !tooltip._active || !tooltip._active.length) return;
+                const x = tooltip._active[0].element.x;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, top);
+                ctx.lineTo(x, bottom);
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
+
+        // Tooltip HTML externo
+        function getOrCreateTooltip(chart) {
+            let tooltipEl = chart.canvas.parentNode.querySelector('.chartjs-tooltip');
+            if (!tooltipEl) {
+                tooltipEl = document.createElement('div');
+                tooltipEl.className = 'chartjs-tooltip';
+                chart.canvas.parentNode.appendChild(tooltipEl);
+            }
+            return tooltipEl;
+        }
+
+        function externalTooltipHandler(context) {
+            const { chart, tooltip } = context;
+            const tooltipEl = getOrCreateTooltip(chart);
+
+            // Ocultar si no hay tooltip
+            if (tooltip.opacity === 0) {
+                tooltipEl.style.opacity = 0;
+                return;
+            }
+
+            // Construir contenido
+            let innerHtml = '';
+            if (tooltip.title && tooltip.title.length) {
+                innerHtml += `<div class="title">${tooltip.title[0]}</div>`;
+            }
+
+            if (tooltip.body) {
+                const body = tooltip.body.map(b => b.lines);
+                // tooltip.labelColors coincide con datasets
+                body.forEach((lines, i) => {
+                    const color = tooltip.labelColors[i]?.borderColor || '#666';
+                    const text = lines[0]; // "Label: valor"
+                    const parts = text.split(':');
+                    const label = parts[0]?.trim() ?? '';
+                    const value = parts[1]?.trim() ?? '';
+                    innerHtml += `
+                                <div class="row">
+                                    <div><span class="dot" style="background:${color}"></span>${label}</div>
+                                    <div>${value}</div>
+                                </div>`;
+                });
+            }
+
+            tooltipEl.innerHTML = innerHtml;
+
+            // Posición
+            const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+            tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+        }
+
+        const ctx = document.getElementById('variableChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: { datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                parsing: true,
+                interaction: {
+                    mode: 'index',
+                    axis: 'x',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'yyyy-MM-dd HH:mm',
+                            displayFormats: {
+                                minute: 'HH:mm',
+                                hour: 'HH:mm',
+                                day: 'MMM dd'
+                            }
+                        },
+                        title: { display: true, text: 'Fecha' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Valor' }
+                    }
+                },
+                plugins: {
+                    legend: { display: true, position: 'bottom' },
+                    tooltip: {
+                        enabled: false,            // Desactivamos el tooltip nativo
+                        external: externalTooltipHandler,
+                        callbacks: {
+                            label: ctx => `${ctx.dataset.label}: ${Number.isFinite(ctx.parsed.y) ? (Number.isInteger(ctx.parsed.y) ? ctx.parsed.y : ctx.parsed.y.toFixed(2)) : ''}`
+                        }
+                    }
+                },
+                elements: {
+                    point: { radius: 3, hoverRadius: 6, hitRadius: 8 },
+                    line: { tension: 0 }
+                }
+            },
+            plugins: [hoverLinePlugin]
+        });
+    </script>
+}

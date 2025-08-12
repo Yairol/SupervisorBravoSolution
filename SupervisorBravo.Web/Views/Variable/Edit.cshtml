@@ -1,0 +1,52 @@
+﻿@model SupervisorBravo.Web.Models.Variable.EditVariableViewModel
+
+@{
+    ViewData["Title"] = "Editar Variable";
+}
+
+<h2 class="mb-4 text-center">✏️ Editar Variable @(Model.IsDigital ? "Digital" : "Analógica")</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PlcId" />
+    <input type="hidden" asp-for="IsDigital" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    @if (Model.IsDigital)
+    {
+        <div class="mb-3">
+            <label asp-for="BitIndex" class="form-label"></label>
+            <input asp-for="BitIndex" class="form-control" type="number" min="0" />
+            <span asp-validation-for="BitIndex" class="text-danger"></span>
+        </div>
+    }
+
+    <div class="form-check mb-4">
+        <input asp-for="IsWritable" class="form-check-input" />
+        <label asp-for="IsWritable" class="form-check-label">¿Acepta Escritura?</label>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a asp-action="Administrar" asp-route-id="@Model.PlcId" class="btn btn-secondary">
+            ↩️ Cancelar
+        </a>
+        <button type="submit" class="btn btn-primary">
+            💾 Guardar Cambios
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

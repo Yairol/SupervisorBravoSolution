@@ -7,6 +7,15 @@
 
 <h2 class="mb-3 text-center">🔌 Controladores PLC</h2>
 
+@if (isAdmin)
+{
+    <div class="text-end mb-3">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle-fill"></i> Crear nuevo controlador
+        </a>
+    </div>
+}
+
 <table class="table table-bordered table-striped">
     <thead class="table-dark text-center align-middle">
         <tr>
@@ -16,48 +25,48 @@
             <th>IP</th>
             @if (isAdmin)
             {
-                    <th>Editar</th>
-                    <th>Eliminar</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
             }
         </tr>
     </thead>
     <tbody class="text-center align-middle">
         @foreach (var d in Model)
         {
-                <tr>
-                    <td>
-                        <a asp-controller="Variable" asp-action="EstadoActual" asp-route-id="@d.Id" class="btn btn-info btn-sm">
-                            <i class="bi bi-eye-fill"></i> Ver
-                        </a>
-                    </td>
-                    <td>@d.Name</td>
-                    <td>@d.ModbusId</td>
-                    <td>@(string.IsNullOrWhiteSpace(d.IpAddress) ? "---" : d.IpAddress)</td>
+            <tr>
+                <td>
+                    <a asp-controller="Variable" asp-action="EstadoActual" asp-route-id="@d.Id" class="btn btn-info btn-sm">
+                        <i class="bi bi-eye-fill"></i> Ver
+                    </a>
+                </td>
+                <td>@d.Name</td>
+                <td>@d.ModbusId</td>
+                <td>@(string.IsNullOrWhiteSpace(d.IpAddress) ? "---" : d.IpAddress)</td>
                 @if (isAdmin)
                 {
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                            </td>
-                            <td>
-                                <form asp-action="Delete" asp-route-id="@d.Id"
-                                      method="post" onsubmit="return confirmDelete('@d.Name');" class="d-inline">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash-fill"></i> Eliminar
-                                    </button>
-                                </form>
-                            </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+                    </td>
+                    <td>
+                        <form asp-action="Delete" asp-route-id="@d.Id"
+                              method="post" onsubmit="return confirmDelete('@d.Name');" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash-fill"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
                 }
-                </tr>
+            </tr>
         }
     </tbody>
 </table>
 
 @section Scripts {
-        <script>
-            function confirmDelete(name) {
-                return confirm(`¿Seguro que deseas eliminar el dispositivo "${name}"? Esta acción no se puede deshacer.`);
-            }
-        </script>
+    <script>
+        function confirmDelete(name) {
+            return confirm(`¿Seguro que deseas eliminar el dispositivo "${name}"? Esta acción no se puede deshacer.`);
+        }
+    </script>
 }
