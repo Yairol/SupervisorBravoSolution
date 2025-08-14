@@ -4,13 +4,23 @@ public class PLCAnalogVariable : PLCVariable
 {
     #region properties
     public List<AnalogMeasurement> Measurements { get; set; } = new();
-
+    /// <summary>
+    /// Tipo de dato de la variable analogica
+    /// </summary>
     public HoldingDataType Type { get; set; }
+    /// <summary>
+    /// Escala de conversion de las variables analogicas, por defecto 1.0
+    /// </summary>
+    public double ScaleFactor { get; set; }
 
     #endregion
 
     #region builders
-    public PLCAnalogVariable() { }
+    public PLCAnalogVariable() 
+    { 
+        Type = HoldingDataType.floating;
+        ScaleFactor = 1.0;
+    }
     public PLCAnalogVariable(string name, ushort address, bool isWritable, PLCDevice device)
         : base(name, address, isWritable, device)
     {

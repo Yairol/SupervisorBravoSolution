@@ -7,6 +7,7 @@ using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.PLCModbusRTUReaderWorkerService.Services;
 using Microsoft.Extensions.DependencyInjection;
 using SupervisorBravo.Domain.Entities.PLC.Variables;
+using SupervisorBravo.Persistence.Abstracts.System;
 
 public class Worker : BackgroundService
 {
@@ -33,6 +34,8 @@ public class Worker : BackgroundService
             var analogRepo = (IAnalogVariableRepository)plcRepository;
             var digitalMedRepo = (IDigitalMeasurementRepository)plcRepository;
             var analogMedRepo = (IAnalogMeasurementRepository)plcRepository;
+            var alarmRepo = (IAlarmRepository)plcRepository;
+
 
             try
             {
@@ -43,65 +46,84 @@ public class Worker : BackgroundService
                 {
                     _logger.LogInformation($"📡 PLC '{plc.Name}' (ModbusId: {plc.ModbusId})");
 
-                    var digitales = await digitalRepo.GetDigitalVariableByDeviceIdAsync(plc.Id);
-                    var analogicas = await analogRepo.GetAnalogVariableByDeviceIdAsync(plc.Id);
-
-                    foreach (var digital in digitales)
+                    try
                     {
-                        try
+                        var digitales = await digitalRepo.GetDigitalVariableByDeviceIdAsync(plc.Id);
+                        var analogicas = await analogRepo.GetAnalogVariableByDeviceIdAsync(plc.Id);
+
+                        foreach (var digital in digitales)
                         {
-                            var uValor = await _modbus.ReadHoldingRegisterAsync(plc.ModbusId, digital.Address);
-                            bool valor = Helpers.GetBitValue(uValor[0], digital.BitIndex);
-                            var medicion = new DigitalMeasurement
+                            try
                             {
-                                Id = Guid.NewGuid(),
-                                PLCDigitalVariableId = digital.Id,
-                                MeasurementValue = valor,
-                                MeasurementTime = DateTime.UtcNow
-                            };
-                            await digitalMedRepo.AddDigitalMeasurementAsync(medicion);
-                            _logger.LogInformation($"💡 Digital [{digital.Name}] Coil @ {digital.Address} = {(valor ? "ON" : "OFF")}");
+                                var uValor = await _modbus.ReadHoldingRegisterAsync(plc.ModbusId, digital.Address);
+                                bool valor = Helpers.GetBitValue(uValor[0], digital.BitIndex);
+                                var medicion = new DigitalMeasurement
+                                {
+                                    Id = Guid.NewGuid(),
+                                    PLCDigitalVariableId = digital.Id,
+                                    MeasurementValue = valor,
+                                    MeasurementTime = DateTime.UtcNow
+                                };
+                                await digitalMedRepo.AddDigitalMeasurementAsync(medicion);
+                                _logger.LogInformation($"💡 Digital [{digital.Name}] Coil @ {digital.Address} = {(valor ? "ON" : "OFF")}");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning($"⚠️ Error al leer digital '{digital.Name}': {ex.Message}");
+                            }
                         }
-                        catch (Exception ex)
+
+                        foreach (var analogica in analogicas)
                         {
-                            _logger.LogWarning($"⚠️ Error al leer digital '{digital.Name}': {ex.Message}");
+                            try
+                            {
+                                double valor;
+                                var uValor = await _modbus.ReadHoldingRegisterAsync(plc.ModbusId, analogica.Address);
+                                switch(analogica.Type)
+                                {
+                                    case HoldingDataType.floating:
+                                        valor = Helpers.ConvertModbusToFloat(uValor[1], uValor[0]);
+                                        break;
+                                    case HoldingDataType.doubleinterger:
+                                        valor = Helpers.ConvertModbusToInt(uValor[1], uValor[0]);
+                                        break;
+                                    case HoldingDataType.interger:
+                                        valor = uValor[0];
+                                        break;
+                                    default:
+                                        valor = 0;
+                                        break;
+                                }
+                                valor *= analogica.ScaleFactor;
+                                var medicion = new AnalogMeasurement
+                                {
+                                    Id = Guid.NewGuid(),
+                                    PLCAnalogVariableId = analogica.Id,
+                                    MeasurementValue = valor,
+                                    MeasurementTime = DateTime.UtcNow
+                                };
+                                await analogMedRepo.AddAnalogMeasurementAsync(medicion);
+                                _logger.LogInformation($"📈 Analógica [{analogica.Name}] Holding @ {analogica.Address} = {valor:F2}");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogWarning($"⚠️ Error al leer analógica '{analogica.Name}': {ex.Message}");
+                            }
                         }
                     }
-
-                    foreach (var analogica in analogicas)
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            var uValor = await _modbus.ReadHoldingRegisterAsync(plc.ModbusId, analogica.Address);
-                            double valor;
-                            //En caso de que sea distinto de 0 se refiere a un registro INT
-                            if (analogica.Type == HoldingDataType.floating)
-                            {
-                                valor = Helpers.ConvertModbusToFloat(uValor[1], uValor[0]);
-                            }
-                            else
-                            {
-                                valor = uValor[0];  
-                            }
-                            var medicion = new AnalogMeasurement
-                            {
-                                Id = Guid.NewGuid(),
-                                PLCAnalogVariableId = analogica.Id,
-                                MeasurementValue = valor,
-                                MeasurementTime = DateTime.UtcNow
-                            };
-                            await analogMedRepo.AddAnalogMeasurementAsync(medicion);
-                            _logger.LogInformation($"📈 Analógica [{analogica.Name}] Holding @ {analogica.Address} = {valor:F2}");
-                            Console.WriteLine(uValor[0] + "  " + uValor[1]);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning($"⚠️ Error al leer analógica '{analogica.Name}': {ex.Message}");
-                        }
-                    }
+                        _logger.LogError(ex, "❌ Error de conexión Modbus. Se intentará nuevamente en el próximo ciclo.");
 
-                    await plcRepository.CommitTransaction();
+
+                        await alarmRepo.CreateAlarm(
+                            "Error de desconexión del bus Modbus",
+                            "Este error se produce debido a la desconexión del USB-RS485 del servidor. Para reconectar, inserte el adaptador USB-RS485 al servidor."
+                        );
+                    }
                 }
+
+                await plcRepository.CommitTransaction();
             }
             catch (Exception general)
             {

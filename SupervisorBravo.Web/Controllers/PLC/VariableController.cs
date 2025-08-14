@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using SupervisorBravo.Domain.Entities.PLC.Variables;
 using SupervisorBravo.Web.Models.PLC;
 using SupervisorBravo.Web.Models.Variable;
 
@@ -109,15 +111,18 @@ namespace SupervisorBravo.Web.Controllers
         public async Task<IActionResult> Create(VariableCreateViewModel model)
         {
             await _plcDeviceRepository.BeginTransaction();
+
             if (!ModelState.IsValid)
                 return View(model);
+
             var plc = await _plcDeviceRepository.GetPLCDeviceByIdAsync(model.PlcId);
             if (plc == null)
             {
-                Console.WriteLine("No se encontro el PLC");
+                Console.WriteLine("No se encontró el PLC");
                 Console.WriteLine(model.PlcId);
                 return View(model);
             }
+
             if (model.Type == "Digital")
             {
                 var digital = new PLCDigitalVariable
@@ -129,24 +134,38 @@ namespace SupervisorBravo.Web.Controllers
                     IsWritable = model.IsWritable,
                     BitIndex = model.BitIndex ?? 0
                 };
-                await ((IDigitalVariableRepository)_plcDeviceRepository).AddDigitalVariableAsync(digital);
+
+                await ((IDigitalVariableRepository)_plcDeviceRepository)
+                    .AddDigitalVariableAsync(digital);
             }
-            else
+            else // Analógica
             {
+                // Convertir el valor del select en el enum
+                HoldingDataType holdingType;
+                if (!Enum.TryParse(model.AnalogHoldingType, true, out holdingType))
+                {
+                    holdingType = HoldingDataType.floating; // valor por defecto
+                }
+
                 var analogica = new PLCAnalogVariable
                 {
                     Id = Guid.NewGuid(),
                     PLCDeviceId = model.PlcId,
                     Name = model.Name.Trim(),
                     Address = (ushort)model.Address,
-                    IsWritable = model.IsWritable
+                    IsWritable = model.IsWritable,
+                    Type = holdingType,
+                    ScaleFactor = model.ScaleFactor > 0 ? model.ScaleFactor : 1.0
                 };
-                await ((IAnalogVariableRepository)_plcDeviceRepository).AddAnalogVariableAsync(analogica);
+
+                await ((IAnalogVariableRepository)_plcDeviceRepository)
+                    .AddAnalogVariableAsync(analogica);
             }
 
             await _plcDeviceRepository.CommitTransaction();
             return RedirectToAction("Administrar", new { id = model.PlcId });
         }
+
         [HttpPost]
         public async Task<IActionResult> DigitalDelete(Guid id)
         {
@@ -180,97 +199,145 @@ namespace SupervisorBravo.Web.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             await _plcDeviceRepository.BeginTransaction();
-            PLCDigitalVariable DVariable = new PLCDigitalVariable();
-            bool IsDigital = false;
-            var variable = await ((IAnalogVariableRepository)_plcDeviceRepository)
-                .GetAnalogVariableByIdAsync(id);
-            if (variable == null)
-            {
+            var digitalRepo = (IDigitalVariableRepository)_plcDeviceRepository;
+            var analogRepo = (IAnalogVariableRepository)_plcDeviceRepository;
 
-                DVariable = await ((IDigitalVariableRepository)_plcDeviceRepository)
-                .GetDigitalVariableByIdAsync(id);
-                if(DVariable == null)
+            // Buscar Digital
+            var digital = await digitalRepo.GetDigitalVariableByIdAsync(id);
+            if (digital != null)
+            {
+                // Para variables digitales, igual inicializamos HoldingTypes por si en el futuro se reutiliza la vista
+                ViewBag.HoldingTypes = new SelectList(
+                    new[]
                     {
-                        await _plcDeviceRepository.CommitTransaction();
-                        return NotFound();
-                    }
-                IsDigital = true;
-            }
-            EditVariableViewModel model;
-            if(!IsDigital)
-            {
-                model = new EditVariableViewModel
+                new { Value = "integer", Text = "Integer" },
+                new { Value = "floating", Text = "Floating" }
+                    },
+                    "Value",
+                    "Text"
+                );
+
+                return View(new EditVariableViewModel
                 {
-                    Id = variable.Id,
-                    PlcId = variable.PLCDeviceId,
-                    Name = variable.Name,
-                    Address = variable.Address,
-                    IsWritable = variable.IsWritable,
-                    IsDigital = IsDigital,
-                    BitIndex = null
-                };
+                    Id = digital.Id,
+                    PlcId = digital.PLCDeviceId,
+                    Name = digital.Name,
+                    Address = digital.Address,
+                    IsWritable = digital.IsWritable,
+                    BitIndex = digital.BitIndex,
+                    IsDigital = true,
+                    AnalogHoldingType = null,
+                    ScaleFactor = 1.0
+                });
             }
-            else
+
+            // Buscar Analógica
+            var analog = await analogRepo.GetAnalogVariableByIdAsync(id);
+            if (analog != null)
             {
-                model = new EditVariableViewModel
+                // Preparar lista de opciones con el valor seleccionado actual
+                ViewBag.HoldingTypes = new SelectList(
+                    new[]
+                    {
+                new { Value = "integer", Text = "Integer" },
+                new { Value = "floating", Text = "Floating" }
+                    },
+                    "Value",
+                    "Text",
+                    analog.Type.ToString().ToLower()
+                );
+
+                return View(new EditVariableViewModel
                 {
-                    Id = DVariable.Id,
-                    PlcId = DVariable.PLCDeviceId,
-                    Name = DVariable.Name,
-                    Address = DVariable.Address,
-                    IsWritable = DVariable.IsWritable,
-                    IsDigital = IsDigital,
-                    BitIndex = DVariable.BitIndex
-                };
+                    Id = analog.Id,
+                    PlcId = analog.PLCDeviceId,
+                    Name = analog.Name,
+                    Address = analog.Address,
+                    IsWritable = analog.IsWritable,
+                    BitIndex = null,
+                    IsDigital = false,
+                    AnalogHoldingType = analog.Type.ToString().ToLower(),
+                    ScaleFactor = analog.ScaleFactor <= 0 ? 1.0 : analog.ScaleFactor
+                });
             }
 
             await _plcDeviceRepository.CommitTransaction();
-            return View("Edit", model);
+            return NotFound();
         }
 
+
+        // POST: Variable/Edit
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(EditVariableViewModel model)
         {
-            await _plcDeviceRepository.BeginTransaction();
             if (!ModelState.IsValid)
-            {
-                await _plcDeviceRepository.CommitTransaction();
-                return View("Edit", model);
-            }
+                return View(model);
+
+            await _plcDeviceRepository.BeginTransaction();
+
+            var digitalRepo = (IDigitalVariableRepository)_plcDeviceRepository;
+            var analogRepo = (IAnalogVariableRepository)_plcDeviceRepository;
+
             if (model.IsDigital)
             {
-                var DVariable = await ((IDigitalVariableRepository)_plcDeviceRepository)
-                    .GetDigitalVariableByIdAsync(model.Id);
-                 if (DVariable == null)
+                var entity = await digitalRepo.GetDigitalVariableByIdAsync(model.Id);
+                if (entity == null)
                 {
-                    await _plcDeviceRepository.CommitTransaction();
-                    return NotFound();
+                    ModelState.AddModelError("", "Variable digital no encontrada.");
+                    await _plcDeviceRepository.RollbackTransaction();
+                    return View(model);
                 }
-                DVariable.Address = (ushort)model.Address;
-                DVariable.BitIndex = model.BitIndex.Value;
-                DVariable.Name = model.Name;
-                await ((IDigitalVariableRepository)_plcDeviceRepository)
-                    .UpdateDigitalVariableAsync(DVariable);
+
+                if (model.BitIndex is < 0 or > 7)
+                {
+                    ModelState.AddModelError(nameof(model.BitIndex), "El Bit Index debe estar entre 0 y 7.");
+                    await _plcDeviceRepository.RollbackTransaction();
+                    return View(model);
+                }
+
+                entity.Name = model.Name.Trim();
+                entity.Address = (ushort)model.Address;
+                entity.IsWritable = model.IsWritable;
+                entity.BitIndex = model.BitIndex ?? 0;
+
+                await digitalRepo.UpdateDigitalVariableAsync(entity);
             }
             else
             {
-                var AVariable = await ((IAnalogVariableRepository)_plcDeviceRepository)
-                    .GetAnalogVariableByIdAsync(model.Id);
-                if (AVariable == null)
+                var entity = await analogRepo.GetAnalogVariableByIdAsync(model.Id);
+                if (entity == null)
                 {
-                    await _plcDeviceRepository.CommitTransaction();
-                    return NotFound();
+                    ModelState.AddModelError("", "Variable analógica no encontrada.");
+                    await _plcDeviceRepository.RollbackTransaction();
+                    return View(model);
                 }
-                AVariable.Address = (ushort)model.Address;
-                AVariable.Name = model.Name;
-                await ((IAnalogVariableRepository)_plcDeviceRepository)
-                    .UpdateAnalogVariableAsync(AVariable);
 
+                if (!Enum.TryParse<HoldingDataType>(model.AnalogHoldingType ?? "floating", true, out var holdingType))
+                    holdingType = HoldingDataType.floating;
+
+                if (model.ScaleFactor <= 0)
+                {
+                    ModelState.AddModelError(nameof(model.ScaleFactor), "El factor de escala debe ser mayor que 0.");
+                    await _plcDeviceRepository.RollbackTransaction();
+                    return View(model);
+                }
+
+                entity.Name = model.Name.Trim();
+                entity.Address = (ushort)model.Address;
+                entity.IsWritable = model.IsWritable;
+                entity.Type = holdingType;
+                entity.ScaleFactor = model.ScaleFactor;
+
+                await analogRepo.UpdateAnalogVariableAsync(entity);
             }
+
             await _plcDeviceRepository.CommitTransaction();
             return RedirectToAction("Administrar", new { id = model.PlcId });
         }
+
+
 
     }
 

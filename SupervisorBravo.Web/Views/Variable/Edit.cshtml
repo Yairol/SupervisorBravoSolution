@@ -1,52 +1,83 @@
-﻿@model SupervisorBravo.Web.Models.Variable.EditVariableViewModel
-
+﻿@model EditVariableViewModel
+@using System.Text.Json
+@using SupervisorBravo.Domain.Entities.PLC.Variables
 @{
     ViewData["Title"] = "Editar Variable";
 }
 
-<h2 class="mb-4 text-center">✏️ Editar Variable @(Model.IsDigital ? "Digital" : "Analógica")</h2>
+<h2 class="mb-4 text-center">✏️ Editar Variable</h2>
 
 <form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="PlcId" />
     <input type="hidden" asp-for="IsDigital" />
 
     <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
+        <label class="form-label">Tipo de Variable</label>
+        <input type="text" class="form-control" value="@(Model.IsDigital ? "Digital" : "Analógica")" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Nombre</label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <input asp-for="Address" class="form-control" />
+        <label asp-for="Address" class="form-label">Registro Modbus</label>
+        <input asp-for="Address" class="form-control" type="number" min="0" max="65535" />
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
 
-    @if (Model.IsDigital)
-    {
-        <div class="mb-3">
-            <label asp-for="BitIndex" class="form-label"></label>
-            <input asp-for="BitIndex" class="form-control" type="number" min="0" />
-            <span asp-validation-for="BitIndex" class="text-danger"></span>
-        </div>
-    }
-
-    <div class="form-check mb-4">
+    <div class="mb-3 form-check">
         <input asp-for="IsWritable" class="form-check-input" />
         <label asp-for="IsWritable" class="form-check-label">¿Acepta Escritura?</label>
     </div>
 
-    <div class="d-flex justify-content-between">
-        <a asp-action="Administrar" asp-route-id="@Model.PlcId" class="btn btn-secondary">
-            ↩️ Cancelar
+    <!-- Digital -->
+    <div class="mb-3" id="bitIndexGroup">
+        <label asp-for="BitIndex" class="form-label">Bit Index (0–7)</label>
+        <input asp-for="BitIndex" class="form-control" type="number" min="0" max="7" />
+        <span asp-validation-for="BitIndex" class="text-danger"></span>
+    </div>
+
+    <!-- Analógica -->
+    <div class="mb-3" id="analogHoldingTypeGroup">
+        <label class="form-label">Tipo de Dato (HoldingDataType)</label>
+        <select asp-for="AnalogHoldingType"
+                class="form-select"
+                asp-items="Html.GetEnumSelectList<HoldingDataType>()">
+        </select>
+        <span asp-validation-for="AnalogHoldingType" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3" id="scaleFactorGroup">
+        <label asp-for="ScaleFactor" class="form-label">Factor de Escala</label>
+        <input asp-for="ScaleFactor" class="form-control" type="number" step="any" min="0.0000001" />
+        <span asp-validation-for="ScaleFactor" class="text-danger"></span>
+    </div>
+
+    <div class="text-end">
+        <a asp-action="Administrar" asp-route-id="@Model.PlcId" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Volver
         </a>
         <button type="submit" class="btn btn-primary">
-            💾 Guardar Cambios
+            <i class="bi bi-save"></i> Guardar cambios
         </button>
     </div>
 </form>
 
 @section Scripts {
+    <script>
+        function toggleFields() {
+            const isDigital = @Html.Raw(JsonSerializer.Serialize(Model.IsDigital));
+            document.getElementById("bitIndexGroup").style.display = isDigital ? "block" : "none";
+            document.getElementById("analogHoldingTypeGroup").style.display = isDigital ? "none" : "block";
+            document.getElementById("scaleFactorGroup").style.display = isDigital ? "none" : "block";
+        }
+        document.addEventListener("DOMContentLoaded", toggleFields);
+    </script>
     <partial name="_ValidationScriptsPartial" />
 }

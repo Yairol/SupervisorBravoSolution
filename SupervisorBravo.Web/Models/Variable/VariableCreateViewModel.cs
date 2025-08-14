@@ -20,6 +20,13 @@ namespace SupervisorBravo.Web.Models.Variable
 
         [Range(0, 7, ErrorMessage = "El BitIndex debe estar entre 0 y 7.")]
         public int? BitIndex { get; set; } // Solo para digitales
+
+        [Required(ErrorMessage = "Debes seleccionar el tipo de dato.")]
+        public string? AnalogHoldingType { get; set; } // "integer" o "floating"
+
+        [Range(0.0001, double.MaxValue, ErrorMessage = "El factor de escala debe ser mayor que 0.")]
+        public double ScaleFactor { get; set; } = 1.0;
+
     }
 
 }
