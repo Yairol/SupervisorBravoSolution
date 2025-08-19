@@ -6,60 +6,70 @@ namespace SupervisorBravo.Persistence.Repository
     {
         public async Task<List<PLCAnalogVariable>> GetAllAnalogVariablesAsync()
         {
-            return await _context.Set<PLCAnalogVariable>().ToListAsync();
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCAnalogVariable>().ToListAsync();
         }
 
         public async Task<PLCAnalogVariable?> GetAnalogVariableByIdAsync(Guid id)
         {
-            return await _context.Set<PLCAnalogVariable>().FindAsync(id);
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCAnalogVariable>().FindAsync(id);
         }
 
         public async Task AddAnalogVariableAsync(PLCAnalogVariable variable)
         {
-            await _context.Set<PLCAnalogVariable>().AddAsync(variable);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            await ctx.Set<PLCAnalogVariable>().AddAsync(variable);
+            await ctx.SaveChangesAsync();
         }
 
         public async Task UpdateAnalogVariableAsync(PLCAnalogVariable variable)
         {
-            _context.Set<PLCAnalogVariable>().Update(variable);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            ctx.Set<PLCAnalogVariable>().Update(variable);
+            await ctx.SaveChangesAsync();
         }
 
         public async Task DeleteAnalogVariableAsync(Guid id)
         {
-            var variable = await _context.Set<PLCAnalogVariable>().FindAsync(id);
+            var ctx = EnsureContext();
+            var variable = await ctx.Set<PLCAnalogVariable>().FindAsync(id);
             if (variable is not null)
             {
-                _context.Set<PLCAnalogVariable>().Remove(variable);
-                await _context.SaveChangesAsync();
+                ctx.Set<PLCAnalogVariable>().Remove(variable);
+                await ctx.SaveChangesAsync();
             }
         }
 
         public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdAsync(Guid deviceId)
         {
-            return await _context.Set<PLCAnalogVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCAnalogVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .ToListAsync();
         }
+
         public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithMeasurementsAsync(Guid deviceId)
         {
-            return await _context.Set<PLCAnalogVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCAnalogVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .Include(v => v.Measurements)
                 .ToListAsync();
         }
+
         public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithMeasurementsAsync(
             Guid deviceId, DateTime fromUtc, DateTime toUtc)
         {
-            // Normaliza a UTC para que el filtro sea consistente con PostgreSQL
+            // Normaliza a UTC
             if (fromUtc.Kind != DateTimeKind.Utc) fromUtc = fromUtc.ToUniversalTime();
             if (toUtc.Kind != DateTimeKind.Utc) toUtc = toUtc.ToUniversalTime();
 
             // Garantiza rango correcto
             if (fromUtc > toUtc) (fromUtc, toUtc) = (toUtc, fromUtc);
 
-            return await _context.Set<PLCAnalogVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCAnalogVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .Include(v => v.Measurements
                     .Where(m => m.MeasurementTime >= fromUtc && m.MeasurementTime <= toUtc)
@@ -67,9 +77,11 @@ namespace SupervisorBravo.Persistence.Repository
                 .AsNoTracking()
                 .ToListAsync();
         }
+
         public async Task<List<PLCAnalogVariable>> GetAnalogVariableByDeviceIdWithLastMeasurementAsync(Guid deviceId)
         {
-            return await _context.Set<PLCAnalogVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCAnalogVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .Select(v => new PLCAnalogVariable
                 {
@@ -87,10 +99,5 @@ namespace SupervisorBravo.Persistence.Repository
                 .AsNoTracking()
                 .ToListAsync();
         }
-
-
-
-
     }
 }
-

@@ -21,7 +21,7 @@ namespace SupervisorBravo.Domain.Entities.Schedule
         /// Dispositivo al cual se le va a realizar la tarea
         /// </summary>
         [ForeignKey(nameof(DeviceId))]
-        public virtual DixellBase Device { get; set; }
+        public virtual DixellBase Device { get; set; } = new DixellXR();
 
         /// <summary>
         /// hora de inicio

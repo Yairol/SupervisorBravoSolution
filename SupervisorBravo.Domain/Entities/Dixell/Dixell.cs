@@ -13,7 +13,7 @@ namespace SupervisorBravo.Domain.Entities.Dixell
         /// Nombre de la sala que monitorea.
         /// </summary>
         [Required(ErrorMessage = "El campo nombre de la sala es obligatorio.")]
-        public string RoomName { get; set; }
+        public string RoomName { get; set; } = string.Empty;
         /// <summary>
         /// Control On/Off activo
         /// </summary>

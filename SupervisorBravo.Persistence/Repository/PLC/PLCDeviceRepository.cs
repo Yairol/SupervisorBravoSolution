@@ -7,7 +7,8 @@ namespace SupervisorBravo.Persistence.Repository
     {
         public async Task<List<PLCDevice>> GetAllPLCDeviceAsync(bool includeVariables = false)
         {
-            var query = _context.Set<PLCDevice>().AsQueryable();
+            var ctx = EnsureContext();
+            var query = ctx.Set<PLCDevice>().AsQueryable();
 
             if (includeVariables)
                 query = query.Include(d => d.Variables);
@@ -17,7 +18,8 @@ namespace SupervisorBravo.Persistence.Repository
 
         public async Task<PLCDevice?> GetPLCDeviceByIdAsync(Guid id, bool includeVariables = false)
         {
-            var query = _context.Set<PLCDevice>().AsQueryable();
+            var ctx = EnsureContext();
+            var query = ctx.Set<PLCDevice>().AsQueryable();
 
             if (includeVariables)
                 query = query.Include(d => d.Variables);
@@ -27,32 +29,35 @@ namespace SupervisorBravo.Persistence.Repository
 
         public async Task<List<PLCDevice>> GetPLCDeviceByNameAsync(string namePart)
         {
-            return await _context.PLCDevices
+            var ctx = EnsureContext();
+            return await ctx.PLCDevices
                 .Where(d => d.Name.Contains(namePart))
                 .ToListAsync();
         }
 
         public async Task AddPLCDeviceAsync(PLCDevice device)
         {
-            await _context.Set<PLCDevice>().AddAsync(device);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            await ctx.Set<PLCDevice>().AddAsync(device);
+            await ctx.SaveChangesAsync();
         }
 
         public async Task UpdatePLCDeviceAsync(PLCDevice device)
         {
-            _context.PLCDevices.Update(device);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            ctx.PLCDevices.Update(device);
+            await ctx.SaveChangesAsync();
         }
 
         public async Task DeletePLCDeviceAsync(Guid id)
         {
-            var device = await _context.Set<PLCDevice>().FindAsync(id);
+            var ctx = EnsureContext();
+            var device = await ctx.Set<PLCDevice>().FindAsync(id);
             if (device is not null)
             {
-                _context.PLCDevices.Remove(device);
-                await _context.SaveChangesAsync();
+                ctx.PLCDevices.Remove(device);
+                await ctx.SaveChangesAsync();
             }
         }
     }
-
 }

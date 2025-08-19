@@ -3,7 +3,7 @@
 public class PLCDevice : Entity
 {
     #region properties
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public byte ModbusId { get; set; }
     public string? IpAddress { get; set; }
 

@@ -10,7 +10,7 @@ public class EditVariableViewModel
 
     [Required]
     [StringLength(100)]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [Required]
     public int Address { get; set; }

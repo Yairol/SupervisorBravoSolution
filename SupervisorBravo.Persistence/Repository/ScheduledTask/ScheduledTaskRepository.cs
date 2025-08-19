@@ -6,32 +6,31 @@ using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {
     public partial class AplicationRepository : IScheduledTaskRepository
     {
-
         public async Task<List<ScheduledTask>> GetPendingTasks(DateTime currentTime)
         {
-            return await _context.Set<ScheduledTask>()
+            var ctx = EnsureContext();
+            return await ctx.Set<ScheduledTask>()
                 .Where(t => t.Status == ScheduledTaskStatus.Pending && t.ScheduledDateTime <= currentTime)
                 .ToListAsync();
         }
 
         public async Task<List<ScheduledTask>> GetTaskByDevice(DixellBase device)
         {
-            return await _context.Set<ScheduledTask>()
+            var ctx = EnsureContext();
+            return await ctx.Set<ScheduledTask>()
                 .Where(t => t.DeviceId == device.Id)
                 .ToListAsync();
         }
 
         public async Task<ScheduledTask> CreateTask(ScheduledTask task)
         {
-            if (_context == null)
-                throw new InvalidOperationException("No hay contexto activo. Usa BeginTransaction.");
+            var ctx = EnsureContext();
 
             task.Id = Guid.NewGuid(); // si no se asigna automáticamente
             task.ScheduledDateTime = task.ScheduledDateTime.ToUniversalTime();
@@ -39,46 +38,48 @@ namespace SupervisorBravo.Persistence.Repository
             if (task.RecurrenceEndDate.HasValue)
                 task.RecurrenceEndDate = task.RecurrenceEndDate.Value.ToUniversalTime();
 
-            await _context.Set<ScheduledTask>().AddAsync(task);
+            await ctx.Set<ScheduledTask>().AddAsync(task);
             return task;
         }
 
-
-
         public async Task<ScheduledTask> UpdateTask(ScheduledTask task)
         {
-            _context.Set<ScheduledTask>()
-                .Update(task);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            ctx.Set<ScheduledTask>().Update(task);
+            await ctx.SaveChangesAsync();
             return task;
         }
 
         public async Task<ScheduledTask?> GetTaskById(Guid taskId)
         {
-            return await _context
-                .Set<ScheduledTask>()
-                .FindAsync(taskId);
+            var ctx = EnsureContext();
+            return await ctx.Set<ScheduledTask>().FindAsync(taskId);
         }
+
         public async Task DeleteTask(ScheduledTask task)
         {
-            var TaskToDelete = await _context
-                .Set<ScheduledTask>()
-                .FindAsync(task.Id);
+            var ctx = EnsureContext();
+            var taskToDelete = await ctx.Set<ScheduledTask>().FindAsync(task.Id);
 
-            if (task != null)
+            if (taskToDelete is not null)
             {
-                _context.Remove(task);
+                ctx.Remove(taskToDelete);
+                await ctx.SaveChangesAsync();
             }
         }
+
         public async Task<List<ScheduledTask>> GetAllTasks()
         {
-            return await _context.ScheduledTasks
+            var ctx = EnsureContext();
+            return await ctx.ScheduledTasks
                 .Include(t => t.Device)
                 .ToListAsync();
         }
+
         public async Task<List<string>> GetAllTasksDeviceNamesAsync()
         {
-            return await _context.Set<ScheduledTask>()
+            var ctx = EnsureContext();
+            return await ctx.Set<ScheduledTask>()
                 .Include(t => t.Device)
                 .Where(t => t.Device != null && !string.IsNullOrWhiteSpace(t.Device.RoomName))
                 .Select(t => t.Device.RoomName)
@@ -86,13 +87,11 @@ namespace SupervisorBravo.Persistence.Repository
                 .OrderBy(name => name)
                 .ToListAsync();
         }
+
         public IQueryable<ScheduledTask> QueryScheduledTasks()
         {
-            return _context.Set<ScheduledTask>().AsQueryable();
+            var ctx = EnsureContext();
+            return ctx.Set<ScheduledTask>().AsQueryable();
         }
-
-
-
     }
-
 }

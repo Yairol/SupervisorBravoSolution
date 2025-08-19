@@ -6,60 +6,70 @@ namespace SupervisorBravo.Persistence.Repository
     {
         public async Task<List<PLCDigitalVariable>> GetAllDigitalVariablesAsync()
         {
-            return await _context.Set<PLCDigitalVariable>().ToListAsync();
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCDigitalVariable>().ToListAsync();
         }
 
         public async Task<PLCDigitalVariable?> GetDigitalVariableByIdAsync(Guid id)
         {
-            return await _context.Set<PLCDigitalVariable>().FindAsync(id);
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCDigitalVariable>().FindAsync(id);
         }
 
         public async Task AddDigitalVariableAsync(PLCDigitalVariable variable)
         {
-            await _context.Set<PLCDigitalVariable>().AddAsync(variable);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            await ctx.Set<PLCDigitalVariable>().AddAsync(variable);
+            await ctx.SaveChangesAsync();
         }
 
         public async Task UpdateDigitalVariableAsync(PLCDigitalVariable variable)
         {
-            _context.Set<PLCDigitalVariable>().Update(variable);
-            await _context.SaveChangesAsync();
+            var ctx = EnsureContext();
+            ctx.Set<PLCDigitalVariable>().Update(variable);
+            await ctx.SaveChangesAsync();
         }
 
         public async Task DeleteDigitalVariableAsync(Guid id)
         {
-            var variable = await _context.Set<PLCDigitalVariable>().FindAsync(id);
+            var ctx = EnsureContext();
+            var variable = await ctx.Set<PLCDigitalVariable>().FindAsync(id);
             if (variable is not null)
             {
-                _context.Set<PLCDigitalVariable>().Remove(variable);
-                await _context.SaveChangesAsync();
+                ctx.Set<PLCDigitalVariable>().Remove(variable);
+                await ctx.SaveChangesAsync();
             }
         }
 
         public async Task<List<PLCDigitalVariable>> GetDigitalVariableByDeviceIdAsync(Guid deviceId)
         {
-            return await _context.Set<PLCDigitalVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCDigitalVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .ToListAsync();
         }
+
         public async Task<List<PLCDigitalVariable>> GetDigitalVariableByDeviceIdWithMeasurementsAsync(Guid deviceId)
         {
-            return await _context.Set<PLCDigitalVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCDigitalVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .Include(v => v.Measurements)
                 .ToListAsync();
         }
+
         public async Task<List<PLCDigitalVariable>> GetDigitalVariableByDeviceIdWithMeasurementsAsync(
             Guid deviceId, DateTime fromUtc, DateTime toUtc)
         {
-            // Normaliza a UTC para que el filtro sea consistente con PostgreSQL
+            // Normaliza a UTC
             if (fromUtc.Kind != DateTimeKind.Utc) fromUtc = fromUtc.ToUniversalTime();
             if (toUtc.Kind != DateTimeKind.Utc) toUtc = toUtc.ToUniversalTime();
 
             // Garantiza rango correcto
             if (fromUtc > toUtc) (fromUtc, toUtc) = (toUtc, fromUtc);
 
-            return await _context.Set<PLCDigitalVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCDigitalVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .Include(v => v.Measurements
                     .Where(m => m.MeasurementTime >= fromUtc && m.MeasurementTime <= toUtc)
@@ -67,9 +77,11 @@ namespace SupervisorBravo.Persistence.Repository
                 .AsNoTracking()
                 .ToListAsync();
         }
+
         public async Task<List<PLCDigitalVariable>> GetDigitalVariableByDeviceIdWithLastMeasurementAsync(Guid deviceId)
         {
-            return await _context.Set<PLCDigitalVariable>()
+            var ctx = EnsureContext();
+            return await ctx.Set<PLCDigitalVariable>()
                 .Where(v => v.PLCDeviceId == deviceId)
                 .Select(v => new PLCDigitalVariable
                 {
@@ -87,9 +99,5 @@ namespace SupervisorBravo.Persistence.Repository
                 .AsNoTracking()
                 .ToListAsync();
         }
-
-
-
     }
 }
-

@@ -2,7 +2,7 @@
 {
     public class DixellReporteViewModel
     {
-        public string Room { get; set; }
+        public string Room { get; set; } = string.Empty;
         public DateTime StartDateReport { get; set; }
         public DateTime EndDateReport { get; set; }
 
@@ -11,7 +11,7 @@
 
     public class DixellReporteItem
     {
-        public string DixellName { get; set; }
+        public string DixellName { get; set; } = string.Empty;
         public double? SetPoint { get; set; }
         public double? AvgTemperature { get; set; }
         public double? MinTemperature { get; set; }

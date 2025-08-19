@@ -225,7 +225,8 @@ public class ScheduledTaskController : Controller
             IsRecurring = task.IsRecurring,
             Recurrence = task.Recurrence,
             RecurrenceEndDate = task.RecurrenceEndDate?.ToLocalTime(),
-            Status = (ScheduledTaskStatus)task.Status,
+            Status = task.Status.HasValue
+                    ? (ScheduledTaskStatus)task.Status.Value : ScheduledTaskStatus.Pending, // o el que definas como default
             Devices = await LoadDevicesAsync(),
             ActionOptions = LoadActions()
         };

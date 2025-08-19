@@ -99,7 +99,11 @@
                     </div>
 
                     <!-- Cerrar sesión -->
-                    @if (User.Identity.IsAuthenticated)
+                    @{
+                        bool isAuth = User?.Identity?.IsAuthenticated ?? false;
+                    }
+
+                    @if (isAuth)
                     {
                         <form asp-controller="Login" asp-action="Logout" method="post" class="w-100 mb-3">
                             <button type="submit" class="btn btn-outline-light w-100">
@@ -108,6 +112,7 @@
                             </button>
                         </form>
                     }
+
                 </div>
             </div>
 

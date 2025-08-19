@@ -6,39 +6,45 @@ public partial class AplicationRepository : IDigitalMeasurementRepository
 {
     public async Task<List<DigitalMeasurement>> GetAllDigitalMeasurementsAsync()
     {
-        return await _context.Set<DigitalMeasurement>().ToListAsync();
+        var ctx = EnsureContext();
+        return await ctx.Set<DigitalMeasurement>().ToListAsync();
     }
 
     public async Task<DigitalMeasurement?> GetDigitalMeasurementByIdAsync(Guid id)
     {
-        return await _context.Set<DigitalMeasurement>().FindAsync(id);
+        var ctx = EnsureContext();
+        return await ctx.Set<DigitalMeasurement>().FindAsync(id);
     }
 
     public async Task AddDigitalMeasurementAsync(DigitalMeasurement measurement)
     {
-        await _context.Set<DigitalMeasurement>().AddAsync(measurement);
-        await _context.SaveChangesAsync();
+        var ctx = EnsureContext();
+        await ctx.Set<DigitalMeasurement>().AddAsync(measurement);
+        await ctx.SaveChangesAsync();
     }
 
     public async Task UpdateDigitalMeasurementAsync(DigitalMeasurement measurement)
     {
-        _context.Set<DigitalMeasurement>().Update(measurement);
-        await _context.SaveChangesAsync();
+        var ctx = EnsureContext();
+        ctx.Set<DigitalMeasurement>().Update(measurement);
+        await ctx.SaveChangesAsync();
     }
 
     public async Task DeleteDigitalMeasurementAsync(Guid id)
     {
-        var entry = await _context.Set<DigitalMeasurement>().FindAsync(id);
+        var ctx = EnsureContext();
+        var entry = await ctx.Set<DigitalMeasurement>().FindAsync(id);
         if (entry is not null)
         {
-            _context.Set<DigitalMeasurement>().Remove(entry);
-            await _context.SaveChangesAsync();
+            ctx.Set<DigitalMeasurement>().Remove(entry);
+            await ctx.SaveChangesAsync();
         }
     }
 
     public async Task<List<DigitalMeasurement>> GetDigitalMeasurementsByVariableIdAsync(Guid digitalVariableId)
     {
-        return await _context.Set<DigitalMeasurement>()
+        var ctx = EnsureContext();
+        return await ctx.Set<DigitalMeasurement>()
             .Where(m => m.PLCDigitalVariableId == digitalVariableId)
             .ToListAsync();
     }
@@ -47,13 +53,14 @@ public partial class AplicationRepository : IDigitalMeasurementRepository
     {
         if (from > to)
         {
-            DateTime save = to;
-            to = from;
-            from = save;
+            (from, to) = (to, from);
         }
-        return await _context.Set<DigitalMeasurement>()
+
+        var ctx = EnsureContext();
+        return await ctx.Set<DigitalMeasurement>()
             .Where(m => m.PLCDigitalVariableId == digitalVariableId &&
-                        m.MeasurementTime >= from && m.MeasurementTime <= to)
+                        m.MeasurementTime >= from &&
+                        m.MeasurementTime <= to)
             .ToListAsync();
     }
 }

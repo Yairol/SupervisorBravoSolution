@@ -8,49 +8,58 @@ namespace SupervisorBravo.Persistence.Repository
     {
         public async Task<DeviceAlarm> CreateDeviceAlarm(string name, string description, string deviceName)
         {
+            var ctx = EnsureContext();
             DeviceAlarm deviceAlarm = new DeviceAlarm(name, description, deviceName);
-            await _context.Set<DeviceAlarm>().AddAsync(deviceAlarm);
+            await ctx.Set<DeviceAlarm>().AddAsync(deviceAlarm);
             return deviceAlarm;
         }
 
         public async Task DeleteAlarmByRoomName(string roomName)
         {
-            var deviceAlarm = await _context.Set<DeviceAlarm>().FirstOrDefaultAsync(d => d.DeviceName == roomName);
-            if (deviceAlarm != null)
+            var ctx = EnsureContext();
+            var deviceAlarm = await ctx.Set<DeviceAlarm>().FirstOrDefaultAsync(d => d.DeviceName == roomName);
+            if (deviceAlarm is not null)
             {
-                _context.Remove(deviceAlarm);
+                ctx.Remove(deviceAlarm);
+                await ctx.SaveChangesAsync();
             }
         }
 
         public async Task DeleteDeviceAlarm(Guid deviceAlarmId)
         {
-            var deviceAlarm = await _context.Set<DeviceAlarm>().FindAsync(deviceAlarmId);
-            if (deviceAlarm != null)
+            var ctx = EnsureContext();
+            var deviceAlarm = await ctx.Set<DeviceAlarm>().FindAsync(deviceAlarmId);
+            if (deviceAlarm is not null)
             {
-                _context.Remove(deviceAlarm);
+                ctx.Remove(deviceAlarm);
+                await ctx.SaveChangesAsync();
             }
-
         }
 
         public async Task<IEnumerable<DeviceAlarm>> GetAllDeviceAlarms()
         {
-            var deviceAlarms = await _context.Set<DeviceAlarm>().ToListAsync();
-            return deviceAlarms;
+            var ctx = EnsureContext();
+            return await ctx.Set<DeviceAlarm>().ToListAsync();
         }
 
         public async Task<DeviceAlarm?> GetDeviceAlarmByDeviceNamme(string deviceName)
         {
-            return await _context.Set<DeviceAlarm>().FirstOrDefaultAsync(d => d.DeviceName == deviceName);
+            var ctx = EnsureContext();
+            return await ctx.Set<DeviceAlarm>().FirstOrDefaultAsync(d => d.DeviceName == deviceName);
         }
 
         public async Task<DeviceAlarm> GetDeviceAlarmById(Guid id)
         {
-            return await _context.Set<DeviceAlarm>().FindAsync(id);
+            var ctx = EnsureContext();
+            return await ctx.Set<DeviceAlarm>().FindAsync(id)
+                   ?? throw new KeyNotFoundException($"DeviceAlarm con Id {id} no encontrado");
         }
+
 
         public Task UpdateDate(DeviceAlarm deviceAlarm)
         {
-            _context.Set<DeviceAlarm>().Update(deviceAlarm);
+            var ctx = EnsureContext();
+            ctx.Set<DeviceAlarm>().Update(deviceAlarm);
             return Task.CompletedTask;
         }
     }

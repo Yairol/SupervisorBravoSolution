@@ -27,9 +27,9 @@ public class ScheduleTaskViewModel
     public DateTime? RecurrenceEndDate { get; set; }
 
     [BindNever]
-    public List<SelectListItem> Devices { get; set; }
+    public List<SelectListItem> Devices { get; set; } = new List<SelectListItem>();
     [BindNever]
-    public List<SelectListItem> ActionOptions { get; set; }
+    public List<SelectListItem> ActionOptions { get; set; } = new List<SelectListItem>();
     public ScheduledTaskStatus Status { get; set; }
     public bool HasRecurrenceEnd { get; set; } // para controlar si mostrar campo EndDate
 

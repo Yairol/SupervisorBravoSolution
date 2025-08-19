@@ -36,12 +36,17 @@ public class ScheduledTaskExecutionLog : Entity
     public int AttemptIndex { get; set; }
     #endregion
 
-    public ScheduledTaskExecutionLog() { }
+    public ScheduledTaskExecutionLog() 
+    {
+        Task = new ScheduledTask();
+        Message = String.Empty;
+    }
 
     public ScheduledTaskExecutionLog(ScheduledTask task) 
     {
         Task = task;
         TaskId = task.Id;
+        Message = String.Empty;
     }
 
 }

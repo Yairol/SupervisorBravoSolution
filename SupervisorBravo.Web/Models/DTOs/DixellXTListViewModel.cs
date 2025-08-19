@@ -4,6 +4,6 @@ namespace SupervisorBravo.Web.Models.DTOs
 {
     public class DixellXTListViewModel
     {
-        public List<DixellXT> Devices { get; set; }
+        public List<DixellXT> Devices { get; set; } = new List<DixellXT> { new DixellXT() };
     }
 }

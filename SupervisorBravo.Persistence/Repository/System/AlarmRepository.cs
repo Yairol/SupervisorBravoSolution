@@ -8,28 +8,35 @@ namespace SupervisorBravo.Persistence.Repository
     {
         public async Task<Alarm> CreateAlarm(string name, string description)
         {
+            var ctx = EnsureContext();
             var alarm = new Alarm(name, description);
-            await _context.AddAsync(alarm);
+            await ctx.AddAsync(alarm);
             return alarm;
         }
 
         public async Task DeleteAlarm(Guid alarmId)
         {
-            var alarm = await _context.Set<Alarm>().FindAsync(alarmId);
-            if (alarm != null)
+            var ctx = EnsureContext();
+            var alarm = await ctx.Set<Alarm>().FindAsync(alarmId);
+            if (alarm is not null)
             {
-                _context.Remove(alarm);
+                ctx.Remove(alarm);
+                await ctx.SaveChangesAsync();
             }
         }
 
         public async Task<Alarm> GetAlarmById(Guid id)
         {
-            return await _context.Set<Alarm>().FindAsync(id);
+            var ctx = EnsureContext();
+            return await ctx.Set<Alarm>().FindAsync(id)
+                   ?? throw new KeyNotFoundException($"Alarm con Id {id} no encontrada");
         }
+
 
         public async Task<IEnumerable<Alarm>> GetAllAlarms()
         {
-            return await _context.Set<Alarm>().ToListAsync();
+            var ctx = EnsureContext();
+            return await ctx.Set<Alarm>().ToListAsync();
         }
     }
 }

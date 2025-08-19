@@ -20,12 +20,26 @@ namespace SupervisorBravo.PLCModbusRTUReaderWorkerService.Services
 
         public ModbusReaderService(IConfiguration config)
         {
-            _portName = config["ModbusRTU:PortName"];     // COM3, etc.
-            _baudRate = int.Parse(config["ModbusRTU:BaudRate"]); // Ej: 9600
-            _parity = Enum.Parse<Parity>(config["ModbusRTU:Parity"]); // None, Odd, Even
-            _dataBits = int.Parse(config["ModbusRTU:DataBits"]); // 8
-            _stopBits = Enum.Parse<StopBits>(config["ModbusRTU:StopBits"]); // One
+            _portName = config["ModbusRTU:PortName"]
+                ?? throw new ArgumentNullException("ModbusRTU:PortName no configurado");
+
+            var baudRateString = config["ModbusRTU:BaudRate"]
+                ?? throw new ArgumentNullException("ModbusRTU:BaudRate no configurado");
+            _baudRate = int.Parse(baudRateString);
+
+            var parityString = config["ModbusRTU:Parity"]
+                ?? throw new ArgumentNullException("ModbusRTU:Parity no configurado");
+            _parity = Enum.Parse<Parity>(parityString);
+
+            var dataBitsString = config["ModbusRTU:DataBits"]
+                ?? throw new ArgumentNullException("ModbusRTU:DataBits no configurado");
+            _dataBits = int.Parse(dataBitsString);
+
+            var stopBitsString = config["ModbusRTU:StopBits"]
+                ?? throw new ArgumentNullException("ModbusRTU:StopBits no configurado");
+            _stopBits = Enum.Parse<StopBits>(stopBitsString);
         }
+
 
         public async Task<bool> ReadCoilAsync(byte unitId, ushort address)
         {
@@ -38,7 +52,7 @@ namespace SupervisorBravo.PLCModbusRTUReaderWorkerService.Services
             return result[0];
         }
 
-        public async Task<ushort[]?> ReadHoldingRegisterAsync(byte unitId, ushort address)
+        public async Task<ushort[]> ReadHoldingRegisterAsync(byte unitId, ushort address)
         {
             using var port = new SerialPort(_portName, _baudRate, _parity, _dataBits, _stopBits);
             port.Open();
