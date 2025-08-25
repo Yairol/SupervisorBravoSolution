@@ -8,7 +8,7 @@ public class DigitalMeasurement : Measurement
     // Relación inversa
     [ForeignKey(nameof(PLCDigitalVariableId))]
     public Guid PLCDigitalVariableId { get; set; }
-    public PLCDigitalVariable PLCDigitalVariable { get; set; } = new PLCDigitalVariable();
+    public PLCDigitalVariable PLCDigitalVariable { get; set; } = null!;
 
     #endregion
 

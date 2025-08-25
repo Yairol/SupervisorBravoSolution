@@ -21,7 +21,7 @@ namespace SupervisorBravo.Domain.Entities.Schedule
         /// Dispositivo al cual se le va a realizar la tarea
         /// </summary>
         [ForeignKey(nameof(DeviceId))]
-        public virtual DixellBase Device { get; set; } = new DixellXR();
+        public virtual DixellBase Device { get; set; } = null!;
 
         /// <summary>
         /// hora de inicio
@@ -76,7 +76,7 @@ namespace SupervisorBravo.Domain.Entities.Schedule
 
         public ScheduledTask()
         {
-            ExecutionLog = new List<ScheduledTaskExecutionLog>();
+            ExecutionLog = new();
             Status = ScheduledTaskStatus.Pending;
         }
 

@@ -35,6 +35,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             {
 
                 var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
+                dixells.OrderBy(d => d.RoomName).ToList();
 
                 foreach(var dixell in dixells)
                 {

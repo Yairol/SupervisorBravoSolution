@@ -38,7 +38,7 @@ public class ScheduledTaskExecutionLog : Entity
 
     public ScheduledTaskExecutionLog() 
     {
-        Task = new ScheduledTask();
+        Task = null!;
         Message = String.Empty;
     }
 

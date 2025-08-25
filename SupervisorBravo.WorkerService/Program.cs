@@ -1,20 +1,11 @@
-using System;
-using System.IO;
-using System.Linq;
-using Npgsql;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Npgsql;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
+using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Abstracts.System;
-using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.WorkerService;
-using SupervisorBravo.WorkerService.Utilities;
-using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -29,7 +20,7 @@ builder.Configuration
 // --------------------------------------------------
 // 2) Opciones del Host
 // --------------------------------------------------
-builder.Logging.ClearProviders(); 
+builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Services.Configure<HostOptions>(options =>

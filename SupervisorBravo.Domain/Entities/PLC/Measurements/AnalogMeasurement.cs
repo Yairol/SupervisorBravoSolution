@@ -8,7 +8,7 @@ public class AnalogMeasurement : Measurement
     // Relación inversa
     [ForeignKey(nameof(PLCAnalogVariable))]
     public Guid PLCAnalogVariableId { get; set; }
-    public PLCAnalogVariable PLCAnalogVariable { get; set; } = new PLCAnalogVariable();
+    public PLCAnalogVariable PLCAnalogVariable { get; set; } = null!;
     #endregion
 
     #region builders

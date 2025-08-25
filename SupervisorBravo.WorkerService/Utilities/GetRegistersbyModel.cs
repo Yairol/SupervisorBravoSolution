@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SupervisorBravo.WorkerService.Utilities
+﻿namespace SupervisorBravo.WorkerService.Utilities
 {
     /// <summary>
     /// Helpers para obtener los registros modbus según el modelo del dispositivo
@@ -27,7 +21,7 @@ namespace SupervisorBravo.WorkerService.Utilities
         {
             switch (modelName)
             {
-                
+
                 case "XR100D": return (ushort)1280; //4369 Thawing Off ----- 4883 ON
 
                 default: return (ushort)513;
@@ -35,7 +29,7 @@ namespace SupervisorBravo.WorkerService.Utilities
 
         }
 
-        public static ushort GetXRCoolingRegisterByModel (string  modelName)
+        public static ushort GetXRCoolingRegisterByModel(string modelName)
         {
             switch (modelName)
             {
@@ -45,7 +39,7 @@ namespace SupervisorBravo.WorkerService.Utilities
             }
         }
 
-        public static ushort GetXRFanRegisterByModel (string modelName)
+        public static ushort GetXRFanRegisterByModel(string modelName)
         {
             switch (modelName)
             {
@@ -72,7 +66,7 @@ namespace SupervisorBravo.WorkerService.Utilities
         /// </summary>
         /// <param name="modelName"></param>
         /// <returns></returns>
-        public static bool GetRegisterTypeByModel (string modelName)
+        public static bool GetRegisterTypeByModel(string modelName)
         {
             switch (modelName)
             {
@@ -81,7 +75,7 @@ namespace SupervisorBravo.WorkerService.Utilities
                 default: return false; //tipo coil
             }
         }
-        public static ushort GetXROnOffWriteRegisterByModel (string modelName)
+        public static ushort GetXROnOffWriteRegisterByModel(string modelName)
         {
             switch (modelName)
             {
@@ -101,12 +95,12 @@ namespace SupervisorBravo.WorkerService.Utilities
         /// <param name="modelName"></param>
         /// <param name="Entry"></param>
         /// <returns></returns>
-        public static bool GetXRThawingResultByModel (string modelName, ushort Entry)
+        public static bool GetXRThawingResultByModel(string modelName, ushort Entry)
         {
             switch (modelName)
             {
                 case "XR100D":
-                    if (Entry == (ushort)4883) {return true; }
+                    if (Entry == (ushort)4883) { return true; }
                     else
                     {
                         return false;
@@ -140,7 +134,7 @@ namespace SupervisorBravo.WorkerService.Utilities
                     {
                         return (ushort)4883;
                     }
-                        
+
                     else
                     {
                         return (ushort)1;

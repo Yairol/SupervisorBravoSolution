@@ -11,7 +11,7 @@ public abstract class PLCVariable : Entity
     // FK para trazabilidad inversa al dispositivo
     [ForeignKey(nameof(PLCDeviceId))]
     public Guid PLCDeviceId { get; set; }
-    public PLCDevice PLCDevice { get; set; } = new PLCDevice();
+    public PLCDevice PLCDevice { get; set; } = null!;
 
     #endregion
 
