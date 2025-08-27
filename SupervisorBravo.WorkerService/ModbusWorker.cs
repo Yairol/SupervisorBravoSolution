@@ -72,7 +72,7 @@ namespace SupervisorBravo.WorkerService
                                     var thawingActualizado = await repository.GetDixellById<DixellXR>(dixell.Id);
                                     if (thawingActualizado.ThawingWrite)
                                     {
-                                        await Task.Delay(250);
+                                        await Task.Delay(100);
                                         await WriteThawingXR(master, thawingActualizado.MoodbusId, thawingActualizado.Thawing, thawingActualizado.modelName)
                                             .WaitAsync(TimeSpan.FromSeconds(1));
                                         thawingActualizado.ThawingWrite = false;
@@ -84,7 +84,7 @@ namespace SupervisorBravo.WorkerService
                                     var onOffActualizado = await repository.GetDixellById<DixellXR>(dixell.Id);
                                     if (onOffActualizado.ControlON_OFFWrite)
                                     {
-                                        await Task.Delay(250);
+                                        await Task.Delay(100);
                                         await WriteControlON_OFFXR(master, onOffActualizado.MoodbusId, onOffActualizado.ControlON_OFF, onOffActualizado.modelName)
                                             .WaitAsync(TimeSpan.FromSeconds(1));
                                         onOffActualizado.ControlON_OFFWrite = false;
@@ -96,7 +96,7 @@ namespace SupervisorBravo.WorkerService
                                     var setPointActualizado = await repository.GetDixellById<DixellXR>(dixell.Id);
                                     if (setPointActualizado.SetPointWrite)
                                     {
-                                        await Task.Delay(250);
+                                        await Task.Delay(100);
                                         await WriteSetPointXR(master, setPointActualizado.MoodbusId, setPointActualizado.SetPoint, setPointActualizado.modelName)
                                             .WaitAsync(TimeSpan.FromSeconds(1));
                                         setPointActualizado.SetPointWrite = false;
@@ -104,7 +104,7 @@ namespace SupervisorBravo.WorkerService
                                         await repository.PartialCommit();
                                     }
                                     // 📥 4. Lectura del SetPoint — evitar sobrescribir si se acaba de escribir
-                                    await Task.Delay(250);
+                                    await Task.Delay(100);
                                     var dixellActualizado = await repository.GetDixellById<DixellXR>(dixell.Id); // Relectura defensiva
                                     var setPointValue = await ReadSetPointXR(master, dixellActualizado.MoodbusId, dixellActualizado.modelName).WaitAsync(TimeSpan.FromSeconds(1));
                                     if (!dixellActualizado.SetPointWrite)
@@ -115,7 +115,7 @@ namespace SupervisorBravo.WorkerService
                                     }
 
                                     // 📥 5. Lectura de Thawing — evitar sobrescribir si se acaba de escribir
-                                    await Task.Delay(250);
+                                    await Task.Delay(100);
                                     dixellActualizado = await repository.GetDixellById<DixellXR>(dixell.Id); // Relectura defensiva
                                     var thawing = await ReadThawingXR(master, dixellActualizado.MoodbusId, dixellActualizado.modelName).WaitAsync(TimeSpan.FromSeconds(1));
                                     if (!dixellActualizado.ThawingWrite)
@@ -126,7 +126,7 @@ namespace SupervisorBravo.WorkerService
                                     }
 
                                     // 📥 6. Lectura de ON/OFF — evitar sobrescribir si se acaba de escribir
-                                    await Task.Delay(250);
+                                    await Task.Delay(100);
                                     dixellActualizado = await repository.GetDixellById<DixellXR>(dixell.Id); // Relectura defensiva
                                     var controlOnOff = await ReadControlOnOffXR(master, dixellActualizado.MoodbusId, dixellActualizado.modelName).WaitAsync(TimeSpan.FromSeconds(1));
                                     if (!dixellActualizado.ControlON_OFFWrite)
@@ -166,7 +166,7 @@ namespace SupervisorBravo.WorkerService
                                         // Escritura Control ON/OFF
                                         if (dixell.ControlON_OFFWrite)
                                         {
-                                            await Task.Delay(250);
+                                            await Task.Delay(100);
                                             dixell.ControlON_OFFWrite = false;
                                             justWroteControl = true;
                                             await WriteControlON_OFFXT(master, dixell.MoodbusId, dixell.ControlON_OFF)
@@ -178,7 +178,7 @@ namespace SupervisorBravo.WorkerService
                                         // Escritura SetPoint
                                         if (dixell.SetPointWrite)
                                         {
-                                            await Task.Delay(250);
+                                            await Task.Delay(100);
                                             dixell.SetPointWrite = false;
                                             justWroteSetPoint = true;
                                             await WriteSetPointXT(master, dixell.MoodbusId, SETPOINT_XT);
@@ -194,7 +194,7 @@ namespace SupervisorBravo.WorkerService
                                         }
 
                                         // Lectura SetPoint, evitando sobrescritura post escritura
-                                        await Task.Delay(250);
+                                        await Task.Delay(100);
                                         double? setPointValueXr = await ReadSetPointXT(master, dixell.MoodbusId)
                                             .WaitAsync(TimeSpan.FromSeconds(1));
                                         if (setPointValueXr != null && !justWroteSetPoint)
@@ -206,7 +206,7 @@ namespace SupervisorBravo.WorkerService
                                         }
 
                                         // Lectura Control ON/OFF, evitando sobrescritura post escritura
-                                        await Task.Delay(250);
+                                        await Task.Delay(100);
                                         bool? controlOnOff = await ReadControlOnOffXT(master, dixell.MoodbusId)
                                             .WaitAsync(TimeSpan.FromSeconds(1));
                                         if (controlOnOff != null && !justWroteControl)
@@ -238,7 +238,7 @@ namespace SupervisorBravo.WorkerService
                                 try
                                 {
                                     //Lectura de temperaturas.
-                                    await Task.Delay(300);
+                                    await Task.Delay(100);
                                     double? temperatureValue = await ReadTemperature(master, dixell.MoodbusId).WaitAsync(TimeSpan.FromSeconds(1.2));
                                     if (temperatureValue != null)
                                     {
@@ -370,7 +370,7 @@ namespace SupervisorBravo.WorkerService
                 return result;
 
             }
-
+            
         }
         /// <summary>
         /// Lee el estado del control on/off de un dixell XT en el bus modbus.

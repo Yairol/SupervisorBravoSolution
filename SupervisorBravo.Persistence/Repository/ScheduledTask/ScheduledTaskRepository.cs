@@ -1,12 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Schedule;
-using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {
@@ -93,5 +88,17 @@ namespace SupervisorBravo.Persistence.Repository
             var ctx = EnsureContext();
             return ctx.Set<ScheduledTask>().AsQueryable();
         }
+
+        public async Task<List<ScheduledTask>> GetRecentTasks(int minutes = 10)
+        {
+            var ctx = EnsureContext();
+            var cutoff = DateTime.UtcNow.AddMinutes(-minutes);
+
+            return await ctx.Set<ScheduledTask>()
+                .Where(t => t.ExecutionLog.Any(log => log.Timestamp >= cutoff))
+                .Distinct()
+                .ToListAsync();
+        }
+
     }
 }

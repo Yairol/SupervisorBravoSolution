@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
-using SupervisorBravo.Web.ViewModels;
 using SupervisorBravo.Domain.Entities.Schedule;
+using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Helpers;
+using SupervisorBravo.Web.ViewModels;
 
 namespace SupervisorBravo.Web.Controllers
 {

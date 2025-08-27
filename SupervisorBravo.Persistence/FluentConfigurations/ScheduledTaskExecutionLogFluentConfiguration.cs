@@ -1,18 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SupervisorBravo.Domain.Entities.Common;
 using SupervisorBravo.Domain.Entities.Schedule;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.FluentConfigurations
 {
     internal class ScheduledTaskExecutionLogFluentConfiguration : IEntityTypeConfiguration<ScheduledTaskExecutionLog>
     {
-        public void Configure (EntityTypeBuilder<ScheduledTaskExecutionLog> builder)
+        public void Configure(EntityTypeBuilder<ScheduledTaskExecutionLog> builder)
         {
             builder.HasKey(e => e.Id);
 

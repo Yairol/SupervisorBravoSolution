@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
-using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
-using Microsoft.EntityFrameworkCore;
 
 public class ScheduledTaskController : Controller
 {
@@ -185,9 +185,9 @@ public class ScheduledTaskController : Controller
 
 
     private async Task<List<SelectListItem>> LoadDevicesAsync()
-    { 
+    {
         bool Flag = false;
-        if(!_repository.IsInTransaction)
+        if (!_repository.IsInTransaction)
         {
             await _repository.BeginTransaction();
             Flag = true;

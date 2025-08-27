@@ -1,12 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;

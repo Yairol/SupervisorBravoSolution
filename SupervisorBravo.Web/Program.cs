@@ -1,12 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using SupervisorBravo.Persistence;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Repository;
-using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 

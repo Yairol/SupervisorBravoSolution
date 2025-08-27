@@ -35,13 +35,13 @@ namespace SupervisorBravo.Persistence.Repository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task 
+        public async Task
             BeginTransaction()
         {
             if (IsInTransaction)
                 throw new InvalidOperationException("Cannot begin a new transaction before closing the current one.");
-           _context = await _contextFactory.CreateDbContextAsync();
-            
+            _context = await _contextFactory.CreateDbContextAsync();
+
             _transaction = await _context.Database.BeginTransactionAsync();
             await _context.Database.CanConnectAsync();
             //await _context.Database.MigrateAsync();

@@ -8,7 +8,7 @@
         #region Propiedades
 
         public bool Cooling { get; set; }
-        public bool Fan {  get; set; }
+        public bool Fan { get; set; }
         /// <summary>
         /// Control de encendido y apagado del deshielo
         /// </summary>

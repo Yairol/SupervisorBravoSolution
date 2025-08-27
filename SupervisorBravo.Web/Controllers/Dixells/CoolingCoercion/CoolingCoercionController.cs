@@ -22,7 +22,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
             await _dixellRepository.BeginTransaction();
             var model = new DixellXTListViewModel();
             var dixells = await _dixellRepository.GetAllDixellsWithoutTemperatures<DixellXT>();
-            var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();           
+            var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();
             foreach (var device in dixellsList)
             {
                 //Solo carga los ultimos 30 minutos
@@ -42,7 +42,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.CoolingCoercion
             }
             return View(model);
         }
-    
+
 
         [HttpGet]
         [Authorize(Roles = "Admin")]

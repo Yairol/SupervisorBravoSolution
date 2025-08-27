@@ -3,10 +3,6 @@ using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Persistence.Repository
 {

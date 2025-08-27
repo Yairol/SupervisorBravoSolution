@@ -1,13 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using SupervisorBravo.Persistence.Repository;
-using SupervisorBravo.PLCModbusRTUReaderWorkerService.Services;
-using Microsoft.Extensions.DependencyInjection;
-using SupervisorBravo.Domain.Entities.PLC.Variables;
+﻿using SupervisorBravo.Domain.Entities.PLC.Variables;
 using SupervisorBravo.Persistence.Abstracts.System;
+using SupervisorBravo.PLCModbusRTUReaderWorkerService.Services;
 
 public class Worker : BackgroundService
 {
@@ -79,7 +72,7 @@ public class Worker : BackgroundService
                             {
                                 double valor;
                                 var uValor = await _modbus.ReadHoldingRegisterAsync(plc.ModbusId, analogica.Address);
-                                switch(analogica.Type)
+                                switch (analogica.Type)
                                 {
                                     case HoldingDataType.floating:
                                         valor = Helpers.ConvertModbusToFloat(uValor[1], uValor[0]);

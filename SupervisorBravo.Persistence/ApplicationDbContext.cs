@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Domain.Entities.System;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.FluentConfigurations;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using SupervisorBravo.Domain.Entities.Schedule;
 
 
 namespace SupervisorBravo.Persistence

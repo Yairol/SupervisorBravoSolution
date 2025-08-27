@@ -1,14 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
+﻿using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Schedule;
-using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
-using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
+using SupervisorBravo.ScheduledTaskWorkerService.Helpers;
 
 namespace SupervisorBravo.WorkerService
 {
@@ -192,7 +187,45 @@ namespace SupervisorBravo.WorkerService
                 {
                     _logger.LogError(ex, "❌ Error general en ciclo de ejecución.");
                 }
+                try
+                {
+                    using var scope = _services.CreateScope();
+                    var taskRepo = scope.ServiceProvider.GetRequiredService<IScheduledTaskRepository>();
+                    await taskRepo.BeginTransaction();
+                    using var deviceScope = _services.CreateScope();
+                    var dixellRepo = deviceScope.ServiceProvider.GetRequiredService<IDixellRepository>();
+                    var RecentTasks = await taskRepo.GetRecentTasks(10);
+                    if (RecentTasks != null)
+                    {
+                        bool Success = false; //Variable para determinar si se realizo la accion correctamente
+                        foreach (var task in RecentTasks)
+                        {
+                            await dixellRepo.BeginTransaction();
+                            var device = await dixellRepo.GetDixellById<DixellXR>(task.DeviceId);
+                            await dixellRepo.CommitTransaction();
+                            Success = await ScheduledTaskHelpers.CheckTasksExecution(dixellRepo, task);
+                            if (!Success)
+                            {
+                                await ApplyActionAndPersistDevice(device, task, dixellRepo);
+                                var successLog = new ScheduledTaskExecutionLog(task)
+                                {
+                                    Timestamp = DateTime.Now.ToUniversalTime(),
+                                    Outcome = ExecutionOutcome.Success,
+                                    AttemptIndex = 1,
+                                    Message = $"✅ Acción aplicada nuevamente: {task.Action} en el dispositivo ({device.RoomName}) debido a que no se habia aplicado correctamente"
+                                };
+                                await ((IScheduledTaskExecutionLogRepository)taskRepo).AddLog(successLog);
+                            }
 
+                        }
+                    }
+                    await taskRepo.CommitTransaction();
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error reintentando tareas");
+                }
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); // 🔁 Ciclo ajustable
             }
         }

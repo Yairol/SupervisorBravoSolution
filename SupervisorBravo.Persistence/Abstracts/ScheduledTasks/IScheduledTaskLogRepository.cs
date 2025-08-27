@@ -1,11 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SupervisorBravo.Domain.Entities.Schedule;
+﻿using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Persistence.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace SupervisorBravo.Persistence.Abstracts.ScheduledTasks

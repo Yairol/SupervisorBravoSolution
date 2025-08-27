@@ -1,12 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SupervisorBravo.Domain.Entities.Common;
 using SupervisorBravo.Domain.Entities.Dixell;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SupervisorBravo.Domain.Entities.Schedule
 {
@@ -31,7 +26,7 @@ namespace SupervisorBravo.Domain.Entities.Schedule
         /// <summary>
         /// Tipo de accion a realizar
         /// </summary>
-        public ActionType Action {  get; set; }
+        public ActionType Action { get; set; }
         /// <summary>
         /// Valor del SetPoint en caso de que se decida modificar
         /// </summary>
@@ -46,7 +41,7 @@ namespace SupervisorBravo.Domain.Entities.Schedule
         /// Tipo de repetición
         /// Diaria, Semanal, Mensual
         /// </summary>
-        public RecurrenceType? Recurrence {  get; set; }
+        public RecurrenceType? Recurrence { get; set; }
         /// <summary>
         /// Dias específicos si es semanal
         /// </summary>
@@ -56,7 +51,7 @@ namespace SupervisorBravo.Domain.Entities.Schedule
         /// Hasta que dia repetir(Si aplica)
         /// </summary>
         public DateTime? RecurrenceEndDate { get; set; }
-        
+
         //Estado de la Ejecución
         /// <summary>
         /// Estado de la tarea

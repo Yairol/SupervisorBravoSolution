@@ -25,13 +25,13 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// <summary>
         /// Indicador si el Dixell está encendido o apagado.
         /// </summary>
-        public bool On_OffDixell { get; set; }          
-        
+        public bool On_OffDixell { get; set; }
+
         /// <summary>
         /// Indicador de descarche en el momento de la medición. PPRUEBA
         /// </summary>
         public bool? DefrostMeasurement { get; set; }
-        
+
         /// <summary>
         /// Indicador de Enfriamiento para el momento de la medición. PRUEBA
         /// </summary>
@@ -44,7 +44,7 @@ namespace SupervisorBravo.Domain.Entities.Temperatures
         /// <summary>
         /// Valor del Set Point en el momento de la medición
         /// </summary>
-        public double SetPointMeasurement { get; set; }      
+        public double SetPointMeasurement { get; set; }
         /// <summary>
         /// Indicador si el dixell estuvo desconctado de la alimentacion.
         /// </summary>

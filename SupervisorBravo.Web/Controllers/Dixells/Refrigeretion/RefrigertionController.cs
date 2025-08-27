@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
-using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
-using SupervisorBravo.Persistence.Repository;
 using SupervisorBravo.Web.Models.DTOs;
 
 namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
@@ -32,7 +30,7 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             {
                 device.temperatures = await ((ITemperatureRepository)_dixellRepository)
                     .GetTemperaturesByDateRange(DateTime.Now.AddMinutes(-5).ToUniversalTime(), DateTime.Now.ToUniversalTime(), device.Id);
-                if (device.temperatures.Count == 0)                
+                if (device.temperatures.Count == 0)
                 {
                     device.temperatures = await ((ITemperatureRepository)_dixellRepository).GetAllTemperaturesByDixell(device);
                 }

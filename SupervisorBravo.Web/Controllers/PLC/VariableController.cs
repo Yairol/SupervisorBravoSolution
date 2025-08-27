@@ -27,7 +27,7 @@ namespace SupervisorBravo.Web.Controllers
 
             var analogicas = await ((IAnalogVariableRepository)_plcDeviceRepository)
                 .GetAnalogVariableByDeviceIdWithLastMeasurementAsync(id);
-            
+
 
             var modelo = new EstadoActualPlcViewModel
             {
@@ -37,11 +37,11 @@ namespace SupervisorBravo.Web.Controllers
                 {
                     Nombre = v.Name,
                     UltimoValor = v.Measurements?
-        .           OrderByDescending(m => m.MeasurementTime)
+        .OrderByDescending(m => m.MeasurementTime)
                     .FirstOrDefault()?.MeasurementValue,
                     FechaMuestreo = v.Measurements?
                     .OrderByDescending(m => m.MeasurementTime)
-        .               FirstOrDefault()?.MeasurementTime.ToLocalTime()
+        .FirstOrDefault()?.MeasurementTime.ToLocalTime()
                 }).ToList(),
 
                 VariablesAnalogicas = analogicas.Select(v => new VariableAnalogicaEstadoDto
@@ -175,7 +175,7 @@ namespace SupervisorBravo.Web.Controllers
             if (variable == null)
                 return NotFound();
 
-            await ((IDigitalVariableRepository) _plcDeviceRepository).DeleteDigitalVariableAsync(id);
+            await ((IDigitalVariableRepository)_plcDeviceRepository).DeleteDigitalVariableAsync(id);
             await _plcDeviceRepository.CommitTransaction();
 
             return RedirectToAction("Administrar", new { id = variable.PLCDeviceId });

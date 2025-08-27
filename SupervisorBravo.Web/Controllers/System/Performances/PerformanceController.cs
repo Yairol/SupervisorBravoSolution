@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.JSInterop;
-using OfficeOpenXml.Style;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
@@ -20,11 +19,12 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             _dixellRepository = dixellRepository;
         }
 
-        
+
         [HttpGet, HttpPost]
         public async Task<IActionResult> Performance(DixellReporteViewModel model)
         {
-            if(model.StartDateReport == default && model.EndDateReport == default){
+            if (model.StartDateReport == default && model.EndDateReport == default)
+            {
 
                 model.EndDateReport = DateTime.Today.AddHours(6);
                 model.StartDateReport = DateTime.Today.AddHours(-6);
@@ -37,7 +37,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
                 var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
                 dixells.OrderBy(d => d.RoomName).ToList();
 
-                foreach(var dixell in dixells)
+                foreach (var dixell in dixells)
                 {
                     var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
                     var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
@@ -48,7 +48,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
                     TimeSpan controlTime = TimeSpan.Zero;
                     TimeSpan disconnectTime = TimeSpan.Zero;
 
-                    for(int i=1; i< temperaturasOrdenandas.Count; i++)
+                    for (int i = 1; i < temperaturasOrdenandas.Count; i++)
                     {
                         var actual = temperaturasOrdenandas[i];
                         var anterior = temperaturasOrdenandas[i - 1];
@@ -96,12 +96,13 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
                         AvgControl = avgControlTime,
                         AvgOffTime = avgOffTime,
                         AvgDisconnectTime = avgDisconnectTime,
-                        
+
                     };
                     model.Reports.Add(item);
                 }
 
-            }else if(model.Room == "Coccion-Enfriamiento")
+            }
+            else if (model.Room == "Coccion-Enfriamiento")
             {
                 var dixells = await _dixellRepository.GetAllDixells<DixellXT>();
 
@@ -170,7 +171,7 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
                 }
             }
             await _dixellRepository.CommitTransaction();
-            
+
             return View(model);
         }
 

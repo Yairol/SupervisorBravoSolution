@@ -16,8 +16,8 @@ public class PLCAnalogVariable : PLCVariable
     #endregion
 
     #region builders
-    public PLCAnalogVariable() 
-    { 
+    public PLCAnalogVariable()
+    {
         Type = HoldingDataType.floating;
         ScaleFactor = 1.0;
     }

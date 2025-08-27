@@ -1,7 +1,4 @@
 ﻿// Models/PLC/VariableChartViewModel.cs
-using System;
-using System.Collections.Generic;
-
 namespace SupervisorBravo.Web.Models.Variable
 {
     public class VariableOption
