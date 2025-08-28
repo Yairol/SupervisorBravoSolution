@@ -22,6 +22,7 @@
         public TimeSpan ControlTime { get; set; }
         public TimeSpan DisconnectTime { get; set; }
         public TimeSpan OffTime { get; set; }
+        public int ModbusId { get; set; }
     }
 
 }

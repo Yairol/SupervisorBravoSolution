@@ -25,155 +25,31 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
         {
             if (model.StartDateReport == default && model.EndDateReport == default)
             {
-
                 model.EndDateReport = DateTime.Today.AddHours(6);
                 model.StartDateReport = DateTime.Today.AddHours(-6);
             }
 
             await _dixellRepository.BeginTransaction();
+
             if (model.Room == "Refrigeracion")
             {
-
                 var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
-                dixells.OrderBy(d => d.RoomName).ToList();
-
-                foreach (var dixell in dixells)
-                {
-                    var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
-                    var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
-                    var temperaturasOrdenandas = temperaturas.OrderBy(t => t.MeasurementTime).ToList();
-
-                    TimeSpan offTime = TimeSpan.Zero;
-                    TimeSpan onTime = TimeSpan.Zero;
-                    TimeSpan controlTime = TimeSpan.Zero;
-                    TimeSpan disconnectTime = TimeSpan.Zero;
-
-                    for (int i = 1; i < temperaturasOrdenandas.Count; i++)
-                    {
-                        var actual = temperaturasOrdenandas[i];
-                        var anterior = temperaturasOrdenandas[i - 1];
-
-                        var deltaTime = actual.MeasurementTime - anterior.MeasurementTime;
-
-                        if (anterior.DisconnectDixell)
-                        {
-                            disconnectTime += deltaTime;
-                        }
-                        else
-                        {
-                            onTime += deltaTime;
-                        }
-                        if (anterior.ControlEnable)
-                        {
-                            controlTime += deltaTime;
-                        }
-                        if (anterior.On_OffDixell == false && anterior.DisconnectDixell == false)
-                        {
-                            offTime += deltaTime;
-                        }
-                    }
-
-                    var totalTime = onTime + disconnectTime;
-                    double avgControlTime = onTime.TotalMinutes > 0 ? (controlTime.TotalMinutes / onTime.TotalMinutes) * 100 : 0;
-                    double avgOffTime = totalTime.TotalMinutes > 0 ? (offTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
-                    double avgDisconnectTime = totalTime.TotalMinutes > 0 ? (disconnectTime.TotalMinutes / totalTime.TotalMinutes * 100) : 0;
-
-
-                    var item = new DixellReporteItem
-                    {
-                        DixellName = dixell.RoomName,
-                        SetPoint = dixell.SetPoint,
-                        AvgTemperature = temperaturasValidas.Any()
-                        ? Math.Round(temperaturasValidas.Average(t => t.TemperatureMeasurement), 2)
-                        : null,
-                        MaxTemperature = temperaturasValidas.Any()
-                        ? temperaturasValidas.Max(t => t.TemperatureMeasurement)
-                        : null,
-                        MinTemperature = temperaturasValidas.Any() ? temperaturasValidas.Min(t => t.TemperatureMeasurement) : null,
-                        OffTime = offTime,
-                        DisconnectTime = disconnectTime,
-                        ControlTime = controlTime,
-                        AvgControl = avgControlTime,
-                        AvgOffTime = avgOffTime,
-                        AvgDisconnectTime = avgDisconnectTime,
-
-                    };
-                    model.Reports.Add(item);
-                }
-
+                await ProcesarDixells(dixells, model);
             }
             else if (model.Room == "Coccion-Enfriamiento")
             {
                 var dixells = await _dixellRepository.GetAllDixells<DixellXT>();
-
-                foreach (var dixell in dixells)
-                {
-                    var temperaturas = await ((ITemperatureRepository)_dixellRepository).GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
-                    var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
-                    var temperaturasOrdenandas = temperaturas.OrderBy(t => t.MeasurementTime).ToList();
-
-                    TimeSpan offTime = TimeSpan.Zero;
-                    TimeSpan onTime = TimeSpan.Zero;
-                    TimeSpan controlTime = TimeSpan.Zero;
-                    TimeSpan disconnectTime = TimeSpan.Zero;
-
-                    for (int i = 1; i < temperaturasOrdenandas.Count; i++)
-                    {
-                        var actual = temperaturasOrdenandas[i];
-                        var anterior = temperaturasOrdenandas[i - 1];
-
-                        var deltaTime = actual.MeasurementTime - anterior.MeasurementTime;
-
-                        if (anterior.DisconnectDixell)
-                        {
-                            disconnectTime += deltaTime;
-                        }
-                        else
-                        {
-                            onTime += deltaTime;
-                        }
-                        if (anterior.ControlEnable)
-                        {
-                            controlTime += deltaTime;
-                        }
-                        if (anterior.On_OffDixell == false && anterior.DisconnectDixell == false)
-                        {
-                            offTime += deltaTime;
-                        }
-                    }
-
-                    var totalTime = onTime + disconnectTime;
-                    double avgControlTime = onTime.TotalMinutes > 0 ? (controlTime.TotalMinutes / onTime.TotalMinutes) * 100 : 0;
-                    double avgOffTime = totalTime.TotalMinutes > 0 ? (offTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
-                    double avgDisconnectTime = totalTime.TotalMinutes > 0 ? (disconnectTime.TotalMinutes / totalTime.TotalMinutes * 100) : 0;
-
-
-                    var item = new DixellReporteItem
-                    {
-                        DixellName = dixell.RoomName,
-                        SetPoint = dixell.SetPoint,
-                        AvgTemperature = temperaturasValidas.Any()
-                        ? Math.Round(temperaturasValidas.Average(t => t.TemperatureMeasurement), 2)
-                        : null,
-                        MaxTemperature = temperaturasValidas.Any()
-                        ? temperaturasValidas.Max(t => t.TemperatureMeasurement)
-                        : null,
-                        MinTemperature = temperaturasValidas.Any() ? temperaturasValidas.Min(t => t.TemperatureMeasurement) : null,
-                        OffTime = offTime,
-                        DisconnectTime = disconnectTime,
-                        ControlTime = controlTime,
-                        AvgControl = avgControlTime,
-                        AvgOffTime = avgOffTime,
-                        AvgDisconnectTime = avgDisconnectTime,
-
-                    };
-                    model.Reports.Add(item);
-                }
+                await ProcesarDixells(dixells, model);
             }
+
             await _dixellRepository.CommitTransaction();
+
+            // 👇 Orden final por ModbusId
+            model.Reports = model.Reports.OrderBy(r => r.ModbusId).ToList();
 
             return View(model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> ExportToExcel(DixellReporteViewModel model)
@@ -232,5 +108,64 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             var fileName = $"ReporteDixell_{DateTime.UtcNow:yyyyMMdd_HHmmss}.xlsx";
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
+
+        private async Task ProcesarDixells<T>(List<T> dixells, DixellReporteViewModel model) where T : DixellBase
+        {
+            foreach (var dixell in dixells)
+            {
+                var temperaturas = await ((ITemperatureRepository)_dixellRepository)
+                    .GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
+
+                var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
+                var temperaturasOrdenadas = temperaturas.OrderBy(t => t.MeasurementTime).ToList();
+
+                TimeSpan offTime = TimeSpan.Zero;
+                TimeSpan onTime = TimeSpan.Zero;
+                TimeSpan controlTime = TimeSpan.Zero;
+                TimeSpan disconnectTime = TimeSpan.Zero;
+
+                for (int i = 1; i < temperaturasOrdenadas.Count; i++)
+                {
+                    var actual = temperaturasOrdenadas[i];
+                    var anterior = temperaturasOrdenadas[i - 1];
+                    var deltaTime = actual.MeasurementTime - anterior.MeasurementTime;
+
+                    if (anterior.DisconnectDixell)
+                        disconnectTime += deltaTime;
+                    else
+                        onTime += deltaTime;
+
+                    if (anterior.ControlEnable)
+                        controlTime += deltaTime;
+
+                    if (!anterior.On_OffDixell && !anterior.DisconnectDixell)
+                        offTime += deltaTime;
+                }
+
+                var totalTime = onTime + disconnectTime;
+                double avgControlTime = onTime.TotalMinutes > 0 ? (controlTime.TotalMinutes / onTime.TotalMinutes) * 100 : 0;
+                double avgOffTime = totalTime.TotalMinutes > 0 ? (offTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
+                double avgDisconnectTime = totalTime.TotalMinutes > 0 ? (disconnectTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
+
+                var item = new DixellReporteItem
+                {
+                    DixellName = dixell.RoomName,
+                    SetPoint = dixell.SetPoint,
+                    AvgTemperature = temperaturasValidas.Any() ? Math.Round(temperaturasValidas.Average(t => t.TemperatureMeasurement), 2) : null,
+                    MaxTemperature = temperaturasValidas.Any() ? temperaturasValidas.Max(t => t.TemperatureMeasurement) : null,
+                    MinTemperature = temperaturasValidas.Any() ? temperaturasValidas.Min(t => t.TemperatureMeasurement) : null,
+                    OffTime = offTime,
+                    DisconnectTime = disconnectTime,
+                    ControlTime = controlTime,
+                    AvgControl = avgControlTime,
+                    AvgOffTime = avgOffTime,
+                    AvgDisconnectTime = avgDisconnectTime,
+                    ModbusId = dixell.MoodbusId // 👈 Aquí se asigna
+                };
+
+                model.Reports.Add(item);
+            }
+        }
+
     }
 }
