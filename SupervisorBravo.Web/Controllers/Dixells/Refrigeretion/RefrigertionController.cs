@@ -37,7 +37,6 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
             }
             model.Devices = dixellsList.ToList();
             await _dixellRepository.CommitTransaction();
-            //cambie a mvc
             if (dixellsList == null)
             {
                 return NotFound();

@@ -3,6 +3,9 @@
 public class PLCAnalogVariable : PLCVariable
 {
     #region properties
+    /// <summary>
+    /// Lista de mediciones correspondiente a la variable en si
+    /// </summary>
     public List<AnalogMeasurement> Measurements { get; set; } = new();
     /// <summary>
     /// Tipo de dato de la variable analogica

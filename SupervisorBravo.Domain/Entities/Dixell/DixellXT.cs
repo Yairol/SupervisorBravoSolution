@@ -5,7 +5,9 @@
     /// </summary>
     public class DixellXT : DixellBase
     {
-
+        /// <summary>
+        /// Estado de la electro valvula
+        /// </summary>
         public bool ElectroValve { get; set; }
         /// <summary>
         /// Constructor por defecto.

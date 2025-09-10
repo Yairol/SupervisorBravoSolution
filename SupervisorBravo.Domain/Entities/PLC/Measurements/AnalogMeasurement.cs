@@ -3,11 +3,18 @@
 public class AnalogMeasurement : Measurement
 {
     #region properties
+    /// <summary>
+    /// Valor de la medicion
+    /// </summary>
     public double MeasurementValue { get; set; }
-
-    // Relación inversa
+    /// <summary>
+/// Id de la variable que se midio
+/// </summary>
     [ForeignKey(nameof(PLCAnalogVariable))]
     public Guid PLCAnalogVariableId { get; set; }
+    /// <summary>
+    /// Variable que se mide, para relacion inversa
+    /// </summary>
     public PLCAnalogVariable PLCAnalogVariable { get; set; } = null!;
     #endregion
 

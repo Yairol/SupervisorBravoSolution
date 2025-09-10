@@ -6,8 +6,13 @@
     public class DixellXR : DixellBase
     {
         #region Propiedades
-
+        /// <summary>
+        /// Estado del enfriamiento
+        /// </summary>
         public bool Cooling { get; set; }
+        /// <summary>
+        /// Estado del ventilador
+        /// </summary>
         public bool Fan { get; set; }
         /// <summary>
         /// Control de encendido y apagado del deshielo
@@ -17,7 +22,9 @@
         /// Identificador si el control de deshielo es de escritura.
         /// </summary>
         public bool ThawingWrite { get; set; }
-
+        /// <summary>
+        /// Modelo del Dispositivo, por defecto XR60CX
+        /// </summary>
         public string modelName { get; set; }
 
         #endregion

@@ -3,6 +3,9 @@
 public abstract class Measurement : Entity
 {
     #region properties
+    /// <summary>
+    /// Tiempo en el que se realizó la medicion
+    /// </summary>
     public DateTime MeasurementTime { get; set; }
     #endregion
 
