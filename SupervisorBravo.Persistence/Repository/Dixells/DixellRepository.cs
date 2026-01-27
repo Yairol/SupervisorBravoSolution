@@ -75,9 +75,9 @@ namespace SupervisorBravo.Persistence.Repository
             var ctx = EnsureContext();
             return await ctx.Set<T>().ToListAsync();
         }
-        public async Task<List<T>> GetAllDixellsWithLastTemperature<T>(Guid deviceId) where T : DixellBase
+        /*public async Task<List<T>> GetAllDixellsWithLastTemperature<T>(Guid deviceId) where T : DixellBase
         {
 
-        }
+        }*/
     }
 }

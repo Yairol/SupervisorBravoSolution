@@ -2,6 +2,7 @@
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
+using SupervisorBravo.Persistence.Helpers;
 
 namespace SupervisorBravo.Persistence.Repository
 {
@@ -92,5 +93,73 @@ namespace SupervisorBravo.Persistence.Repository
                 .OrderBy(t => t.MeasurementTime)
                 .ToListAsync();
         }
+        public async Task<List<TemperatureAggregate>> GetTemperatureAggregates(DateTime startDate, DateTime endDate)
+        {
+            var dixells = await _context.Set<DixellBase>().ToListAsync();
+
+            var result = new List<TemperatureAggregate>();
+
+            foreach (var dixell in dixells)
+            {
+                var temps = await _context.Temperatures
+                    .Where(t => t.MeasurementTime >= startDate &&
+                                t.MeasurementTime <= endDate &&
+                                t.DixellId == dixell.Id)
+                    .OrderBy(t => t.MeasurementTime)
+                    .ToListAsync();
+
+                if (!temps.Any()) continue;
+
+                var validTemps = temps.Where(t => t.TemperatureMeasurement != 0).ToList();
+
+                TimeSpan offTime = TimeSpan.Zero;
+                TimeSpan onTime = TimeSpan.Zero;
+                TimeSpan controlTime = TimeSpan.Zero;
+                TimeSpan disconnectTime = TimeSpan.Zero;
+
+                for (int i = 1; i < temps.Count; i++)
+                {
+                    var actual = temps[i];
+                    var anterior = temps[i - 1];
+                    var deltaTime = actual.MeasurementTime - anterior.MeasurementTime;
+
+                    if (anterior.DisconnectDixell)
+                        disconnectTime += deltaTime;
+                    else
+                        onTime += deltaTime;
+
+                    if (anterior.ControlEnable)
+                        controlTime += deltaTime;
+
+                    if (!anterior.On_OffDixell && !anterior.DisconnectDixell)
+                        offTime += deltaTime;
+                }
+
+                var totalTime = onTime + disconnectTime;
+                double avgControlTime = onTime.TotalMinutes > 0 ? (controlTime.TotalMinutes / onTime.TotalMinutes) * 100 : 0;
+                double avgOffTime = totalTime.TotalMinutes > 0 ? (offTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
+                double avgDisconnectTime = totalTime.TotalMinutes > 0 ? (disconnectTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
+
+                result.Add(new TemperatureAggregate
+                {
+                    DixellId = dixell.Id,
+                    DixellName = dixell.RoomName,
+                    SetPoint = dixell.SetPoint,
+                    AvgTemperature = validTemps.Any() ? Math.Round(validTemps.Average(t => t.TemperatureMeasurement), 2) : null,
+                    MinTemperature = validTemps.Any() ? validTemps.Min(t => t.TemperatureMeasurement) : null,
+                    MaxTemperature = validTemps.Any() ? validTemps.Max(t => t.TemperatureMeasurement) : null,
+                    OffTime = offTime,
+                    DisconnectTime = disconnectTime,
+                    ControlTime = controlTime,
+                    AvgControl = avgControlTime,
+                    AvgOffTime = avgOffTime,
+                    AvgDisconnectTime = avgDisconnectTime
+                });
+            }
+
+            return result;
+        }
+
+
     }
 }

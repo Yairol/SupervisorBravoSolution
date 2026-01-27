@@ -1,22 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35913.81
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11408.102 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.Domain", "SupervisorBravo.Domain\SupervisorBravo.Domain.csproj", "{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Domain", "SupervisorBravo.Domain\SupervisorBravo.Domain.csproj", "{2856F3CF-9C77-4A8B-B71D-48D61EC92D45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.Persistence", "SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj", "{6CB05085-BFF9-4457-94B0-3DE256DE8669}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Persistence", "SupervisorBravo.Persistence\SupervisorBravo.Persistence.csproj", "{6CB05085-BFF9-4457-94B0-3DE256DE8669}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.Web", "SupervisorBravo.Web\SupervisorBravo.Web.csproj", "{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.Web", "SupervisorBravo.Web\SupervisorBravo.Web.csproj", "{41CC46D3-4815-4CFA-8AEB-DE2A69B5BB54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.ModbusWorkerService", "SupervisorBravo.WorkerService\SupervisorBravo.ModbusWorkerService.csproj", "{1A2F5F55-4216-4467-80FF-1FE4134CE0F3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupervisorBravo.ScheduledTaskWorkerService", "SupervisorBravo.ScheduledTaskWorkerService\SupervisorBravo.ScheduledTaskWorkerService.csproj", "{8AA03BFD-EA34-417D-9AF0-485D661ECF2B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{12DBF037-A903-4BD2-90E7-42C1DAF07FD5}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupervisorBravo.PLCModbusRTUReaderWorkerService", "SupervisorBravo.PLCModbusRTUReaderWorkerService\SupervisorBravo.PLCModbusRTUReaderWorkerService.csproj", "{76CAE88A-423A-4B8E-9822-84227ADA5DAD}"
 EndProject
