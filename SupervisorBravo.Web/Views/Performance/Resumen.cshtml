@@ -1,0 +1,31 @@
+﻿@model SupervisorBravo.Web.ViewModels.ResumenViewModel
+
+<h2>Resumen de Cámaras de Refrigeración</h2>
+
+<form asp-action="Resumen" method="post">
+    <div class="form-group mb-3">
+        <label>Seleccione dispositivos:</label>
+        @for (int i = 0; i < Model.Devices.Count; i++)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="Devices[i].Selected" />
+                <label class="form-check-label">@Model.Devices[i].Name</label>
+                <input type="hidden" asp-for="Devices[i].Id" />
+                <input type="hidden" asp-for="Devices[i].Name" />
+            </div>
+        }
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label>Desde</label>
+            <input type="date" asp-for="StartDate" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label>Hasta</label>
+            <input type="date" asp-for="EndDate" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Generar Excel</button>
+</form>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SupervisorBravo.Domain.Entities.Dixell;
+using SupervisorBravo.Domain.Entities.Temperatures;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Web.Models.DTOs;
@@ -21,26 +22,37 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> Dixells()
         {
             await _dixellRepository.BeginTransaction();
+
             var model = new DixellXRListViewModel();
-            //var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
+
+            // Traer todos los dispositivos sin temperaturas
             var dixells = await _dixellRepository.GetAllDixellsWithoutTemperatures<DixellXR>();
             var dixellsList = dixells.OrderBy(x => x.MoodbusId).ToList();
-            //en pruebas eliminar en caso de error
+
             foreach (var device in dixellsList)
             {
-                device.temperatures = await ((ITemperatureRepository)_dixellRepository)
-                    .GetTemperaturesByDateRange(DateTime.Now.AddMinutes(-5).ToUniversalTime(), DateTime.Now.ToUniversalTime(), device.Id);
-                if (device.temperatures.Count == 0)
+                // Hacer cast de DixellRepository a ITemperatureRepository
+                var temperatureRepo = (ITemperatureRepository)_dixellRepository;
+
+                // Obtener el último dato de temperatura
+                var ultimoDato = await temperatureRepo.GetLastTemperatureByDixell(device.Id);
+
+                device.temperatures = new List<Temperature>();
+                if (ultimoDato != null)
                 {
-                    device.temperatures = await ((ITemperatureRepository)_dixellRepository).GetAllTemperaturesByDixell(device);
+                    device.temperatures.Add(ultimoDato);
                 }
             }
-            model.Devices = dixellsList.ToList();
+
+            model.Devices = dixellsList;
+
             await _dixellRepository.CommitTransaction();
-            if (dixellsList == null)
+
+            if (dixellsList.Count == 0)
             {
                 return NotFound();
             }
+
             return View(model);
         }
 
@@ -56,12 +68,16 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> CreateDixell(DixellXR dixell)
         {
             await _dixellRepository.BeginTransaction();
+
             var newDixell = await _dixellRepository.CreateDixellXR60CX(dixell.RoomName, dixell.MoodbusId, dixell.modelName);
+
             await _dixellRepository.CommitTransaction();
-            if (dixell == null)
+
+            if (newDixell == null)
             {
                 return NotFound();
             }
+
             return RedirectToAction(nameof(Dixells));
         }
 
@@ -70,10 +86,14 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> UpdateDixell(int id)
         {
             await _dixellRepository.BeginTransaction();
+
             var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR>(id);
+
             await _dixellRepository.CommitTransaction();
+
             if (dixell == null)
                 return NotFound();
+
             return View(dixell);
         }
 
@@ -82,8 +102,9 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> UpdateDixell(DixellXR dixell)
         {
             await _dixellRepository.BeginTransaction();
+
             var dixellUpdate = await _dixellRepository.GetDixellById<DixellXR>(dixell.Id);
-            if (dixell == null) return NotFound();
+            if (dixellUpdate == null) return NotFound();
 
             if (dixell.ControlON_OFF != dixellUpdate.ControlON_OFF)
             {
@@ -95,7 +116,6 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
                 dixellUpdate.ThawingWrite = true;
                 dixellUpdate.Thawing = dixell.Thawing;
             }
-
             if ((dixell.SetPoint != dixellUpdate.SetPoint) && (dixellUpdate.SetPointWrite == false))
             {
                 dixellUpdate.SetPointWrite = true;
@@ -120,8 +140,13 @@ namespace SupervisorBravo.Web.Controllers.Dixells.Refrigeretion
         public async Task<IActionResult> DeleteDixell(int id)
         {
             await _dixellRepository.BeginTransaction();
+
             var dixell = await _dixellRepository.GetDixellByMoodbusId<DixellXR>(id);
-            await _dixellRepository.DeleteDixell<DixellXR>(dixell.Id);
+            if (dixell != null)
+            {
+                await _dixellRepository.DeleteDixell<DixellXR>(dixell.Id);
+            }
+
             await _dixellRepository.CommitTransaction();
 
             return RedirectToAction(nameof(Dixells));

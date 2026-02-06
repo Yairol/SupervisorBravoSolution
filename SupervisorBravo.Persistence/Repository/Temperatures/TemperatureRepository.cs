@@ -75,7 +75,6 @@ namespace SupervisorBravo.Persistence.Repository
             return temp;
         }
 
-
         public async Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate, Guid dixellId)
         {
             var ctx = EnsureContext();
@@ -93,6 +92,7 @@ namespace SupervisorBravo.Persistence.Repository
                 .OrderBy(t => t.MeasurementTime)
                 .ToListAsync();
         }
+
         public async Task<List<TemperatureAggregate>> GetTemperatureAggregates(DateTime startDate, DateTime endDate)
         {
             var dixells = await _context.Set<DixellBase>().ToListAsync();
@@ -153,13 +153,23 @@ namespace SupervisorBravo.Persistence.Repository
                     ControlTime = controlTime,
                     AvgControl = avgControlTime,
                     AvgOffTime = avgOffTime,
-                    AvgDisconnectTime = avgDisconnectTime
+                    AvgDisconnectTime = avgDisconnectTime,
+                    ModbusId = dixell.MoodbusId
                 });
             }
 
             return result;
         }
 
+        // 🔥 Nuevo método: obtener el último dato de temperatura de un Dixell
+        public async Task<Temperature?> GetLastTemperatureByDixell(Guid dixellId)
+        {
+            var ctx = EnsureContext();
 
+            return await ctx.Temperatures
+                .Where(t => t.DixellId == dixellId)
+                .OrderByDescending(t => t.MeasurementTime)
+                .FirstOrDefaultAsync();
+        }
     }
 }

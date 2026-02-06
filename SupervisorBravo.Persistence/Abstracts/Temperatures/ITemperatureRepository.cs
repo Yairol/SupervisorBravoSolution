@@ -1,5 +1,6 @@
 ﻿using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Temperatures;
+using SupervisorBravo.Persistence.Helpers;
 
 namespace SupervisorBravo.Persistence.Abstracts.Temperatures
 {
@@ -33,6 +34,9 @@ namespace SupervisorBravo.Persistence.Abstracts.Temperatures
         /// <returns></returns>
         Task<List<Temperature>> GetTemperaturesByDateRange(DateTime startDate, DateTime endDate, Guid dixellId);
 
+        Task<Temperature?> GetLastTemperatureByDixell(Guid dixellId);
+
+        Task<List<TemperatureAggregate>> GetTemperatureAggregates(DateTime startDate, DateTime endDate);
 
     }
 }

@@ -5,8 +5,11 @@
 
 <h2>Medida de Desempeño</h2>
 
-<form asp-action="Performance" method="post">
-    <div class="form-group mb-3">
+<!-- Formulario de Filtrar -->
+<form asp-action="Performance" method="post" class="mb-3">
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+
+    <div class="form-group mb-3 mt-3">
         <label>Dispositivo</label>
         <select name="Room" class="form-control" required>
             <option value="">Seleccione una sala</option>
@@ -27,9 +30,12 @@
                    value="@Model.EndDateReport.ToString("yyyy-MM-ddTHH:mm")" required />
         </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Filtrar</button>
 </form>
+
+<!-- Botón Resumen independiente -->
+<div class="text-end mb-3">
+    <a asp-action="Resumen" class="btn btn-info">Resumen</a>
+</div>
 
 @if (Model.Reports.Any())
 {

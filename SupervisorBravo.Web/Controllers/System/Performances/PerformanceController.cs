@@ -5,6 +5,7 @@ using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.Temperatures;
 using SupervisorBravo.Web.Models.DTOs;
+using SupervisorBravo.Web.ViewModels;
 using System.Drawing;
 
 namespace SupervisorBravo.Web.Controllers.System.Performances
@@ -13,12 +14,10 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
     {
         private readonly IDixellRepository _dixellRepository;
 
-
         public PerformanceController(IDixellRepository dixellRepository)
         {
             _dixellRepository = dixellRepository;
         }
-
 
         [HttpGet, HttpPost]
         public async Task<IActionResult> Performance(DixellReporteViewModel model)
@@ -31,43 +30,69 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
 
             await _dixellRepository.BeginTransaction();
 
-            if (model.Room == "Refrigeracion")
-            {
-                var dixells = await _dixellRepository.GetAllDixells<DixellXR>();
-                await ProcesarDixells(dixells, model);
-            }
-            else if (model.Room == "Coccion-Enfriamiento")
-            {
-                var dixells = await _dixellRepository.GetAllDixells<DixellXT>();
-                await ProcesarDixells(dixells, model);
-            }
+            // 👉 Usamos directamente la función agregada del repositorio
+            var aggregates = await ((ITemperatureRepository)_dixellRepository)
+                .GetTemperatureAggregates(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime());
 
             await _dixellRepository.CommitTransaction();
 
-            // 👇 Orden final por ModbusId
-            model.Reports = model.Reports.OrderBy(r => r.ModbusId).ToList();
+            // Convertimos los resultados a DixellReporteItem para la vista
+            model.Reports = aggregates.Select(a => new DixellReporteItem
+            {
+                DixellName = a.DixellName,
+                SetPoint = a.SetPoint,
+                AvgTemperature = a.AvgTemperature,
+                MinTemperature = a.MinTemperature,
+                MaxTemperature = a.MaxTemperature,
+                OffTime = a.OffTime,
+                DisconnectTime = a.DisconnectTime,
+                ControlTime = a.ControlTime,
+                AvgControl = a.AvgControl,
+                AvgOffTime = a.AvgOffTime,
+                AvgDisconnectTime = a.AvgDisconnectTime,
+                ModbusId = a.ModbusId // usamos el Id como ModbusId
+            }).OrderBy(r => r.ModbusId).ToList();
 
             return View(model);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> ExportToExcel(DixellReporteViewModel model)
         {
-            await Performance(model); // Rellenamos los datos como en la vista
+            // ⚠️ Importante: recalcular datos con la misma función
+            await _dixellRepository.BeginTransaction();
 
+            var aggregates = await ((ITemperatureRepository)_dixellRepository)
+                .GetTemperatureAggregates(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime());
+
+            await _dixellRepository.CommitTransaction();
+
+            model.Reports = aggregates.Select(a => new DixellReporteItem
+            {
+                DixellName = a.DixellName,
+                SetPoint = a.SetPoint,
+                AvgTemperature = a.AvgTemperature,
+                MinTemperature = a.MinTemperature,
+                MaxTemperature = a.MaxTemperature,
+                OffTime = a.OffTime,
+                DisconnectTime = a.DisconnectTime,
+                ControlTime = a.ControlTime,
+                AvgControl = a.AvgControl,
+                AvgOffTime = a.AvgOffTime,
+                AvgDisconnectTime = a.AvgDisconnectTime,
+                ModbusId = a.ModbusId
+            }).OrderBy(r => r.ModbusId).ToList();
 
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Reporte");
 
-            // Encabezados (igual que en la vista)
             string[] headers =
             {
-        "Dispositivo", "SP", "AVG", "Min", "Max",
-        model.Room == "Refrigeracion" ? "%Cool" : "Electro Válvula",
-        "Tiempo Desconectado(horas)/% del intervalo",
-        "Tiempo Apagado(Off)(horas)/% del intervalo"
-    };
+                "Dispositivo", "SP", "AVG", "Min", "Max",
+                model.Room == "Refrigeracion" ? "%Cool" : "Electro Válvula",
+                "Tiempo Desconectado(horas)/% del intervalo",
+                "Tiempo Apagado(Off)(horas)/% del intervalo"
+            };
 
             for (int i = 0; i < headers.Length; i++)
             {
@@ -108,64 +133,125 @@ namespace SupervisorBravo.Web.Controllers.System.Performances
             var fileName = $"ReporteDixell_{DateTime.UtcNow:yyyyMMdd_HHmmss}.xlsx";
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
-
-        private async Task ProcesarDixells<T>(List<T> dixells, DixellReporteViewModel model) where T : DixellBase
+        [HttpGet]
+        public async Task<IActionResult> Resumen()
         {
-            foreach (var dixell in dixells)
+            await _dixellRepository.BeginTransaction();
+            var dispositivos = await _dixellRepository.GetAllDixellsWithoutTemperatures<DixellXR>(); // suponiendo que tienes este método
+            await _dixellRepository.CommitTransaction();
+
+            var model = new ResumenViewModel
             {
-                var temperaturas = await ((ITemperatureRepository)_dixellRepository)
-                    .GetTemperaturesByDateRange(model.StartDateReport.ToUniversalTime(), model.EndDateReport.ToUniversalTime(), dixell.Id);
-
-                var temperaturasValidas = temperaturas.Where(t => t.TemperatureMeasurement != 0).ToList();
-                var temperaturasOrdenadas = temperaturas.OrderBy(t => t.MeasurementTime).ToList();
-
-                TimeSpan offTime = TimeSpan.Zero;
-                TimeSpan onTime = TimeSpan.Zero;
-                TimeSpan controlTime = TimeSpan.Zero;
-                TimeSpan disconnectTime = TimeSpan.Zero;
-
-                for (int i = 1; i < temperaturasOrdenadas.Count; i++)
+                Devices = dispositivos.Select(d => new DeviceCheckViewModel
                 {
-                    var actual = temperaturasOrdenadas[i];
-                    var anterior = temperaturasOrdenadas[i - 1];
-                    var deltaTime = actual.MeasurementTime - anterior.MeasurementTime;
+                    Id = d.Id,
+                    Name = d.RoomName,
+                    Selected = false
+                }).ToList(),
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today
+            };
 
-                    if (anterior.DisconnectDixell)
-                        disconnectTime += deltaTime;
-                    else
-                        onTime += deltaTime;
-
-                    if (anterior.ControlEnable)
-                        controlTime += deltaTime;
-
-                    if (!anterior.On_OffDixell && !anterior.DisconnectDixell)
-                        offTime += deltaTime;
-                }
-
-                var totalTime = onTime + disconnectTime;
-                double avgControlTime = onTime.TotalMinutes > 0 ? (controlTime.TotalMinutes / onTime.TotalMinutes) * 100 : 0;
-                double avgOffTime = totalTime.TotalMinutes > 0 ? (offTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
-                double avgDisconnectTime = totalTime.TotalMinutes > 0 ? (disconnectTime.TotalMinutes / totalTime.TotalMinutes) * 100 : 0;
-
-                var item = new DixellReporteItem
-                {
-                    DixellName = dixell.RoomName,
-                    SetPoint = dixell.SetPoint,
-                    AvgTemperature = temperaturasValidas.Any() ? Math.Round(temperaturasValidas.Average(t => t.TemperatureMeasurement), 2) : null,
-                    MaxTemperature = temperaturasValidas.Any() ? temperaturasValidas.Max(t => t.TemperatureMeasurement) : null,
-                    MinTemperature = temperaturasValidas.Any() ? temperaturasValidas.Min(t => t.TemperatureMeasurement) : null,
-                    OffTime = offTime,
-                    DisconnectTime = disconnectTime,
-                    ControlTime = controlTime,
-                    AvgControl = avgControlTime,
-                    AvgOffTime = avgOffTime,
-                    AvgDisconnectTime = avgDisconnectTime,
-                    ModbusId = dixell.MoodbusId // 👈 Aquí se asigna
-                };
-
-                model.Reports.Add(item);
-            }
+            return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Resumen(ResumenViewModel model)
+        {
+            var seleccionados = model.Devices.Where(d => d.Selected).ToList();
+            if (!seleccionados.Any())
+            {
+                ModelState.AddModelError("", "Debe seleccionar al menos un dispositivo.");
+                return View(model);
+            }
+
+            var datos = await CalcularPromedios(model.StartDate, model.EndDate, seleccionados);
+
+            var excelFile = GenerarResumenExcel(datos, model.StartDate, model.EndDate);
+
+            var fileName = $"Resumen_{DateTime.UtcNow:yyyyMMdd_HHmmss}.xlsx";
+            return File(excelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        private async Task<Dictionary<string, Dictionary<DateTime, double>>> CalcularPromedios(
+    DateTime start, DateTime end, List<DeviceCheckViewModel> devices)
+        {
+            var result = new Dictionary<string, Dictionary<DateTime, double>>();
+
+            await _dixellRepository.BeginTransaction();
+
+            foreach (var device in devices)
+            {
+                var registros = await ((ITemperatureRepository)_dixellRepository)
+                    .GetTemperaturesByDateRange( start.ToUniversalTime(), end.ToUniversalTime(), device.Id);
+
+                var dailyData = registros
+                    .GroupBy(r => r.MeasurementTime.Date)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Average(x => x.TemperatureMeasurement)
+                    );
+
+                result[device.Name] = dailyData;
+            }
+
+            await _dixellRepository.CommitTransaction();
+
+            return result;
+        }
+        private byte[] GenerarResumenExcel(
+          Dictionary<string, Dictionary<DateTime, double>> datos,
+          DateTime start, DateTime end)
+        {
+            using var package = new ExcelPackage();
+            var ws = package.Workbook.Worksheets.Add("Resumen");
+
+            // Encabezado
+            ws.Cells[1, 1].Value = "Cámaras";
+            ws.Cells[1, 1].Style.Font.Bold = true;
+            ws.Cells[1, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+            ws.Cells[1, 1].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+
+            var dias = Enumerable.Range(0, (end.Date - start.Date).Days + 1)
+                                 .Select(offset => start.Date.AddDays(offset))
+                                 .ToList();
+
+            for (int i = 0; i < dias.Count; i++)
+            {
+                var cell = ws.Cells[1, i + 2];
+                cell.Value = dias[i].ToString("dd/MM");
+                cell.Style.Font.Bold = true;
+                cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                cell.Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                cell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            }
+
+            // Filas de dispositivos
+            int row = 2;
+            foreach (var kvp in datos)
+            {
+                ws.Cells[row, 1].Value = kvp.Key;
+                ws.Cells[row, 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+
+                for (int i = 0; i < dias.Count; i++)
+                {
+                    if (kvp.Value.TryGetValue(dias[i], out double avg))
+                    {
+                        ws.Cells[row, i + 2].Value = avg;
+                        ws.Cells[row, i + 2].Style.Numberformat.Format = "0.00"; // 👈 dos decimales
+                    }
+                    else
+                    {
+                        ws.Cells[row, i + 2].Value = "-";
+                    }
+
+                    ws.Cells[row, i + 2].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                }
+
+                row++;
+            }
+
+            ws.Cells.AutoFitColumns();
+            return package.GetAsByteArray();
+        }
     }
 }
