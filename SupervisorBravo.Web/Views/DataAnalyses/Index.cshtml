@@ -1,0 +1,29 @@
+﻿@model SupervisorBravo.Domain.Entities.Analysis.DataAnalysis
+
+<div class="container">
+    <h2>Análisis de Datos</h2>
+
+    @if (Model != null)
+    {
+        <p><strong>Último Análisis de Datos:</strong> @Model.AnalysisDate.ToLocalTime()</p>
+    }
+    else
+    {
+        <p><strong>Último Análisis de Datos:</strong> No hay análisis registrados.</p>
+    }
+
+    <div class="d-flex justify-content-between mb-3">
+        <form asp-controller="DataAnalyses" asp-action="CreateAnalysis" method="post">
+            <button type="submit" class="btn btn-primary">Crear Análisis de Datos</button>
+        </form>
+
+        <a asp-controller="DataAnalyses" asp-action="ExportToExcel" class="btn btn-success">
+            Exportar a Excel
+        </a>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+</div>

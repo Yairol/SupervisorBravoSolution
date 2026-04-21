@@ -1,18 +1,24 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@model SupervisorBravo.Web.Models.DTOs.AlarmModel
+﻿@model SupervisorBravo.Web.Models.DTOs.AlarmModel
 
 <div class="row">
     <div class="col-sm-8 offset-sm-2">
         <h2>Estado del Sistema</h2>
-        <a asp-controller="Alarm" asp-action="DeleteAllAlarms" 
-           onclick="return confirmar()"
-           class="btn btn-primary">
-            Eliminar Todas
-        </a>
+        <div class="d-flex justify-content-between mb-3">
+            <a asp-controller="Alarm" asp-action="DeleteAllAlarms" 
+               onclick="return confirmar()"
+               class="btn btn-primary">
+                Eliminar Todas
+            </a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="DataAnalyses" asp-action="Index"
+                   class="btn btn-success">
+                    Análisis de Datos
+                </a>
+            }
+        </div>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -42,6 +48,7 @@
                         }
                     </tr>
                 }
+            </tbody>
         </table>
 
         <h2>Estado de los Dispositivos</h2>
@@ -64,15 +71,17 @@
                         <td>@item.AlarmDate.ToLocalTime()</td>
                     </tr>
                 }
+            </tbody>
         </table>
     </div>
 </div>
+
 @section Scripts
 {
     <script>
         function confirmar()
         {
-            return confirm("¿Esta seguro que desea eliminar permanentemente todas las alarmas?")
+            return confirm("¿Está seguro que desea eliminar permanentemente todas las alarmas?")
         }
     </script>
 }

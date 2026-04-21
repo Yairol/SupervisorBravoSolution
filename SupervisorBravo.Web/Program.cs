@@ -1,30 +1,41 @@
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using SupervisorBravo.Domain.Entities.Analysis;
 using SupervisorBravo.Persistence;
+using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Abstracts.Dixells;
 using SupervisorBravo.Persistence.Abstracts.ScheduledTasks;
-using SupervisorBravo.Persistence.Abstracts.System;
 using SupervisorBravo.Persistence.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Agregar servicios al contenedor
 builder.Services.AddControllersWithViews();
+
+// Registrar el DbContextFactory con PostgreSQL
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("connectionString"))
 );
 
+// Configuración de Kestrel
 builder.WebHost.ConfigureKestrel(o => o.ListenAnyIP(5000));
+
+// Registrar repositorios como Scoped
 builder.Services.AddScoped<IDixellRepository, AplicationRepository>();
 builder.Services.AddScoped<IAlarmRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskExecutionLogRepository, AplicationRepository>();
 builder.Services.AddScoped<IScheduledTaskRepository, AplicationRepository>();
 builder.Services.AddScoped<IPLCDeviceRepository, AplicationRepository>();
+builder.Services.AddScoped<IDataAnalysesRepository, AplicationRepository>();
+
+// Ejemplo de registro adicional (si necesitas aliasar repositorios)
 builder.Services.AddScoped<IScheduledTaskRepository>(provider =>
     (IScheduledTaskRepository)provider.GetRequiredService<IDixellRepository>());
 
+// Configuración de licencia para EPPlus
 ExcelPackage.License.SetNonCommercialPersonal("Bravo");
 
+// Configuración de autenticación y autorización
 builder.Services.AddAuthentication("MiCookieAuth")
     .AddCookie("MiCookieAuth", opts =>
     {
@@ -38,6 +49,7 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy("TecnicoOnly", policy => policy.RequireRole("Tecnico"));
 });
 
+// Compresión de respuestas
 builder.Services.AddResponseCompression();
 
 var app = builder.Build();
@@ -49,7 +61,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Sólo migrar si NO hay ninguna migración aplicada
+// Migrar automáticamente si hay migraciones pendientes
 using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();

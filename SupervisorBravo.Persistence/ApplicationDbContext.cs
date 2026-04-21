@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SupervisorBravo.Domain.Entities.Analysis;
 using SupervisorBravo.Domain.Entities.Dixell;
 using SupervisorBravo.Domain.Entities.Schedule;
 using SupervisorBravo.Domain.Entities.System;
@@ -23,6 +24,8 @@ namespace SupervisorBravo.Persistence
         public DbSet<PLCDigitalVariable> DigitalVariables { get; set; }
         public DbSet<AnalogMeasurement> AnalogMeasurements { get; set; }
         public DbSet<DigitalMeasurement> DigitalMeasurements { get; set; }
+        public DbSet<DataAnalysis> DataAnalyses { get; set; }
+        public DbSet<AnalyzedData> AnalyzedData { get; set; }
 
         public ApplicationDbContext() { }
 
